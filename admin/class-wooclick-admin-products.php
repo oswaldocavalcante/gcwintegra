@@ -175,7 +175,7 @@ class Wooclick_Admin_Products {
     private function save_product_variable_attributes( $variations ) {
         $attribute = new WC_Product_Attribute();
         $attribute->set_id(0);
-        $attribute->set_name('Variação');
+        $attribute->set_name('modelo');
         $attribute->set_visible(true);
         $attribute->set_variation(true);
 
@@ -191,15 +191,26 @@ class Wooclick_Admin_Products {
     private function save_product_variable_variations( $product_variable_id, $variations ) {
         foreach ($variations as $variation_data) {
 
-            $variation = new WC_Product_Variation();
+            $sku = $variation_data['variacao']['codigo'];
+            $variation_id_exists = wc_get_product_id_by_sku($sku);
+            $variation = null;
+
+            if ($variation_id_exists) {
+                $variation = wc_get_product($variation_id_exists);
+            } else {
+                $variation = new WC_Product_Variation();
+                $variation->set_sku($variation_data['variacao']['codigo']);
+            }
+            
             $variation->set_parent_id($product_variable_id);
             $variation->set_status('publish');
-            $variation->set_sku($variation_data['variacao']['codigo']);
             $variation->set_price($variation_data['variacao']['valores'][0]['valor_venda']);
             $variation->set_regular_price($variation_data['variacao']['valores'][0]['valor_venda']);
             $variation->set_stock_status();
+            $variation->set_manage_stock(true);
+            $variation->set_stock_quantity($variation_data['variacao']['estoque']);
             $attributes = array(
-                'variation' => $variation_data['variacao']['nome']
+                'modelo' => $variation_data['variacao']['nome']
             );
             $variation->set_attributes($attributes);
             $variation->save();
