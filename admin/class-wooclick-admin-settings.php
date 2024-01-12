@@ -8,6 +8,7 @@ class Wooclick_Admin_Settings {
 
 	private $api_endpoint_products;
     private $api_endpoint_categories;
+    private $api_endpoint_attributes;
 
     public function __construct($api_access_token = '', $api_secret_access_token = '') {
         
@@ -23,6 +24,7 @@ class Wooclick_Admin_Settings {
 
         $this->api_endpoint_products =      'https://api.gestaoclick.com/api/produtos';
         $this->api_endpoint_categories =    'https://api.gestaoclick.com/api/grupos_produtos';
+        $this->api_endpoint_attributes =    'https://api.gestaoclick.com/api/grades';
     }
 
     public function get_api_access_token() {
@@ -43,5 +45,9 @@ class Wooclick_Admin_Settings {
 
     public function get_api_endpoint_categories() {
         return $this->api_endpoint_categories;
+    }
+
+    public function get_api_endpoint_attributes() {
+        return $this->api_endpoint_attributes;
     }
 }

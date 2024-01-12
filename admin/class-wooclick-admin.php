@@ -24,6 +24,7 @@
 include_once 'class-wooclick-admin-settings.php';
 include_once 'class-wooclick-admin-products.php';
 include_once 'class-wooclick-admin-categories.php';
+include_once 'class-wooclick-admin-attributes.php';
 
 class Wooclick_Admin {
 
@@ -49,6 +50,7 @@ class Wooclick_Admin {
 	private $wooclick_products;
 	private $wooclick_categories;
 	private $wooclick_variations;
+	private $wooclick_attributes;
 
 	/**
 	 * Initialize the class and set its properties.
@@ -78,6 +80,12 @@ class Wooclick_Admin {
 			$this->wooclick_settings->get_api_headers()
 		);
 
+		$this->wooclick_attributes = new Wooclick_Admin_Attributes(
+			$this->wooclick_settings->get_api_endpoint_attributes(),
+			$this->wooclick_settings->get_api_headers()
+		);
+
+		// Setting up noticies
 		add_action( 'shutdown', array($this, 'check_import_notice'));
 	}
 
@@ -141,12 +149,22 @@ class Wooclick_Admin {
 
 		add_submenu_page( 
 			'wooclick', 
+			'Sincronizar atributos', 
+			'Atributos', 
+			'manage_options',
+			'wooclick-attributes',
+			array($this, 'wooclick_display_attributes'),
+			3,
+		);
+
+		add_submenu_page( 
+			'wooclick', 
 			'Configurações - WooClick', 
 			'Configurações', 
 			'manage_options',
 			'wooclick-settings', 
 			array($this, 'wooclick_display_settings'),
-			3,
+			4,
 		);
 	}
 	
@@ -187,6 +205,16 @@ class Wooclick_Admin {
 	public function wooclick_display_categories() {
 		$this->wooclick_categories->fetch_api();
 		require_once 'partials/wooclick-admin-display-categories.php';
+	}
+
+	/**
+	 * Return the attributes page.
+	 *
+	 * @since    1.0.0
+	 */
+	public function wooclick_display_attributes() {
+		$this->wooclick_attributes->fetch_api();
+		require_once 'partials/wooclick-admin-display-attributes.php';
 	}
 
 	/**
