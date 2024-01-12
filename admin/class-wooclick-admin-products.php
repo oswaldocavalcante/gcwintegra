@@ -202,21 +202,38 @@ class Wooclick_Admin_Products {
     }
 
     private function add_product_variation_attribute( $product_id, $variation_id, $attribute_name, $term_name) {
-            $taxonomy = 'pa_'.$attribute_name; // The attribute taxonomy
+            
+        // Creating taxonomy for variation attribute
+        $taxonomy = 'pa_'. sanitize_title( $attribute_name ); // The attribute taxonomy
+        clean_taxonomy_cache( $taxonomy );
+        // If attribute doesn't exists we create it 
+        $attribute_id = wc_attribute_taxonomy_id_by_name($attribute_name);
+        if (!$attribute_id) {
+            $attribute_args = array(
+                'name' => $attribute_name,
+                'slug' => sanitize_title($attribute_name),
+                'type' => 'select',
+            );
+            $attribute_id = wc_create_attribute($attribute_args);
+        }
 
-            // If attribute doesn't exists we create it 
-            $attribute_id = wc_attribute_taxonomy_id_by_name($attribute_name);
-            if (!$attribute_id) {
-                $attribute_args = array(
-                    'name' => $attribute_name,
-                    'slug' => sanitize_title($attribute_name),
-                );
-                $attribute_id = wc_create_attribute($attribute_args);
-            }
+        if (!taxonomy_exists( $taxonomy )) {
+            register_taxonomy(
+                $taxonomy,
+               'product_variation',
+                array(
+                    'hierarchical' => false,
+                    'label' => ucfirst( $attribute_name ),
+                    'query_var' => true,
+                    'rewrite' => array( 'slug' => sanitize_title($attribute_name) ), // The base slug
+                ),
+            );
+        } 
 
-            // If the value ($term_name) of attribute doesn't exist we create it
-            if( ! term_exists( $term_name, $taxonomy ) )
-                wp_insert_term( $term_name, $taxonomy ); // Create the term
+        // If the value ($term_name) of attribute doesn't exist we create it
+        if( ! term_exists( $term_name, $taxonomy ) )
+            wp_insert_term( $term_name, $taxonomy ); // Create the term
+
 
             // $term = get_term_by('name', $term_name, $taxonomy ); // Get the term slug
 
