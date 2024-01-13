@@ -86,7 +86,7 @@ class Wooclick_Admin {
 		);
 
 		// Setting up noticies
-		add_action( 'shutdown', array($this, 'check_import_notice'));
+		add_action( 'shutdown', array($this, 'wooclick_check_import_notice'));
 	}
 
 	/**
@@ -110,13 +110,23 @@ class Wooclick_Admin {
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wooclick-admin.js', array( 'jquery' ), $this->version, false );
 
 	}
+	
+	/**
+	 * Register custom fields for settings.
+	 *
+	 * @since    1.0.0
+	 */
+	public function wooclick_register_settings() {
+		register_setting('wooclick_settings', 'access-token');
+		register_setting('wooclick_settings', 'secret-access-token');		
+	}
 
 	/**
 	 * Add the custom menu.
 	 *
 	 * @since    1.0.0
 	 */
-	public function wooclick_admin_menu() {
+	public function wooclick_add_admin_menu() {
 		add_menu_page(
 			'WooClick - Configurações',
 			'WooClick',
@@ -167,16 +177,6 @@ class Wooclick_Admin {
 			4,
 		);
 	}
-	
-	/**
-	 * Register custom fields for settings.
-	 *
-	 * @since    1.0.0
-	 */
-	public function wooclick_register_settings() {
-		register_setting('wooclick_settings', 'access-token');
-		register_setting('wooclick_settings', 'secret-access-token');		
-	}
 
 	/**
 	 * Return the settings page.
@@ -222,11 +222,22 @@ class Wooclick_Admin {
 	 *
 	 * @since    1.0.0
 	 */
-    public function check_import_notice() {
+    public function wooclick_check_import_notice() {
         $import_notice = get_transient('wooclick_import_notice');
         if ($import_notice) {
             echo '<div class="notice notice-success is-dismissible"><p>' . esc_html($import_notice) . '</p></div>';
             delete_transient('wooclick_import_notice');
         }
+    }
+
+	/**
+	 * Execute the importations of categories and products by cron schdeduled event.
+	 * The period of time for execution is setted at cPanel Cronjobs
+	 * 
+	 * @since    1.0.0
+	 */
+    public function wooclick_import_all() {
+		$this->wooclick_categories->import('all');
+		$this->wooclick_products->import('all');
     }
 }

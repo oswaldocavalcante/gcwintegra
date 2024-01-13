@@ -78,6 +78,7 @@ class Wooclick {
 		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
+		$this->define_cron_settings();
 	}
 
 	/**
@@ -156,13 +157,28 @@ class Wooclick {
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 
-		//add admin menu
-		$this->loader->add_action( 'admin_menu', 				$plugin_admin, 'wooclick_admin_menu');
-		//register general settings
-		$this->loader->add_action( 'admin_init', 				$plugin_admin, 'wooclick_register_settings');
+		// Register general settings
+		$this->loader->add_action( 'admin_init', $plugin_admin, 'wooclick_register_settings');
+		// Add the admin menu
+		$this->loader->add_action( 'admin_menu', $plugin_admin, 'wooclick_add_admin_menu');
+		// Set the cron hook to execute importations when called
+		$this->loader->add_action( 'wooclick_update', $plugin_admin, 'wooclick_import_all');
+	}
 
-		$this->loader->add_action( 'wp_ajax_product_sync', 		$plugin_admin, 'wooclick_product_sync_callback');
-		$this->loader->add_action( 'wp_ajax_product_sync_all', 	$plugin_admin, 'wooclick_product_sync_all_callback');
+	private function define_cron_settings() {
+
+		add_filter( 'cron_schedules', 'add_cron_interval' );
+
+		function add_cron_interval( $schedules ) { 
+			$schedules['fifteen_minutes'] = array(
+				'interval' => 900,
+				'display'  => esc_html__( 'Every Fifteen Minutes' ), );
+			return $schedules;
+		}
+
+		if ( ! wp_next_scheduled( 'wooclick_update' ) ) {
+			wp_schedule_event( time(), 'fifteen_minutes', 'wooclick_update' );
+		}
 	}
 
 	/**
