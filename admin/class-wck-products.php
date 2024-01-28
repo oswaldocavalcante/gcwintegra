@@ -136,7 +136,7 @@ class WCK_Products extends WCK_GC_Api {
             'height' =>         $product['altura'],
             'category_ids' =>   $category_ids,
             'manage_stock' =>   'true',
-            'backorders' =>     'notify',
+            'backorders' =>     'no',
         );
 
         $product_exists = wc_get_product_id_by_sku($product_props['sku']);
@@ -172,7 +172,7 @@ class WCK_Products extends WCK_GC_Api {
             'height' =>         $product['altura'],
             'category_ids' =>   $category_ids,
             'manage_stock' =>   'true',
-            'backorders' =>     'notify',
+            'backorders' =>     'no',
         );
 
         $product_exists = wc_get_product_id_by_sku($product['codigo_barra']);

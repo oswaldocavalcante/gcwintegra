@@ -43,8 +43,16 @@ class WCK_Categories extends WCK_GC_Api {
     }
 
     public function import( $categories_ids ) {
-        $categories = get_option('wooclick-categories');
+        $categories =           get_option('wooclick-categories');
+        $categories_blacklist = get_option( 'wck-settings-blacklist-categories' );
         $selectedCategories = array();
+
+        if( $categories_blacklist ) {
+            $filteredCategories = array_filter($categories, function ($item) use ($categories_blacklist) {
+                return (!in_array($item['nome'], $categories_blacklist));
+            });
+            $categories = $filteredCategories;
+        }
 
         // Filtering selected categories
         if (is_array($categories_ids)){
