@@ -75,19 +75,17 @@ class WCK_WC_Integration extends WC_Integration {
         update_option( 'wck-settings-blacklist-categories', explode( ',', $this->get_option('wck-settings-blacklist-categories') ) );
         update_option( 'wck-settings-blacklist-products',   explode( ',', $this->get_option('wck-settings-blacklist-products') ) );
 
-        echo '<h2>' . esc_html( $this->get_method_title() ) . '</h2>';
-        echo wp_kses_post( wpautop( $this->get_method_description() ) );
         echo '<div id="wck_settings">';
-        echo '<div><input type="hidden" name="section" value="' . esc_attr( $this->id ) . '" /></div>';
-        echo '<table class="form-table">' . $this->generate_settings_html( $this->get_form_fields(), false ) . '</table>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-        echo '</div>';
+        echo '<h2 class="wck-integration-title">' . esc_html( $this->get_method_title() ) . '</h2>';
 
         if( $this->wck_gc_api->test_connection() ) {
-            wp_admin_notice( __( 'WooClick: Connection successfull.', 'wooclick' ), array( 'success', true ) );
+            echo '<span class="wck-integration-connection dashicons-before dashicons-yes-alt">' . __('Connected', 'wooclick') . '</span>';
         } else {
             wp_admin_notice( __( 'WooClick: Preencha corretamente suas credenciais de acesso.', 'wooclick' ), array( 'error' ) );
         }
-
-        var_dump(get_option( 'wck-settings-blacklist-categories'));
+        echo wp_kses_post( wpautop( $this->get_method_description() ) );
+        echo '<div><input type="hidden" name="section" value="' . esc_attr( $this->id ) . '" /></div>';
+        echo '<table class="form-table">' . $this->generate_settings_html( $this->get_form_fields(), false ) . '</table>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+        echo '</div>';
     }
 }

@@ -2,3 +2,28 @@
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
  */
+
+#wck_settings {
+    margin-top: 16px;
+}
+
+.wck-integration-title {
+    /* float: left; */
+    /* width: auto; */
+    display: inline;
+    padding-top: 20px;
+}
+
+.wck-integration-connection {
+    /* vertical-align: middle; */
+    /* float: left; */
+    display: inline;
+    margin-top: 15px;
+    /* width: 100%; */
+    color: #6a6969;
+}
+
+.wck-integration-connection:before {
+    color: green;
+    margin: 0 5px;
+ }
