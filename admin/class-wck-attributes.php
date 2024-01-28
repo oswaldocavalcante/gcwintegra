@@ -17,8 +17,8 @@ class WCK_Attributes extends WCK_GC_Api {
     public function __construct() {
         parent::__construct();
 
-        $this->api_endpoint =   parent::get_endpoint_attributes();
-        $this->api_headers =    parent::get_headers();
+        $this->api_endpoint = parent::get_endpoint_attributes();
+        $this->api_headers =  parent::get_headers();
         
         add_filter( 'wooclick_import_attributes', array( $this, 'import' ) );
     }

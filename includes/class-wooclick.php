@@ -157,7 +157,7 @@ class Wooclick {
 		// Add the admin menu
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'add_admin_menu');
 		// Set the cron hook to execute importations when called
-		// $this->loader->add_action( 'wooclick_update', $plugin_admin, 'wooclick_import_all');
+		$this->loader->add_action( 'wooclick_update', $plugin_admin, 'wooclick_import_all');
 	}
 
 	private function define_cron_settings() {

@@ -227,14 +227,14 @@ class WCK_Admin {
         }
     }
 
-	// /**
-	//  * Execute the importations of categories and products by cron schdeduled event.
-	//  * The period of time for execution is setted at cPanel Cronjobs
-	//  * 
-	//  * @since    1.0.0
-	//  */
-    // public function wooclick_import_all() {
-	// 	$this->wooclick_categories->import('all');
-	// 	$this->wooclick_products->import('all');
-    // }
+	/**
+	 * Execute the importations of categories and products by cron schdeduled event.
+	 * The period of time for execution is setted at cPanel Cronjobs
+	 * 
+	 * @since    1.0.0
+	 */
+    public function wooclick_import_all() {
+		$this->wooclick_categories->import('all');
+		$this->wooclick_products->import('all');
+    }
 }

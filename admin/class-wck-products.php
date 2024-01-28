@@ -23,7 +23,7 @@ class WCK_Products extends WCK_GC_Api {
         parent::__construct();
 
         $this->api_endpoint = parent::get_endpoint_products();
-        $this->api_headers = parent::get_headers();
+        $this->api_headers =  parent::get_headers();
 
         add_filter( 'wooclick_import_products', array( $this, 'import' ) );
     }
