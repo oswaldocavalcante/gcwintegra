@@ -52,12 +52,28 @@ class WCK_Products extends WCK_GC_Api {
             include_once WC_ABSPATH . 'includes/abstracts/abstract-wc-product.php';
         }
 
-        $products = get_option('wooclick-products');
-        $selectedProducts = array();
+        $products =             get_option( 'wooclick-products' );
+        $products_blacklist =   get_option( 'wck-settings-blacklist-products' );
+        $categories_blacklist = get_option( 'wck-settings-blacklist-categories' );
+        $selectedProducts =     array();
 
-        if( is_array($products_codes) ){
+        if( $categories_blacklist ) {
+            $filteredCategories = array_filter($products, function ($item) use ($categories_blacklist) {
+                return (!in_array($item['nome_grupo'], $categories_blacklist));
+            });
+            $products = $filteredCategories;
+        }
+
+        if( $products_blacklist ) {
+            $filteredProducts = array_filter($products, function ($item) use ($products_blacklist) {
+                return (!in_array($item['codigo_barra'], $products_blacklist));
+            });
+            $products = $filteredProducts;
+        }
+
+        if( is_array($products_codes) ) {
             $selectedProducts = array_filter($products, function ($item) use ($products_codes) {
-                return in_array($item['codigo_barra'], $products_codes);
+                return (in_array($item['codigo_barra'], $products_codes));
             });
         } elseif( $products_codes == 'all' ) {
             $selectedProducts = $products;

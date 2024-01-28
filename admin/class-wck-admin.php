@@ -131,8 +131,11 @@ class WCK_Admin {
 	 * @since    1.0.0
 	 */
 	public function register_settings() {
-		register_setting('wck_credentials', 'wck-api-access-token');
-		register_setting('wck_credentials', 'wck-api-secret-access-token');
+		register_setting('wck_credentials', 'wck-api-access-token', 				'string');
+		register_setting('wck_credentials', 'wck-api-secret-access-token', 			'string');
+		register_setting('wck_settings', 	'wck-settings-auto-imports', 			'boolean');
+		register_setting('wck_settings', 	'wck-settings-blacklist-categories', 	'array');
+		register_setting('wck_settings', 	'wck-settings-blacklist-products', 		'array');
 	}
 
 	/**

@@ -55,7 +55,7 @@ class WCK_WC_Integration extends WC_Integration {
 				'title'         => __( 'Categories Blacklist', 'wooclick' ),
 				'type'          => 'textarea',
                 'placeholder'   => __('Companies, Universities, Schools, ...', 'wooclick' ),
-				'description'   => __( 'List of categories to not import from GestãoClick (categories names separated by commas).', 'wooclick' ),
+				'description'   => __( 'List of categories to not import products from GestãoClick (categories names separated by commas).', 'wooclick' ),
             ),
 			'wck-settings-blacklist-products' => array(
 				'title'         => __( 'Products Blacklist', 'wooclick' ),
@@ -68,8 +68,12 @@ class WCK_WC_Integration extends WC_Integration {
 
     public function admin_options() {
 
-        update_option( 'wck-api-access-token', 	        $this->get_option('wck-api-access-token') );
-        update_option( 'wck-api-secret-access-token', 	$this->get_option('wck-api-secret-access-token') );
+        update_option( 'wck-api-access-token', 	            $this->get_option('wck-api-access-token') );
+        update_option( 'wck-api-secret-access-token', 	    $this->get_option('wck-api-secret-access-token') );
+
+        update_option( 'wck-settings-auto-imports',         $this->get_option('wck-settings-auto-imports') );
+        update_option( 'wck-settings-blacklist-categories', explode( ',', $this->get_option('wck-settings-blacklist-categories') ) );
+        update_option( 'wck-settings-blacklist-products',   explode( ',', $this->get_option('wck-settings-blacklist-products') ) );
 
         echo '<h2>' . esc_html( $this->get_method_title() ) . '</h2>';
         echo wp_kses_post( wpautop( $this->get_method_description() ) );
@@ -83,5 +87,7 @@ class WCK_WC_Integration extends WC_Integration {
         } else {
             wp_admin_notice( __( 'WooClick: Preencha corretamente suas credenciais de acesso.', 'wooclick' ), array( 'error' ) );
         }
+
+        var_dump(get_option( 'wck-settings-blacklist-categories'));
     }
 }
