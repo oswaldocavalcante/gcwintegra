@@ -77,7 +77,6 @@ class Wooclick {
 		$this->load_dependencies();
 		$this->set_locale();
 		$this->define_admin_hooks();
-		$this->define_public_hooks();
 		$this->define_cron_settings();
 	}
 
@@ -114,13 +113,7 @@ class Wooclick {
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wooclick-admin.php';
-
-		/**
-		 * The class responsible for defining all actions that occur in the public-facing
-		 * side of the site.
-		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-wooclick-public.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wck-admin.php';
 
 		$this->loader = new Wooclick_Loader();
 
@@ -152,17 +145,19 @@ class Wooclick {
 	 */
 	private function define_admin_hooks() {
 
-		$plugin_admin = new Wooclick_Admin( $this->get_plugin_name(), $this->get_version() );
+		$plugin_admin = new WCK_Admin( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 
 		// Register general settings
-		$this->loader->add_action( 'admin_init', $plugin_admin, 'wooclick_register_settings');
+		$this->loader->add_action( 'admin_init', $plugin_admin, 'register_settings');
+		// Checks if WooCommerce is active and registers in its settings page
+		$this->loader->add_filter( 'woocommerce_integrations', 	$plugin_admin, 'add_integration');
 		// Add the admin menu
-		$this->loader->add_action( 'admin_menu', $plugin_admin, 'wooclick_add_admin_menu');
+		$this->loader->add_action( 'admin_menu', $plugin_admin, 'add_admin_menu');
 		// Set the cron hook to execute importations when called
-		$this->loader->add_action( 'wooclick_update', $plugin_admin, 'wooclick_import_all');
+		// $this->loader->add_action( 'wooclick_update', $plugin_admin, 'wooclick_import_all');
 	}
 
 	private function define_cron_settings() {
@@ -179,22 +174,6 @@ class Wooclick {
 		if ( ! wp_next_scheduled( 'wooclick_update' ) ) {
 			wp_schedule_event( time(), 'fifteen_minutes', 'wooclick_update' );
 		}
-	}
-
-	/**
-	 * Register all of the hooks related to the public-facing functionality
-	 * of the plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 */
-	private function define_public_hooks() {
-
-		$plugin_public = new Wooclick_Public( $this->get_plugin_name(), $this->get_version() );
-
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-
 	}
 
 	/**

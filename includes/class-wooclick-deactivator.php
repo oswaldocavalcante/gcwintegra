@@ -30,7 +30,6 @@ class Wooclick_Deactivator {
 	 */
 	public static function deactivate() {
 		$timestamp = wp_next_scheduled( 'wooclick_cron_hook' );
-			wp_unschedule_event( $timestamp, 'wooclick_cron_hook' );
-		}
+		wp_unschedule_event( $timestamp, 'wooclick_cron_hook' );
 	}
 }

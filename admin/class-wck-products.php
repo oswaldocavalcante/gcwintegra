@@ -11,15 +11,19 @@
  * @subpackage Wooclick/admin
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  */
-class Wooclick_Admin_Products {
+
+include_once 'class-wck-gc-api.php';
+
+class WCK_Products extends WCK_GC_Api {
 
     private $api_endpoint;
     private $api_headers;
 
-    public function __construct( $api_endpoint, $api_headers ) {
+    public function __construct() {
+        parent::__construct();
 
-        $this->api_endpoint = $api_endpoint;
-        $this->api_headers = $api_headers;
+        $this->api_endpoint = parent::get_endpoint_products();
+        $this->api_headers = parent::get_headers();
 
         add_filter( 'wooclick_import_products', array( $this, 'import' ) );
     }
@@ -161,7 +165,6 @@ class Wooclick_Admin_Products {
         if($product_exists) {
             $product_variable = wc_get_product($product_exists);
             $product_variable->set_props($product_props);
-            
         } else {
             $product_variable = new WC_Product_Variable();
             $product_variable->set_props($product_props);
@@ -218,6 +221,11 @@ class Wooclick_Admin_Products {
             $product = wc_get_product($product_variable_id);
             $product->save();
         }
+    }
+
+    public function display() {
+        $this->fetch_api();
+        require_once 'partials/wooclick-admin-display-products.php';
     }
 
     // private function save_product_variable($product) {

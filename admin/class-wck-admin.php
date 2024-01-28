@@ -21,12 +21,12 @@
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  */
 
-include_once 'class-wooclick-admin-settings.php';
-include_once 'class-wooclick-admin-products.php';
-include_once 'class-wooclick-admin-categories.php';
-include_once 'class-wooclick-admin-attributes.php';
+include_once 'class-wck-gc-api.php';
+include_once 'class-wck-products.php';
+include_once 'class-wck-categories.php';
+include_once 'class-wck-attributes.php';
 
-class Wooclick_Admin {
+class WCK_Admin {
 
 	/**
 	 * The ID of this plugin.
@@ -46,10 +46,9 @@ class Wooclick_Admin {
 	 */
 	private $version;
 
-	private $wooclick_settings;
+	private $wooclick_gc_api;
 	private $wooclick_products;
 	private $wooclick_categories;
-	private $wooclick_variations;
 	private $wooclick_attributes;
 
 	/**
@@ -63,30 +62,47 @@ class Wooclick_Admin {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
-		$this->wooclick_settings = null;
-
-		$this->wooclick_settings = new Wooclick_Admin_Settings(
-			get_option( 'access-token' ), 
-			get_option( 'secret-access-token' )
-		);
-
-		$this->wooclick_products = new Wooclick_Admin_Products(
-			$this->wooclick_settings->get_api_endpoint_products(),
-			$this->wooclick_settings->get_api_headers()
-		);
-
-		$this->wooclick_categories = new Wooclick_Admin_Categories(
-			$this->wooclick_settings->get_api_endpoint_categories(),
-			$this->wooclick_settings->get_api_headers()
-		);
-
-		$this->wooclick_attributes = new Wooclick_Admin_Attributes(
-			$this->wooclick_settings->get_api_endpoint_attributes(),
-			$this->wooclick_settings->get_api_headers()
-		);
 
 		// Setting up noticies
 		add_action( 'shutdown', array($this, 'wooclick_check_import_notice'));
+	}
+
+	public function add_integration( $integrations ) {
+
+		if ( $this->is_woocommerce_active() ) {
+			include_once 'class-wck-wc-integration.php';
+			$integrations[] = 'WCK_WC_Integration';
+
+			return $integrations;
+		} else {
+			add_action( 'admin_notices', array( $this, 'notice_activate_wc' ) );
+		}
+
+		return null;
+	}	
+
+	public function is_woocommerce_active() {
+
+		$active_plugins = (array) get_option( 'active_plugins', array() );
+		if ( is_multisite() ) {
+			$active_plugins = array_merge( $active_plugins, get_site_option( 'active_sitewide_plugins', array() ) );
+		}
+		if ( in_array( 'woocommerce/woocommerce.php', $active_plugins ) || array_key_exists( 'woocommerce/woocommerce.php', $active_plugins ) ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public function notice_activate_wc() { ?>
+		<div class="error">
+			<p>
+				<?php
+				printf( esc_html__( 'Please install and activate %1$sWooCommerce%2$s to use WooClick!' ), '<a href="' . esc_url( admin_url( 'plugin-install.php?tab=search&s=WooCommerce&plugin-search-input=Search+Plugins' ) ) . '">', '</a>' );
+				?>
+			</p>
+		</div>
+		<?php
 	}
 
 	/**
@@ -116,9 +132,9 @@ class Wooclick_Admin {
 	 *
 	 * @since    1.0.0
 	 */
-	public function wooclick_register_settings() {
-		register_setting('wooclick_settings', 'access-token');
-		register_setting('wooclick_settings', 'secret-access-token');		
+	public function register_settings() {
+		register_setting('wck_credentials', 'wck-api-access-token');
+		register_setting('wck_credentials', 'wck-api-secret-access-token');
 	}
 
 	/**
@@ -126,9 +142,9 @@ class Wooclick_Admin {
 	 *
 	 * @since    1.0.0
 	 */
-	public function wooclick_add_admin_menu() {
+	public function add_admin_menu() {
 		add_menu_page(
-			'WooClick - Configurações',
+			'WooClick',
 			'WooClick',
 			'manage_options',
 			'wooclick',
@@ -166,25 +182,6 @@ class Wooclick_Admin {
 			array($this, 'wooclick_display_attributes'),
 			3,
 		);
-
-		add_submenu_page( 
-			'wooclick', 
-			'Configurações - WooClick', 
-			'Configurações', 
-			'manage_options',
-			'wooclick-settings', 
-			array($this, 'wooclick_display_settings'),
-			4,
-		);
-	}
-
-	/**
-	 * Return the settings page.
-	 *
-	 * @since    1.0.0
-	 */
-	public function wooclick_display_settings() {
-		require_once 'partials/wooclick-admin-display-settings.php';
 	}
 
 	/**
@@ -193,8 +190,8 @@ class Wooclick_Admin {
 	 * @since    1.0.0
 	 */
 	public function wooclick_display_products() {
-		$this->wooclick_products->fetch_api();
-		require_once 'partials/wooclick-admin-display-products.php';
+		$this->wooclick_products = new WCK_Products();
+		$this->wooclick_products->display();
 	}
 
 	/**
@@ -203,8 +200,8 @@ class Wooclick_Admin {
 	 * @since    1.0.0
 	 */
 	public function wooclick_display_categories() {
-		$this->wooclick_categories->fetch_api();
-		require_once 'partials/wooclick-admin-display-categories.php';
+		$this->wooclick_categories = new WCK_Categories();
+		$this->wooclick_categories->display();
 	}
 
 	/**
@@ -213,15 +210,15 @@ class Wooclick_Admin {
 	 * @since    1.0.0
 	 */
 	public function wooclick_display_attributes() {
-		$this->wooclick_attributes->fetch_api();
-		require_once 'partials/wooclick-admin-display-attributes.php';
+		$this->wooclick_attributes = new WCK_Attributes();
+		$this->wooclick_attributes->display();
 	}
 
-	/**
-	 * Display notices on screen.
-	 *
-	 * @since    1.0.0
-	 */
+	// /**
+	//  * Display notices on screen.
+	//  *
+	//  * @since    1.0.0
+	//  */
     public function wooclick_check_import_notice() {
         $import_notice = get_transient('wooclick_import_notice');
         if ($import_notice) {
@@ -230,14 +227,14 @@ class Wooclick_Admin {
         }
     }
 
-	/**
-	 * Execute the importations of categories and products by cron schdeduled event.
-	 * The period of time for execution is setted at cPanel Cronjobs
-	 * 
-	 * @since    1.0.0
-	 */
-    public function wooclick_import_all() {
-		$this->wooclick_categories->import('all');
-		$this->wooclick_products->import('all');
-    }
+	// /**
+	//  * Execute the importations of categories and products by cron schdeduled event.
+	//  * The period of time for execution is setted at cPanel Cronjobs
+	//  * 
+	//  * @since    1.0.0
+	//  */
+    // public function wooclick_import_all() {
+	// 	$this->wooclick_categories->import('all');
+	// 	$this->wooclick_products->import('all');
+    // }
 }

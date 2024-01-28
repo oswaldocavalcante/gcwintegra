@@ -14,8 +14,8 @@
  *
  * @wordpress-plugin
  * Plugin Name:       WooClick
- * Plugin URI:        https://https://github.com/oswaldocavalcante/wooclick
- * Description:       Wordpress plugin to sync GestãoClick to WooCommerce.
+ * Plugin URI:        https://github.com/oswaldocavalcante/wooclick
+ * Description:       Integrates GestãoClick to WooCommerce.
  * Version:           1.0.0
  * Author:            Oswaldo Cavalcante
  * Author URI:        https://oswaldocavalcante.com/

@@ -9,15 +9,16 @@
  * @subpackage Wooclick/admin
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  */
-class Wooclick_Admin_Categories {
+class WCK_Categories extends WCK_GC_Api {
 
     private $api_endpoint;
     private $api_headers;
 
-    public function __construct( $api_endpoint, $api_headers ) {
+    public function __construct() {
+        parent::__construct();
 
-        $this->api_endpoint = $api_endpoint;
-        $this->api_headers = $api_headers;
+        $this->api_endpoint = parent::get_endpoint_categories();
+        $this->api_headers =  parent::get_headers();
         
         add_filter( 'wooclick_import_categories', array( $this, 'import' ) );
     }
@@ -97,5 +98,10 @@ class Wooclick_Admin_Categories {
                 true
             );
         }
+    }
+
+    public function display(){
+        $this->fetch_api();
+        require_once 'partials/wooclick-admin-display-categories.php';
     }
 }

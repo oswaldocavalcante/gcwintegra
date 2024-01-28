@@ -9,15 +9,16 @@
  * @subpackage Wooclick/admin
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  */
-class Wooclick_Admin_Attributes {
+class WCK_Attributes extends WCK_GC_Api {
 
     private $api_endpoint;
     private $api_headers;
 
-    public function __construct( $api_endpoint, $api_headers ) {
+    public function __construct() {
+        parent::__construct();
 
-        $this->api_endpoint = $api_endpoint;
-        $this->api_headers = $api_headers;
+        $this->api_endpoint =   parent::get_endpoint_attributes();
+        $this->api_headers =    parent::get_headers();
         
         add_filter( 'wooclick_import_attributes', array( $this, 'import' ) );
     }
@@ -77,5 +78,10 @@ class Wooclick_Admin_Attributes {
             $attribute->name = $attribute_data['nome'];
             wp_update_term( $attribute_id, 'pa', array( 'name' => $new_name, 'slug' => sanitize_title( $new_name ) ) );
         }
+    }
+
+    public function display() {
+        $this->fetch_api();
+        require_once 'partials/wooclick-admin-display-attributes.php';
     }
 }
