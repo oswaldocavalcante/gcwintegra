@@ -8,19 +8,13 @@
 }
 
 .wck-integration-title {
-    /* float: left; */
-    /* width: auto; */
     display: inline;
     padding-top: 20px;
 }
 
 .wck-integration-connection {
-    /* vertical-align: middle; */
-    /* float: left; */
-    display: inline;
-    margin-top: 15px;
-    /* width: 100%; */
-    color: #6a6969;
+    font-size: 10px;
+    color: darkslategray;
 }
 
 .wck-integration-connection:before {
