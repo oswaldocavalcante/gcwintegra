@@ -21,7 +21,6 @@
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  */
 
-include_once 'class-wck-gc-api.php';
 include_once 'class-wck-products.php';
 include_once 'class-wck-categories.php';
 include_once 'class-wck-attributes.php';
@@ -46,7 +45,6 @@ class WCK_Admin {
 	 */
 	private $version;
 
-	private $wooclick_gc_api;
 	private $wooclick_products;
 	private $wooclick_categories;
 	private $wooclick_attributes;

@@ -27,7 +27,7 @@ class WCK_GC_Api {
         $this->endpoint_attributes =    'https://api.gestaoclick.com/api/grades';
     }
 
-    public function is_connected() {
+    public function test_connection() {
         $http_code = null;
 
         $access_token =         get_option( 'wck-api-access-token' );
