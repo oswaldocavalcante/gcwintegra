@@ -25,6 +25,8 @@ class WCK_GC_Api {
         $this->endpoint_products =      'https://api.gestaoclick.com/api/produtos';
         $this->endpoint_categories =    'https://api.gestaoclick.com/api/grupos_produtos';
         $this->endpoint_attributes =    'https://api.gestaoclick.com/api/grades';
+        $this->endpoint_sales =         'https://api.gestaoclick.com/api/vendas';
+        $this->endpoint_clients =       'https://api.gestaoclick.com/api/clientes';
     }
 
     public function test_connection() {
@@ -76,5 +78,13 @@ class WCK_GC_Api {
 
     public function get_endpoint_attributes() {
         return $this->endpoint_attributes;
+    }
+
+    public function get_endpoint_sales() {
+        return $this->endpoint_sales;
+    }
+
+    public function get_endpoint_clients() {
+        return $this->endpoint_clients;
     }
 }

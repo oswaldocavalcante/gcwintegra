@@ -1,6 +1,7 @@
 <?php
 
 require_once 'class-wck-gc-api.php';
+require_once 'class-wck-gc-sales.php';
 
 class WCK_WC_Integration extends WC_Integration {
     
@@ -16,6 +17,7 @@ class WCK_WC_Integration extends WC_Integration {
         $this->init_settings();
 
         $this->wck_gc_api = new WCK_GC_Api();
+        $this->wck_gc_sales = new WCK_GC_Sales();
 
         add_action(	'woocommerce_update_options_integration_' . $this->id, array($this, 'process_admin_options'));
     }

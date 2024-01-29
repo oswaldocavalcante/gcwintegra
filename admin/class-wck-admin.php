@@ -235,7 +235,10 @@ class WCK_Admin {
 	 * @since    1.0.0
 	 */
     public function wooclick_import_all() {
+		$this->wooclick_categories = new WCK_Categories();
 		$this->wooclick_categories->import('all');
+
+		$this->wooclick_products = new WCK_Products();
 		$this->wooclick_products->import('all');
     }
 }
