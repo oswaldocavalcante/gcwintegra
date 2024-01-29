@@ -15,25 +15,49 @@ class WCK_GC_Sales extends WCK_GC_Api {
     public function new_sell( $order_id, $order ) {
 
         $client_id = $this->get_client_id( $order->get_customer_id() );
-        $date = $order->get_date_created();
-        $products = $order->get_items();
+        $wc_date = $order->get_date_created();
+        $wc_order_items = $order->get_items();
+        $gc_produtos = [];
+
+        foreach ($wc_order_items as $order_item) {
+            $wc_product_id = $order_item->get_changes()['product_id'];
+            $wc_product = wc_get_product($wc_product_id);
+            $gc_product_id = $wc_product->get_meta('wooclick_gc_product_id');
+            
+            $wc_variation_id = $order_item->get_changes()['variation_id'];
+
+            if($wc_variation_id) {
+                $wc_variation = wc_get_product($wc_variation_id);
+                $gc_variation_id = $wc_variation->get_meta('wooclick_gc_variation_id');
+
+                $gc_produtos[] = array(
+                    'produto' => array(
+                        'produto_id'    => $gc_product_id,
+                        'variacao_id'   => $gc_variation_id,
+                        'quantidade'    => $order_item->get_quantity(),
+                        'valor_venda'   => $wc_product->get_price(),
+                    )
+                );
+            } else {
+                $gc_produtos[] = array(
+                    'produto' => array(
+                        'produto_id'    => $gc_product_id,
+                        'quantidade'    => $order_item->get_quantity(),
+                        'valor_venda'   => $wc_product->get_price(),
+                    )
+                );
+            }
+        }
 
         $body = array(
-            'tipo' => 'produto',
-            'cliente_id' => $client_id,
-            'data' => $date->date('Y-m-d'),
-            'situacao_id' => 809158,
-            'transportadora_id' => 154839,
-            'valor_frete' => $order->get_shipping_total(),
-            // Criar a lista de produtos separadamente
-            // 'produtos' => array(
-            //     'produto' => array(
-            //         'produto_id' => ,
-            //         'variacao_id' => ,
-            //         'quantidade' => ,
-            //         'valor_venda' => ,
-            //     )
-            // )
+            'tipo'              => 'produto',
+            'cliente_id'        => $client_id,
+            'data'              => $order->get_date_created()->date('Y-m-d'),
+            'situacao_id'       => 809158, // TODO: change to get it dinamically
+            'transportadora_id' => 154839, // TODO: change to get it dinamically
+            'valor_frete'       => $order->get_shipping_total(),
+            'nome_canal_venda'  => 'Internet',
+            'produtos'          => $gc_produtos,
         );
 
         $response = wp_remote_post( 

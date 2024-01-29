@@ -140,16 +140,17 @@ class WCK_Products extends WCK_GC_Api {
         );
 
         $product_exists = wc_get_product_id_by_sku($product_props['sku']);
+        $product_simple = null;
 
         if ($product_exists) {
-            $product = wc_get_product($product_exists);
-            $product->set_props($product_props);
-            $product->save();
+            $product_simple = wc_get_product($product_exists);
         } else {
-            $product = new WC_Product_Simple();
-            $product->set_props($product_props);
-            $product->save();
+            $product_simple = new WC_Product_Simple();
+            $product_simple->add_meta_data( 'wooclick_gc_product_id', (int) $product['id'], true );
         }
+
+        $product_simple->set_props($product_props);
+        $product_simple->save();
     }
 
     private function save_product_variable( $product ) {
@@ -180,12 +181,12 @@ class WCK_Products extends WCK_GC_Api {
 
         if($product_exists) {
             $product_variable = wc_get_product($product_exists);
-            $product_variable->set_props($product_props);
         } else {
             $product_variable = new WC_Product_Variable();
-            $product_variable->set_props($product_props);
+            $product_variable->add_meta_data( 'wooclick_gc_product_id', (int) $product['id'], true );
         }
 
+        $product_variable->set_props($product_props);
         $product_variable->save();
 
         return $product_variable;
@@ -219,6 +220,7 @@ class WCK_Products extends WCK_GC_Api {
             } else {
                 $variation = new WC_Product_Variation();
                 $variation->set_sku($variation_data['variacao']['codigo']);
+                $variation->add_meta_data( 'wooclick_gc_variation_id', (int) $variation_data['variacao']['id'], true );
             }
             
             $variation->set_parent_id($product_variable_id);
