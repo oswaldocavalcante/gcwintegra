@@ -88,6 +88,7 @@ class WCK_GC_Sales extends WCK_GC_Api {
         return $clients;
     }
 
+    // TODO: Change to add_meta_data('wooclick_gc_client_id') and get this meta_data to not fetch all clients
     public function get_client_id( $wc_customer_id ) {
 
         $gc_all_clients = $this->fetch_clients_api();

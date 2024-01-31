@@ -56,14 +56,14 @@ class WCK_WC_Integration extends WC_Integration {
 			'wck-settings-blacklist-categories' => array(
 				'title'         => __( 'Categories Blacklist', 'wooclick' ),
 				'type'          => 'textarea',
-                'placeholder'   => __('Companies, Universities, Schools, ...', 'wooclick' ),
-				'description'   => __( 'List of categories to not import products from GestãoClick (categories names separated by commas).', 'wooclick' ),
+                'placeholder'   => __('Companies,Universities,Schools,...', 'wooclick' ),
+				'description'   => __( 'List of categories to not import products from GestãoClick (categories names separated by commas, without spaces).', 'wooclick' ),
             ),
 			'wck-settings-blacklist-products' => array(
 				'title'         => __( 'Products Blacklist', 'wooclick' ),
 				'type'          => 'textarea',
-                'placeholder'   => '2012254018005, 2090661972561, ...',
-				'description'   => __( 'List of products to not import from GestãoClick (product codes separated by commas).', 'wooclick' ),
+                'placeholder'   => '2012254018005,2090661972561,...',
+				'description'   => __( 'List of products to not import from GestãoClick (product codes separated by commas, without spaces).', 'wooclick' ),
             ),
         );
     }
@@ -85,6 +85,7 @@ class WCK_WC_Integration extends WC_Integration {
         } else {
             wp_admin_notice( __( 'WooClick: Preencha corretamente suas credenciais de acesso.', 'wooclick' ), array( 'error' ) );
         }
+
         echo wp_kses_post( wpautop( $this->get_method_description() ) );
         echo '<div><input type="hidden" name="section" value="' . esc_attr( $this->id ) . '" /></div>';
         echo '<table class="form-table">' . $this->generate_settings_html( $this->get_form_fields(), false ) . '</table>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
