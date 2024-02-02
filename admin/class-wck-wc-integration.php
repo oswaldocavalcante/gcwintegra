@@ -86,9 +86,32 @@ class WCK_WC_Integration extends WC_Integration {
             wp_admin_notice( __( 'WooClick: Preencha corretamente suas credenciais de acesso.', 'wooclick' ), array( 'error' ) );
         }
 
+        $this->set_auto_imports( get_option( 'wck-settings-auto-imports') );
+
         echo wp_kses_post( wpautop( $this->get_method_description() ) );
         echo '<div><input type="hidden" name="section" value="' . esc_attr( $this->id ) . '" /></div>';
         echo '<table class="form-table">' . $this->generate_settings_html( $this->get_form_fields(), false ) . '</table>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
         echo '</div>';
     }
+
+	public function set_auto_imports( $auto_updates = boolean ) {
+
+		if( $auto_updates ){
+			add_filter( 'cron_schedules', 'add_cron_interval' );
+
+			function add_cron_interval( $schedules ) { 
+				$schedules['fifteen_minutes'] = array(
+					'interval' => 900,
+					'display'  => esc_html__( 'Every Fifteen Minutes' ), );
+				return $schedules;
+			}
+
+			if ( ! wp_next_scheduled( 'wooclick_update' ) ) {
+				wp_schedule_event( time(), 'fifteen_minutes', 'wooclick_update' );
+			}
+		} elseif ( wp_next_scheduled( 'wooclick_update' ) ) {
+			$timestamp = wp_next_scheduled( 'wooclick_update' );
+			wp_unschedule_event( $timestamp, 'wooclick_update' );
+		}
+	}
 }

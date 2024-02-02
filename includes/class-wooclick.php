@@ -77,7 +77,6 @@ class Wooclick {
 		$this->load_dependencies();
 		$this->set_locale();
 		$this->define_admin_hooks();
-		$this->define_cron_settings();
 	}
 
 	/**
@@ -158,28 +157,6 @@ class Wooclick {
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'add_admin_menu');
 		// Set the cron hook to execute importations when called
 		$this->loader->add_action( 'wooclick_update', $plugin_admin, 'wooclick_import_all');
-	}
-
-	private function define_cron_settings() {
-
-		if( get_option( 'wck-settings-auto-imports') ){
-			add_filter( 'cron_schedules', 'add_cron_interval' );
-
-			function add_cron_interval( $schedules ) { 
-				$schedules['fifteen_minutes'] = array(
-					'interval' => 900,
-					'display'  => esc_html__( 'Every Fifteen Minutes' ), );
-				return $schedules;
-			}
-
-			if ( ! wp_next_scheduled( 'wooclick_update' ) ) {
-				wp_schedule_event( time(), 'fifteen_minutes', 'wooclick_update' );
-			}
-		} else {
-			$timestamp = wp_next_scheduled( 'wooclick_cron_hook' );
-			wp_unschedule_event( $timestamp, 'wooclick_cron_hook' );
-		}
-
 	}
 
 	/**
