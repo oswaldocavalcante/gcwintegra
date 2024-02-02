@@ -20,6 +20,7 @@ class WCK_WC_Integration extends WC_Integration {
         $this->wck_gc_sales = new WCK_GC_Sales();
 
         add_action(	'woocommerce_update_options_integration_' . $this->id, array($this, 'process_admin_options'));
+        add_filter( 'cron_schedules', array($this, 'add_cron_interval') );
     }
 
     public function init_form_fields() {
@@ -94,18 +95,16 @@ class WCK_WC_Integration extends WC_Integration {
         echo '</div>';
     }
 
-	public function set_auto_imports( $auto_updates = boolean ) {
+    public function add_cron_interval( $schedules ) { 
+        $schedules['fifteen_minutes'] = array(
+            'interval' => 900,
+            'display'  => __( 'Every Fifteen Minutes', 'wooclick' ), 
+        );
+        return $schedules;
+    }
 
-		if( $auto_updates ){
-			add_filter( 'cron_schedules', 'add_cron_interval' );
-
-			function add_cron_interval( $schedules ) { 
-				$schedules['fifteen_minutes'] = array(
-					'interval' => 900,
-					'display'  => esc_html__( 'Every Fifteen Minutes' ), );
-				return $schedules;
-			}
-
+	public function set_auto_imports( $auto_updates = 'no' ) {
+		if( $auto_updates == 'yes' ){
 			if ( ! wp_next_scheduled( 'wooclick_update' ) ) {
 				wp_schedule_event( time(), 'fifteen_minutes', 'wooclick_update' );
 			}

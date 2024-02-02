@@ -183,6 +183,20 @@ class WCK_Admin {
 			array($this, 'wooclick_display_attributes'),
 			3,
 		);
+
+		add_submenu_page( 
+			'wooclick', 
+			'Configurações', 
+			'Configurações', 
+			'manage_options',
+			'wooclick-settings',
+			function() {
+				$url = admin_url('admin.php?page=wc-settings&tab=integration&section=wooclick');
+				wp_redirect($url);
+				exit;
+			},
+			3,
+		);
 	}
 
 	/**
