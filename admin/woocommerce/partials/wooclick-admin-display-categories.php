@@ -12,9 +12,9 @@
  * @subpackage Wooclick/admin/partials
  */
 
-include WP_PLUGIN_DIR . '/wooclick/admin/list-tables/class-wooclick-admin-list-table-categories.php';
+include WP_PLUGIN_DIR . '/wooclick/admin/woocommerce/list-tables/class-wck-list-table-categories.php';
 
-$categories_table = new Wooclick_Admin_List_Table_Categories();
+$categories_table = new WCK_List_Table_Categories();
 $categories_table->prepare_items();
 
 ?>

@@ -6,7 +6,7 @@ if (!class_exists('WP_List_Table')) {
     require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
 
-class Wooclick_Admin_List_Table_Products extends WP_List_Table {
+class WCK_List_Table_Categories extends WP_List_Table {
 
     private $table_data;
 
@@ -14,8 +14,8 @@ class Wooclick_Admin_List_Table_Products extends WP_List_Table {
         global $status, $page;
 
         parent::__construct( array(
-          'singular' => 'product',
-          'plural' => 'products',
+          'singular' => 'category',
+          'plural' => 'categories',
           'ajax' => false
         ) ); 
     }
@@ -23,10 +23,10 @@ class Wooclick_Admin_List_Table_Products extends WP_List_Table {
    function column_default($item, $column_name) {
 
         switch ($column_name) {
-            case 'codigo_barra':
+            case 'id':
             case 'nome':
-            case 'estoque':
-            case 'valor_venda':
+            case 'meta_descricao':
+            case 'grupo_pai_id':
                 return $item[$column_name];
             default:
                 return print_r($item,true);
@@ -36,18 +36,18 @@ class Wooclick_Admin_List_Table_Products extends WP_List_Table {
     function column_cb($item) {
         return sprintf(
                 '<input type="checkbox" name="bulk-action[]" value="%1$s" />',
-                /*$1%s*/$item['codigo_barra']
+                /*$1%s*/$item['id']
         );
     }    
 
     function get_columns() {
 
         $columns = array(
-            'cb'            => '<input type="checkbox" />',
-            'codigo_barra'  => __('Código', 'wooclick-products'),
-            'nome'          => __('Nome', 'wooclick-products'),
-            'estoque'       => __('Estoque', 'wooclick-products'),
-            'valor_venda'   => __('Preço', 'wooclick-products')
+            'cb'                => '<input type="checkbox" />',
+            'id'                => __('ID', 'wooclick-categories'),
+            'nome'              => __('Nome', 'wooclick-categories'),
+            'meta_descricao'    => __('Descrição', 'wooclick-categories'),
+            'grupo_pai_id'      => __('Pai ID', 'wooclick-categories')
         );
         return $columns;
     }
@@ -57,8 +57,7 @@ class Wooclick_Admin_List_Table_Products extends WP_List_Table {
         $sortable_columns = array(
             'id'            => array('id', false),
             'nome'          => array('nome', false),
-            'grupo_pai_id'  => array('estoque', false),
-            'grupo_pai_id'  => array('valor_venda', false)
+            'grupo_pai_id'  => array('grupo_pai_id', false)
         );
         return $sortable_columns;
     }
@@ -72,14 +71,17 @@ class Wooclick_Admin_List_Table_Products extends WP_List_Table {
     }
 
     function process_bulk_action() {
+
+        $selected_items = isset($_POST['bulk-action']) ? $_POST['bulk-action'] : array();
         
         //Detect when a bulk action is being triggered...
         if( 'import' === $this->current_action() ) {
             $selected_items = isset($_POST['bulk-action']) ? $_POST['bulk-action'] : array();
-            apply_filters( 'wooclick_import_products', $selected_items );
+            apply_filters( 'wooclick_import_categories', $selected_items );
         }
+
         if( 'import_all' === $this->current_action() ) {
-            apply_filters( 'wooclick_import_products', 'all' );
+            apply_filters( 'wooclick_import_categories', 'all' );
         }
     }
 
@@ -101,8 +103,8 @@ class Wooclick_Admin_List_Table_Products extends WP_List_Table {
 
     public function prepare_items() {
         
-        $products = get_option( 'wooclick-products' );
-        $this->table_data = $products;
+        $categories = get_option( 'wooclick-categories' );
+        $this->table_data = $categories;
         
         $columns = $this->get_columns();
         $hidden = array();

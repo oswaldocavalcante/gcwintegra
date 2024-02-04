@@ -22,20 +22,22 @@ class WCK_GC_Api {
             ),
         );
 
-        $this->endpoint_products =      'https://api.gestaoclick.com/api/produtos';
-        $this->endpoint_categories =    'https://api.gestaoclick.com/api/grupos_produtos';
-        $this->endpoint_attributes =    'https://api.gestaoclick.com/api/grades';
-        $this->endpoint_sales =         'https://api.gestaoclick.com/api/vendas';
-        $this->endpoint_clients =       'https://api.gestaoclick.com/api/clientes';
+        $this->endpoint_products =          'https://api.gestaoclick.com/api/produtos';
+        $this->endpoint_categories =        'https://api.gestaoclick.com/api/grupos_produtos';
+        $this->endpoint_attributes =        'https://api.gestaoclick.com/api/grades';
+        $this->endpoint_sales =             'https://api.gestaoclick.com/api/vendas';
+        $this->endpoint_clients =           'https://api.gestaoclick.com/api/clientes';
+        $this->endpoint_transportadoras =   'https://api.gestaoclick.com/api/transportadoras';
+        $this->endpoint_situacoes =         'https://api.gestaoclick.com/api/situacoes_vendas';
     }
 
-    public function test_connection() {
+    public static function test_connection() {
         $http_code = null;
 
         $access_token =         get_option( 'wck-api-access-token' );
         $secret_access_token =  get_option( 'wck-api-secret-access-token' );
 
-        if ( ( $this->access_token && $this->secret_access_token ) != '' ) {
+        if ( ( $access_token && $secret_access_token ) != '' ) {
 
             $url = 'https://api.gestaoclick.com/produtos';
             $args = array (
@@ -48,6 +50,7 @@ class WCK_GC_Api {
 
             $response = wp_remote_get( $url, $args );
             $http_code = wp_remote_retrieve_response_code( $response );
+            
         } else {
             return false;
         }
@@ -86,5 +89,13 @@ class WCK_GC_Api {
 
     public function get_endpoint_clients() {
         return $this->endpoint_clients;
+    }
+
+    public function get_endpoint_transportadoras() {
+        return $this->endpoint_transportadoras;
+    }
+
+    public function get_endpoint_situacoes() {
+        return $this->endpoint_situacoes;
     }
 }

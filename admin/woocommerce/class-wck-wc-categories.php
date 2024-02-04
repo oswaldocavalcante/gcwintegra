@@ -9,14 +9,16 @@
  * @subpackage Wooclick/admin
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  */
-class WCK_Categories extends WCK_GC_Api {
+
+include_once WP_PLUGIN_DIR . '/wooclick/admin/class-wck-gc-api.php';
+
+class WCK_WC_Categories extends WCK_GC_Api {
 
     private $api_endpoint;
     private $api_headers;
 
     public function __construct() {
         parent::__construct();
-
         $this->api_endpoint = parent::get_endpoint_categories();
         $this->api_headers =  parent::get_headers();
         
@@ -72,10 +74,8 @@ class WCK_Categories extends WCK_GC_Api {
     }
 
     private function save( $category ) {
-        
         $taxonomy = 'product_cat';
-
-        $category_object = get_term_by( 'slug', sanitize_title($category['nome'] ), 'product_cat' );
+        $category_object = get_term_by( 'slug', sanitize_title($category['nome'] ), $taxonomy );
 
         if($category_object != false) { //If category already exists, update it
             wp_update_term(

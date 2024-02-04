@@ -12,16 +12,15 @@
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  */
 
-include_once 'class-wck-gc-api.php';
+include_once WP_PLUGIN_DIR . '/wooclick/admin/class-wck-gc-api.php';
 
-class WCK_Products extends WCK_GC_Api {
+class WCK_WC_Products extends WCK_GC_Api {
 
     private $api_endpoint;
     private $api_headers;
 
     public function __construct() {
         parent::__construct();
-
         $this->api_endpoint = parent::get_endpoint_products();
         $this->api_headers =  parent::get_headers();
 

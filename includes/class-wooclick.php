@@ -148,7 +148,6 @@ class Wooclick {
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
-
 		// Register general settings
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'register_settings');
 		// Checks if WooCommerce is active and registers in its settings page
@@ -156,7 +155,14 @@ class Wooclick {
 		// Add the admin menu
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'add_admin_menu');
 		// Set the cron hook to execute importations when called
-		$this->loader->add_action( 'wooclick_update', $plugin_admin, 'wooclick_import_all');
+		$this->loader->add_action( 'wooclick_update', $plugin_admin, 'import_all');
+
+		if( get_option('wck-settings-export-orders') == 'yes' ){
+			// Export a paid order to GestãoClick
+			$this->loader->add_action( 'woocommerce_payment_complete_order_status_processing', $plugin_admin, 'export_order' );
+		} else {
+			remove_action( 'woocommerce_payment_complete_order_status_processing', 'export_order' );
+		}
 	}
 
 	/**
