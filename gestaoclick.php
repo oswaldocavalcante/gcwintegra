@@ -10,18 +10,18 @@
  *
  * @link              https://oswaldocavalcante.com
  * @since             1.0.0
- * @package           Wooclick
+ * @package           GestaoClick
  *
  * @wordpress-plugin
- * Plugin Name:       WooClick
- * Plugin URI:        https://github.com/oswaldocavalcante/wooclick
+ * Plugin Name:       GestaoClick
+ * Plugin URI:        https://github.com/oswaldocavalcante/gestaoclick
  * Description:       Integrates GestãoClick to WooCommerce.
  * Version:           1.0.0
  * Author:            Oswaldo Cavalcante
  * Author URI:        https://oswaldocavalcante.com/
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain:       wooclick
+ * Text Domain:       gestaoclick
  * Domain Path:       /languages
  */
 
@@ -35,34 +35,34 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'WOOCLICK_VERSION', '1.0.0' );
+define( 'GESTAOCLICK_VERSION', '1.0.0' );
 
 /**
  * The code that runs during plugin activation.
- * This action is documented in includes/class-wooclick-activator.php
+ * This action is documented in includes/class-gestaoclick-activator.php
  */
-function activate_wooclick() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-wooclick-activator.php';
-	Wooclick_Activator::activate();
+function activate_gestaoclick() {
+	require_once plugin_dir_path( __FILE__ ) . 'includes/class-gestaoclick-activator.php';
+	Gestaoclick_Activator::activate();
 }
 
 /**
  * The code that runs during plugin deactivation.
- * This action is documented in includes/class-wooclick-deactivator.php
+ * This action is documented in includes/class-gestaoclick-deactivator.php
  */
-function deactivate_wooclick() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-wooclick-deactivator.php';
-	Wooclick_Deactivator::deactivate();
+function deactivate_gestaoclick() {
+	require_once plugin_dir_path( __FILE__ ) . 'includes/class-gestaoclick-deactivator.php';
+	Gestaoclick_Deactivator::deactivate();
 }
 
-register_activation_hook( __FILE__, 'activate_wooclick' );
-register_deactivation_hook( __FILE__, 'deactivate_wooclick' );
+register_activation_hook( __FILE__, 'activate_gestaoclick' );
+register_deactivation_hook( __FILE__, 'deactivate_gestaoclick' );
 
 /**
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.
  */
-require plugin_dir_path( __FILE__ ) . 'includes/class-wooclick.php';
+require plugin_dir_path( __FILE__ ) . 'includes/class-gestaoclick.php';
 
 /**
  * Begins execution of the plugin.
@@ -73,10 +73,10 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-wooclick.php';
  *
  * @since    1.0.0
  */
-function run_wooclick() {
+function run_gestaoclick() {
 
-	$plugin = new Wooclick();
+	$plugin = new Gestaoclick();
 	$plugin->run();
 
 }
-run_wooclick();
+run_gestaoclick();

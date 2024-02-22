@@ -1,8 +1,8 @@
 <?php
 
-include_once WP_PLUGIN_DIR . '/wooclick/admin/class-wck-gc-api.php';
+include_once WP_PLUGIN_DIR . '/gestaoclick/admin/class-gcw-gc-api.php';
 
-class WCK_GC_Situacoes extends WCK_GC_Api {
+class GCW_GC_Situacoes extends GCW_GC_Api {
 
     private $default = null;
 

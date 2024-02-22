@@ -7,14 +7,14 @@
  *
  * Sync products to WooCommerce from GestãoClick API
  *
- * @package    Wooclick
- * @subpackage Wooclick/admin
+ * @package    Gestaoclick
+ * @subpackage Gestaoclick/admin
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  */
 
-include_once WP_PLUGIN_DIR . '/wooclick/admin/class-wck-gc-api.php';
+include_once WP_PLUGIN_DIR . '/gestaoclick/admin/class-gcw-gc-api.php';
 
-class WCK_WC_Products extends WCK_GC_Api {
+class GCW_WC_Products extends GCW_GC_Api {
 
     private $api_endpoint;
     private $api_headers;
@@ -24,7 +24,7 @@ class WCK_WC_Products extends WCK_GC_Api {
         $this->api_endpoint = parent::get_endpoint_products();
         $this->api_headers =  parent::get_headers();
 
-        add_filter( 'wooclick_import_products', array( $this, 'import' ) );
+        add_filter( 'gestaoclick_import_products', array( $this, 'import' ) );
     }
 
     public function fetch_api() {
@@ -43,7 +43,7 @@ class WCK_WC_Products extends WCK_GC_Api {
 
         } while ( $proxima_pagina != null );
 
-        update_option( 'wooclick-products', $products );
+        update_option( 'gestaoclick-products', $products );
     }
 
     public function import( $products_codes ) {
@@ -51,34 +51,34 @@ class WCK_WC_Products extends WCK_GC_Api {
             include_once WC_ABSPATH . 'includes/abstracts/abstract-wc-product.php';
         }
 
-        $products =             get_option( 'wooclick-products' );
-        $products_blacklist =   get_option( 'wck-settings-blacklist-products' );
-        $categories_blacklist = get_option( 'wck-settings-blacklist-categories' );
-        $selectedProducts =     array();
+        $products =             get_option( 'gestaoclick-products' );
+        $products_blacklist =   get_option( 'gcw-settings-products-blacklist' );
+        $categories_selection = get_option( 'gcw-settings-categories-selection' );
+        $products_selection =     array();
 
-        if( $categories_blacklist ) {
-            $filteredCategories = array_filter($products, function ($item) use ($categories_blacklist) {
-                return (!in_array($item['nome_grupo'], $categories_blacklist));
+        if( $categories_selection ) {
+            $filtered_categories = array_filter($products, function ($item) use ($categories_selection) {
+                return (in_array($item['nome_grupo'], $categories_selection));
             });
-            $products = $filteredCategories;
+            $products = $filtered_categories;
         }
 
         if( $products_blacklist ) {
-            $filteredProducts = array_filter($products, function ($item) use ($products_blacklist) {
+            $filtered_products = array_filter($products, function ($item) use ($products_blacklist) {
                 return (!in_array($item['codigo_barra'], $products_blacklist));
             });
-            $products = $filteredProducts;
+            $products = $filtered_products;
         }
 
         if( is_array($products_codes) ) {
-            $selectedProducts = array_filter($products, function ($item) use ($products_codes) {
+            $products_selection = array_filter($products, function ($item) use ($products_codes) {
                 return (in_array($item['codigo_barra'], $products_codes));
             });
         } elseif( $products_codes == 'all' ) {
-            $selectedProducts = $products;
+            $products_selection = $products;
         }
 
-        foreach ($selectedProducts as $product) {
+        foreach ($products_selection as $product) {
             // Check if the product has variations
             if ($product['possui_variacao'] == '1') {
 
@@ -101,8 +101,8 @@ class WCK_WC_Products extends WCK_GC_Api {
             }
         }
 
-        $import_notice = sprintf('%d produtos importados com sucesso.', count($selectedProducts));
-        set_transient('wooclick_import_notice', $import_notice, 30); // Ajuste o tempo conforme necessário
+        $import_notice = sprintf('%d produtos importados com sucesso.', count($products_selection));
+        set_transient('gestaoclick_import_notice', $import_notice, 30); // Ajuste o tempo conforme necessário
     }
 
     private function get_category_ids( $category_name ) {
@@ -145,7 +145,7 @@ class WCK_WC_Products extends WCK_GC_Api {
             $product_simple = wc_get_product($product_exists);
         } else {
             $product_simple = new WC_Product_Simple();
-            $product_simple->add_meta_data( 'wooclick_gc_product_id', (int) $product['id'], true );
+            $product_simple->add_meta_data( 'gestaoclick_gc_product_id', (int) $product['id'], true );
         }
 
         $product_simple->set_props($product_props);
@@ -182,7 +182,7 @@ class WCK_WC_Products extends WCK_GC_Api {
             $product_variable = wc_get_product($product_exists);
         } else {
             $product_variable = new WC_Product_Variable();
-            $product_variable->add_meta_data( 'wooclick_gc_product_id', (int) $product['id'], true );
+            $product_variable->add_meta_data( 'gestaoclick_gc_product_id', (int) $product['id'], true );
         }
 
         $product_variable->set_props($product_props);
@@ -219,7 +219,7 @@ class WCK_WC_Products extends WCK_GC_Api {
             } else {
                 $variation = new WC_Product_Variation();
                 $variation->set_sku($variation_data['variacao']['codigo']);
-                $variation->add_meta_data( 'wooclick_gc_variation_id', (int) $variation_data['variacao']['id'], true );
+                $variation->add_meta_data( 'gestaoclick_gc_variation_id', (int) $variation_data['variacao']['id'], true );
             }
             
             $variation->set_parent_id($product_variable_id);
@@ -241,8 +241,12 @@ class WCK_WC_Products extends WCK_GC_Api {
     }
 
     public function display() {
-        $this->fetch_api();
-        require_once 'partials/wooclick-admin-display-products.php';
+        if( GCW_GC_Api::test_connection() ) {
+            $this->fetch_api();
+            require_once 'partials/gestaoclick-admin-display-products.php';
+        } else {
+            wp_admin_notice( __( 'GestãoClick: Preencha corretamente suas credenciais de acesso.', 'gestaoclick' ), array( 'error' ) );
+        }
     }
 
     // private function save_product_variable($product) {

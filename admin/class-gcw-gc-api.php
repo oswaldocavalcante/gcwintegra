@@ -1,6 +1,6 @@
 <?php
 
-class WCK_GC_Api {
+class GCW_GC_Api {
 
 	private $access_token;
 	private $secret_access_token;
@@ -12,8 +12,8 @@ class WCK_GC_Api {
 
     public function __construct() {
         
-        $this->access_token =           get_option( 'wck-api-access-token' );
-        $this->secret_access_token =    get_option( 'wck-api-secret-access-token' );
+        $this->access_token =           get_option( 'gcw-api-access-token' );
+        $this->secret_access_token =    get_option( 'gcw-api-secret-access-token' );
         $this->headers = array(
             'headers' => array (
                 'Content-Type' =>           'application/json',
@@ -29,13 +29,14 @@ class WCK_GC_Api {
         $this->endpoint_clients =           'https://api.gestaoclick.com/api/clientes';
         $this->endpoint_transportadoras =   'https://api.gestaoclick.com/api/transportadoras';
         $this->endpoint_situacoes =         'https://api.gestaoclick.com/api/situacoes_vendas';
+        $this->endpoint_orcamentos =        'https://api.gestaoclick.com/api/orcamentos';
     }
 
     public static function test_connection() {
         $http_code = null;
 
-        $access_token =         get_option( 'wck-api-access-token' );
-        $secret_access_token =  get_option( 'wck-api-secret-access-token' );
+        $access_token =         get_option( 'gcw-api-access-token' );
+        $secret_access_token =  get_option( 'gcw-api-secret-access-token' );
 
         if ( ( $access_token && $secret_access_token ) != '' ) {
 

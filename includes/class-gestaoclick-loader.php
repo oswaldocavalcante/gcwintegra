@@ -6,8 +6,8 @@
  * @link       https://oswaldocavalcante.com
  * @since      1.0.0
  *
- * @package    Wooclick
- * @subpackage Wooclick/includes
+ * @package    Gestaoclick
+ * @subpackage Gestaoclick/includes
  */
 
 /**
@@ -17,11 +17,11 @@
  * the plugin, and register them with the WordPress API. Call the
  * run function to execute the list of actions and filters.
  *
- * @package    Wooclick
- * @subpackage Wooclick/includes
+ * @package    Gestaoclick
+ * @subpackage Gestaoclick/includes
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  */
-class Wooclick_Loader {
+class Gestaoclick_Loader {
 
 	/**
 	 * The array of actions registered with WordPress.

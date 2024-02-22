@@ -1,9 +1,9 @@
 <?php
 
-include_once WP_PLUGIN_DIR . '/wooclick/admin/class-wck-gc-api.php';
-include_once WP_PLUGIN_DIR . '/wooclick/admin/gestaoclick/class-wck-gc-cliente.php';
+include_once WP_PLUGIN_DIR . '/gestaoclick/admin/class-gcw-gc-api.php';
+include_once WP_PLUGIN_DIR . '/gestaoclick/admin/gestaoclick/class-gcw-gc-cliente.php';
 
-class WCK_GC_Venda extends WCK_GC_Api {
+class GCW_GC_Venda extends GCW_GC_Api {
 
     public function __construct() {
         parent::__construct();
@@ -11,7 +11,7 @@ class WCK_GC_Venda extends WCK_GC_Api {
         $this->api_endpoint =   parent::get_endpoint_sales();
     }
 
-    public function export( $order_id) {
+    public function export( $order_id ) {
         $order = wc_get_order( $order_id );
         $order_items = $order->get_items();
         $gc_products = [];
@@ -19,12 +19,12 @@ class WCK_GC_Venda extends WCK_GC_Api {
         foreach ($order_items as $order_item) {
             $wc_product_id = $order_item->get_changes()['product_id'];
             $wc_product = wc_get_product($wc_product_id);
-            $gc_product_id = $wc_product->get_meta('wooclick_gc_product_id');
+            $gc_product_id = $wc_product->get_meta('gestaoclick_gc_product_id');
             
             $wc_variation_id = $order_item->get_changes()['variation_id'];
             if($wc_variation_id) {
                 $wc_variation = wc_get_product($wc_variation_id);
-                $gc_variation_id = $wc_variation->get_meta('wooclick_gc_variation_id');
+                $gc_variation_id = $wc_variation->get_meta('gestaoclick_gc_variation_id');
 
                 $gc_products[] = array(
                     'produto' => array(
@@ -49,10 +49,10 @@ class WCK_GC_Venda extends WCK_GC_Api {
         $wc_customer_id = $order->get_customer_id();
         $wc_customer = new WC_Customer( $wc_customer_id );
         $gc_cliente_id = null;
-        if( $wc_customer->get_meta('wooclick_gc_cliente_id') ) {
-            $gc_cliente_id = $wc_customer->get_meta('wooclick_gc_cliente_id');
+        if( $wc_customer->get_meta('gestaoclick_gc_cliente_id') ) {
+            $gc_cliente_id = $wc_customer->get_meta('gestaoclick_gc_cliente_id');
         } else {
-            $gc_cliente = new WCK_GC_Cliente( $wc_customer );
+            $gc_cliente = new GCW_GC_Cliente( $wc_customer );
             $gc_cliente_id = $gc_cliente->get_id();
         }
 
@@ -60,8 +60,8 @@ class WCK_GC_Venda extends WCK_GC_Api {
             'tipo'              => 'produto',
             'cliente_id'        => $gc_cliente_id,
             'data'              => $order->get_date_created()->date('Y-m-d'),
-            'situacao_id'       => get_option('wck-settings-export-situacao'),
-            'transportadora_id' => get_option('wck-settings-export-trasportadora'),
+            'situacao_id'       => get_option('gcw-settings-export-situacao'),
+            'transportadora_id' => get_option('gcw-settings-export-trasportadora'),
             'valor_frete'       => $order->get_shipping_total(),
             'nome_canal_venda'  => 'Internet',
             'produtos'          => $gc_products,

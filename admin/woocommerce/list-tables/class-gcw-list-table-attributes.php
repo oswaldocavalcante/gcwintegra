@@ -6,7 +6,7 @@ if (!class_exists('WP_List_Table')) {
     require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
 
-class WCK_List_Table_Products extends WP_List_Table {
+class GCW_List_Table_Attributes extends WP_List_Table {
 
     private $table_data;
 
@@ -14,8 +14,8 @@ class WCK_List_Table_Products extends WP_List_Table {
         global $status, $page;
 
         parent::__construct( array(
-          'singular' => 'product',
-          'plural' => 'products',
+          'singular' => 'attribute',
+          'plural' => 'attributes',
           'ajax' => false
         ) ); 
     }
@@ -23,10 +23,9 @@ class WCK_List_Table_Products extends WP_List_Table {
    function column_default($item, $column_name) {
 
         switch ($column_name) {
-            case 'codigo_barra':
+            case 'id':
             case 'nome':
-            case 'estoque':
-            case 'valor_venda':
+            case 'cadastrado_em':
                 return $item[$column_name];
             default:
                 return print_r($item,true);
@@ -36,18 +35,17 @@ class WCK_List_Table_Products extends WP_List_Table {
     function column_cb($item) {
         return sprintf(
                 '<input type="checkbox" name="bulk-action[]" value="%1$s" />',
-                /*$1%s*/$item['codigo_barra']
+                /*$1%s*/$item['id']
         );
     }    
 
     function get_columns() {
 
         $columns = array(
-            'cb'            => '<input type="checkbox" />',
-            'codigo_barra'  => __('Código', 'wooclick-products'),
-            'nome'          => __('Nome', 'wooclick-products'),
-            'estoque'       => __('Estoque', 'wooclick-products'),
-            'valor_venda'   => __('Preço', 'wooclick-products')
+            'cb'                => '<input type="checkbox" />',
+            'id'                => __('ID', 'gestaoclick-attributes'),
+            'nome'              => __('Nome', 'gestaoclick-attributes'),
+            'cadastrado_em'    => __('Criação', 'gestaoclick-attributes'),
         );
         return $columns;
     }
@@ -57,8 +55,7 @@ class WCK_List_Table_Products extends WP_List_Table {
         $sortable_columns = array(
             'id'            => array('id', false),
             'nome'          => array('nome', false),
-            'grupo_pai_id'  => array('estoque', false),
-            'grupo_pai_id'  => array('valor_venda', false)
+            'cadastrado_em'  => array('cadastrado_em', false)
         );
         return $sortable_columns;
     }
@@ -72,14 +69,17 @@ class WCK_List_Table_Products extends WP_List_Table {
     }
 
     function process_bulk_action() {
+
+        $selected_items = isset($_POST['bulk-action']) ? $_POST['bulk-action'] : array();
         
         //Detect when a bulk action is being triggered...
         if( 'import' === $this->current_action() ) {
             $selected_items = isset($_POST['bulk-action']) ? $_POST['bulk-action'] : array();
-            apply_filters( 'wooclick_import_products', $selected_items );
+            apply_filters( 'gestaoclick_import_attributes', $selected_items );
         }
+
         if( 'import_all' === $this->current_action() ) {
-            apply_filters( 'wooclick_import_products', 'all' );
+            apply_filters( 'gestaoclick_import_attributes', 'all' );
         }
     }
 
@@ -101,13 +101,13 @@ class WCK_List_Table_Products extends WP_List_Table {
 
     public function prepare_items() {
         
-        $products = get_option( 'wooclick-products' );
-        $this->table_data = $products;
+        $attributes = get_option( 'gestaoclick-attributes' );
+        $this->table_data = $attributes;
         
         $columns = $this->get_columns();
         $hidden = array();
         $sortable = $this->get_sortable_columns();
-        $primary  = 'name';
+        $primary  = 'nome';
         $this->_column_headers = array($columns, $hidden, $sortable, $primary);
         $this->process_bulk_action();
         

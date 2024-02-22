@@ -6,8 +6,8 @@
  * @link       https://oswaldocavalcante.com
  * @since      1.0.0
  *
- * @package    Wooclick
- * @subpackage Wooclick/includes
+ * @package    Gestaoclick
+ * @subpackage Gestaoclick/includes
  */
 
 /**
@@ -16,11 +16,11 @@
  * This class defines all code necessary to run during the plugin's activation.
  *
  * @since      1.0.0
- * @package    Wooclick
- * @subpackage Wooclick/includes
+ * @package    Gestaoclick
+ * @subpackage Gestaoclick/includes
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  */
-class Wooclick_Activator {
+class Gestaoclick_Activator {
 
 	/**
 	 * Short Description. (use period)

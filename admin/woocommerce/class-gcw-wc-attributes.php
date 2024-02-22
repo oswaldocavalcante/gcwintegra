@@ -10,9 +10,9 @@
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  */
 
-include_once WP_PLUGIN_DIR . '/wooclick/admin/class-wck-gc-api.php';
+include_once WP_PLUGIN_DIR . '/gestaoclick/admin/class-gcw-gc-api.php';
  
-class WCK_WC_Attributes extends WCK_GC_Api {
+class GCW_WC_Attributes extends GCW_GC_Api {
 
     private $api_endpoint;
     private $api_headers;
@@ -22,7 +22,7 @@ class WCK_WC_Attributes extends WCK_GC_Api {
         $this->api_endpoint = parent::get_endpoint_attributes();
         $this->api_headers =  parent::get_headers();
         
-        add_filter( 'wooclick_import_attributes', array( $this, 'import' ) );
+        add_filter( 'gestaoclick_import_attributes', array( $this, 'import' ) );
     }
 
     public function fetch_api() {
@@ -41,11 +41,11 @@ class WCK_WC_Attributes extends WCK_GC_Api {
 
         } while ( $proxima_pagina != null );
 
-        update_option( 'wooclick-attributes', $attributes );
+        update_option( 'gestaoclick-attributes', $attributes );
     }
 
     public function import( $attributes_ids ) {
-        $attributes = get_option('wooclick-attributes');
+        $attributes = get_option('gestaoclick-attributes');
         $selected_attributes = array();
 
         // Filtering selected attributes
@@ -62,7 +62,7 @@ class WCK_WC_Attributes extends WCK_GC_Api {
         }
 
         $import_notice = sprintf('%d atributos importados com sucesso.', count($selected_attributes));
-        set_transient('wooclick_import_notice', $import_notice, 30); 
+        set_transient('gestaoclick_import_notice', $import_notice, 30); 
     }
 
     private function save( $attribute_data ) {
@@ -83,7 +83,11 @@ class WCK_WC_Attributes extends WCK_GC_Api {
     }
 
     public function display() {
-        $this->fetch_api();
-        require_once 'partials/wooclick-admin-display-attributes.php';
+        if( GCW_GC_Api::test_connection() ) {
+            $this->fetch_api();
+            require_once 'partials/gestaoclick-admin-display-attributes.php';
+        } else {
+            wp_admin_notice( __( 'GestãoClick: Preencha corretamente suas credenciais de acesso.', 'gestaoclick' ), array( 'error' ) );
+        }
     }
 }

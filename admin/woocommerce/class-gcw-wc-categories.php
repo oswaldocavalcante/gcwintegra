@@ -10,9 +10,9 @@
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  */
 
-include_once WP_PLUGIN_DIR . '/wooclick/admin/class-wck-gc-api.php';
+include_once WP_PLUGIN_DIR . '/gestaoclick/admin/class-gcw-gc-api.php';
 
-class WCK_WC_Categories extends WCK_GC_Api {
+class GCW_WC_Categories extends GCW_GC_Api {
 
     private $api_endpoint;
     private $api_headers;
@@ -22,7 +22,7 @@ class WCK_WC_Categories extends WCK_GC_Api {
         $this->api_endpoint = parent::get_endpoint_categories();
         $this->api_headers =  parent::get_headers();
         
-        add_filter( 'wooclick_import_categories', array( $this, 'import' ) );
+        add_filter( 'gestaoclick_import_categories', array( $this, 'import' ) );
     }
 
     public function fetch_api() {
@@ -41,36 +41,36 @@ class WCK_WC_Categories extends WCK_GC_Api {
 
         } while ( $proxima_pagina != null );
 
-        update_option( 'wooclick-categories', $categories );
+        update_option( 'gestaoclick-categories', $categories );
     }
 
     public function import( $categories_ids ) {
-        $categories =           get_option('wooclick-categories');
-        $categories_blacklist = get_option( 'wck-settings-blacklist-categories' );
-        $selectedCategories = array();
+        $categories =           get_option( 'gestaoclick-categories' );
+        $categories_selection = get_option( 'gcw-settings-categories-selection' );
+        $selected_categories = array();
 
-        if( $categories_blacklist ) {
-            $filteredCategories = array_filter($categories, function ($item) use ($categories_blacklist) {
-                return (!in_array($item['nome'], $categories_blacklist));
+        if( $categories_selection ) {
+            $filtered_categories = array_filter($categories, function ($item) use ($categories_selection) {
+                return (in_array($item['nome'], $categories_selection));
             });
-            $categories = $filteredCategories;
+            $categories = $filtered_categories;
         }
 
         // Filtering selected categories
         if (is_array($categories_ids)){
-            $selectedCategories = array_filter($categories, function ($item) use ($categories_ids) {
+            $selected_categories = array_filter($categories, function ($item) use ($categories_ids) {
                 return in_array($item['id'], $categories_ids);
             });
         } elseif ($categories_ids == 'all') {
-            $selectedCategories = $categories;
+            $selected_categories = $categories;
         }
 
-        foreach ($selectedCategories as $category ) {
+        foreach ($selected_categories as $category ) {
             $this->save( $category );
         }
 
-        $import_notice = sprintf('%d categorias importadas com sucesso.', count($selectedCategories));
-        set_transient('wooclick_import_notice', $import_notice, 30); 
+        $import_notice = sprintf('%d categorias importadas com sucesso.', count($selected_categories));
+        set_transient('gestaoclick_import_notice', $import_notice, 30); 
     }
 
     private function save( $category ) {
@@ -109,7 +109,11 @@ class WCK_WC_Categories extends WCK_GC_Api {
     }
 
     public function display(){
-        $this->fetch_api();
-        require_once 'partials/wooclick-admin-display-categories.php';
+        if( GCW_GC_Api::test_connection() ) {
+            $this->fetch_api();
+            require_once 'partials/gestaoclick-admin-display-categories.php';
+        } else {
+            wp_admin_notice( __( 'GestãoClick: Preencha corretamente suas credenciais de acesso.', 'gestaoclick' ), array( 'error' ) );
+        }
     }
 }

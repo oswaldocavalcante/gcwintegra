@@ -1,8 +1,8 @@
 <?php
 
-include_once WP_PLUGIN_DIR . '/wooclick/admin/class-wck-gc-api.php';
+include_once WP_PLUGIN_DIR . '/gestaoclick/admin/class-gcw-gc-api.php';
 
-class WCK_GC_Cliente extends WCK_GC_Api {
+class GCW_GC_Cliente extends GCW_GC_Api {
 
     private $id = null;
 
@@ -45,9 +45,9 @@ class WCK_GC_Cliente extends WCK_GC_Api {
 
         if( $response_body['code'] == 200 ) {
             $this->id = $response_body['data']['id'];
-            $wc_customer->add_meta_data( 'wooclick_gc_cliente_id', $this->id, true );
+            $wc_customer->add_meta_data( 'gestaoclick_gc_cliente_id', $this->id, true );
         } else {
-            return new WP_Error( 'failed', __( 'WooClick: Error on export client to GestãoClick.', 'wooclick' ) );
+            return new WP_Error( 'failed', __( 'GestãoClick: Error on export client to GestãoClick.', 'gestaoclick' ) );
         }
     }
 

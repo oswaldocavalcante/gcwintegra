@@ -6,7 +6,7 @@ if (!class_exists('WP_List_Table')) {
     require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
 
-class WCK_List_Table_Attributes extends WP_List_Table {
+class GCW_List_Table_Categories extends WP_List_Table {
 
     private $table_data;
 
@@ -14,8 +14,8 @@ class WCK_List_Table_Attributes extends WP_List_Table {
         global $status, $page;
 
         parent::__construct( array(
-          'singular' => 'attribute',
-          'plural' => 'attributes',
+          'singular' => 'category',
+          'plural' => 'categories',
           'ajax' => false
         ) ); 
     }
@@ -25,7 +25,8 @@ class WCK_List_Table_Attributes extends WP_List_Table {
         switch ($column_name) {
             case 'id':
             case 'nome':
-            case 'cadastrado_em':
+            case 'meta_descricao':
+            case 'grupo_pai_id':
                 return $item[$column_name];
             default:
                 return print_r($item,true);
@@ -43,9 +44,10 @@ class WCK_List_Table_Attributes extends WP_List_Table {
 
         $columns = array(
             'cb'                => '<input type="checkbox" />',
-            'id'                => __('ID', 'wooclick-attributes'),
-            'nome'              => __('Nome', 'wooclick-attributes'),
-            'cadastrado_em'    => __('Criação', 'wooclick-attributes'),
+            'id'                => __('ID', 'gestaoclick-categories'),
+            'nome'              => __('Nome', 'gestaoclick-categories'),
+            'meta_descricao'    => __('Descrição', 'gestaoclick-categories'),
+            'grupo_pai_id'      => __('Pai ID', 'gestaoclick-categories')
         );
         return $columns;
     }
@@ -55,7 +57,7 @@ class WCK_List_Table_Attributes extends WP_List_Table {
         $sortable_columns = array(
             'id'            => array('id', false),
             'nome'          => array('nome', false),
-            'cadastrado_em'  => array('cadastrado_em', false)
+            'grupo_pai_id'  => array('grupo_pai_id', false)
         );
         return $sortable_columns;
     }
@@ -75,11 +77,11 @@ class WCK_List_Table_Attributes extends WP_List_Table {
         //Detect when a bulk action is being triggered...
         if( 'import' === $this->current_action() ) {
             $selected_items = isset($_POST['bulk-action']) ? $_POST['bulk-action'] : array();
-            apply_filters( 'wooclick_import_attributes', $selected_items );
+            apply_filters( 'gestaoclick_import_categories', $selected_items );
         }
 
         if( 'import_all' === $this->current_action() ) {
-            apply_filters( 'wooclick_import_attributes', 'all' );
+            apply_filters( 'gestaoclick_import_categories', 'all' );
         }
     }
 
@@ -101,13 +103,13 @@ class WCK_List_Table_Attributes extends WP_List_Table {
 
     public function prepare_items() {
         
-        $attributes = get_option( 'wooclick-attributes' );
-        $this->table_data = $attributes;
+        $categories = get_option( 'gestaoclick-categories' );
+        $this->table_data = $categories;
         
         $columns = $this->get_columns();
         $hidden = array();
         $sortable = $this->get_sortable_columns();
-        $primary  = 'nome';
+        $primary  = 'name';
         $this->_column_headers = array($columns, $hidden, $sortable, $primary);
         $this->process_bulk_action();
         

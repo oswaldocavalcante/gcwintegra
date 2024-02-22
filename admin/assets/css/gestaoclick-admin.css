@@ -3,21 +3,21 @@
  * included in this file.
  */
 
-#wck_settings {
+#gcw_settings {
     margin-top: 16px;
 }
 
-.wck-integration-title {
+.gcw-integration-title {
     display: inline;
     padding-top: 20px;
 }
 
-.wck-integration-connection {
+.gcw-integration-connection {
     font-size: 10px;
     color: darkslategray;
 }
 
-.wck-integration-connection:before {
+.gcw-integration-connection:before {
     color: green;
     margin: 0 5px;
  }

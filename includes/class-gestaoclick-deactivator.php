@@ -6,8 +6,8 @@
  * @link       https://oswaldocavalcante.com
  * @since      1.0.0
  *
- * @package    Wooclick
- * @subpackage Wooclick/includes
+ * @package    Gestaoclick
+ * @subpackage Gestaoclick/includes
  */
 
 /**
@@ -16,11 +16,11 @@
  * This class defines all code necessary to run during the plugin's deactivation.
  *
  * @since      1.0.0
- * @package    Wooclick
- * @subpackage Wooclick/includes
+ * @package    Gestaoclick
+ * @subpackage Gestaoclick/includes
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  */
-class Wooclick_Deactivator {
+class Gestaoclick_Deactivator {
 
 	/**
 	 * Deactivates the cron hook.
@@ -29,9 +29,9 @@ class Wooclick_Deactivator {
 	 * @since    1.0.0
 	 */
 	public static function deactivate() {
-		if ( wp_next_scheduled( 'wooclick_update' ) ) {
-			$timestamp = wp_next_scheduled( 'wooclick_update' );
-			wp_unschedule_event( $timestamp, 'wooclick_update' );
+		if ( wp_next_scheduled( 'gestaoclick_update' ) ) {
+			$timestamp = wp_next_scheduled( 'gestaoclick_update' );
+			wp_unschedule_event( $timestamp, 'gestaoclick_update' );
 		}
 	}
 }

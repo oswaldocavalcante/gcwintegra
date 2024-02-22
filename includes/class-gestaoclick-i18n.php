@@ -9,8 +9,8 @@
  * @link       https://oswaldocavalcante.com
  * @since      1.0.0
  *
- * @package    Wooclick
- * @subpackage Wooclick/includes
+ * @package    Gestaoclick
+ * @subpackage Gestaoclick/includes
  */
 
 /**
@@ -20,11 +20,11 @@
  * so that it is ready for translation.
  *
  * @since      1.0.0
- * @package    Wooclick
- * @subpackage Wooclick/includes
+ * @package    Gestaoclick
+ * @subpackage Gestaoclick/includes
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  */
-class Wooclick_i18n {
+class Gestaoclick_i18n {
 
 
 	/**
@@ -35,7 +35,7 @@ class Wooclick_i18n {
 	public function load_plugin_textdomain() {
 
 		load_plugin_textdomain(
-			'wooclick',
+			'gestaoclick',
 			false,
 			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
 		);
