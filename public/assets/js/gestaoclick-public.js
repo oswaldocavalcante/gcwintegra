@@ -1,7 +1,5 @@
 (function ($) {
 
-    var item_id = 0;
-
     function add_fieldset(item_id) {
         var section = document.getElementById("gcw-section-quote");
         var fieldset = document.createElement("fieldset");
@@ -11,15 +9,15 @@
             <legend>Item ${item_id}</legend>
             <div class="gcw-field-wrap">
                 <label>Name</label>
-                <input type="text" name="gcw-quote-name" />
+                <input type="text" class="gcw-quote-name" name="gcw_item_nome-${item_id}"  required />
             </div>
             <div class="gcw-field-wrap">
                 <label>Description</label>
-                <input type="text" name="gcw-quote-description" />
+                <input type="text" class="gcw-quote-description" name="gcw_item_descricao-${item_id}"  required />
             </div>
             <div class="gcw-field-wrap">
             <label>Size</label>
-                <select name="gcw-quote-size">
+                <select class="gcw-quote-size" name="gcw_item_tamanho-${item_id}"  required >
                     <option value="Selecionar" selected="selected">Selecionar</option>
                     <option value="PP">PP</option>
                     <option value="P">P</option>
@@ -33,7 +31,7 @@
             </div>
             <div class="gcw-field-wrap">
                 <label>Quantity</label>
-                <input type="number" name="gcw-quote-quantity" />
+                <input type="number" class="gcw-quote-quantity" name="gcw_item_quantidade-${item_id}"  required />
             </div>
             <a class="gcw-quote-remove" item_id="${item_id}">X</a>
         `;
@@ -42,17 +40,16 @@
     }
 
     $(window).on('load', () => {
-        add_fieldset(++item_id);
+        add_fieldset(1);
     });
 
     $(document).on('click', '#gcw-quote-add-item', () => {
         var section = document.getElementById("gcw-section-quote");
-        
         add_fieldset(section.children.length+1);
     });
 
-    $(document).on('click', '.gcw-quote-remove', (element) => {
-        var item_id = element.target.getAttribute('item_id');
+    $(document).on('click', '.gcw-quote-remove', (event) => {
+        var item_id = event.target.getAttribute('item_id');
         document.getElementById('gcw-quote-fieldset-' + item_id).remove();
 
         var section = document.getElementById("gcw-section-quote");
@@ -60,13 +57,41 @@
         
         for (var i = 0; i < section_items.length; i++) {
             const fieldset = section_items[i];
-            // console.log(fieldset);
             if(fieldset!=null) {
                 fieldset.setAttribute('id', `gcw-quote-fieldset-${i+1}`);
                 fieldset.firstElementChild.innerHTML = `Item ${i+1}`;
                 fieldset.lastElementChild.setAttribute('item_id', i+1);
+
+                var name = fieldset.getElementsByClassName(`gcw-quote-name`);
+                name[0].setAttribute('name', `gcw_item_nome-${i + 1}`);
+
+                var description = fieldset.getElementsByClassName(`gcw-quote-description`);
+                description[0].setAttribute('name', `gcw_item_descricao-${i + 1}`);
+
+                var size = fieldset.getElementsByClassName(`gcw-quote-size`);
+                size[0].setAttribute('name', `gcw_item_tamanho-${i + 1}`);
+
+                var quantity = fieldset.getElementsByClassName(`gcw-quote-quantity`);
+                quantity[0].setAttribute('name', `gcw_item_quantidade-${i + 1}`);
             }
         }
+    });
+
+    $(document).on('focusout', '#gcw-cliente-cpf-cnpj', (event) => {
+        var cpf_cnpj = event.target.value;
+        cpf_cnpj = cpf_cnpj.replace(/\D/g, "");
+
+        if (cpf_cnpj.length < 14) { //CPF
+            cpf_cnpj = cpf_cnpj.replace(/(\d{3})(\d)/, "$1.$2")
+            cpf_cnpj = cpf_cnpj.replace(/(\d{3})(\d)/, "$1.$2")
+            cpf_cnpj = cpf_cnpj.replace(/(\d{3})(\d{1,2})$/, "$1-$2")
+        } else { //CNPJ
+            cpf_cnpj = cpf_cnpj.replace(/^(\d{2})(\d)/, "$1.$2")
+            cpf_cnpj = cpf_cnpj.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
+            cpf_cnpj = cpf_cnpj.replace(/\.(\d{3})(\d)/, ".$1/$2")
+            cpf_cnpj = cpf_cnpj.replace(/(\d{4})(\d)/, "$1-$2")
+        }
+        event.target.value = cpf_cnpj;
     });
 
 })(jQuery);

@@ -1,17 +1,19 @@
 <?php
 
-include_once WP_PLUGIN_DIR . '/gestaoclick/admin/class-gcw-gc-api.php';
+require_once plugin_dir_path( dirname( __FILE__ ) ) . 'class-gcw-gc-api.php';
 
 class GCW_GC_Cliente extends GCW_GC_Api {
 
     private $id = null;
 
-    public function __construct( $wc_customer ) {
+    public function __construct() {
         parent::__construct();
         $this->api_headers =    parent::get_headers();
         $this->api_endpoint =   parent::get_endpoint_clients();
+    }
 
-        $this->export( $wc_customer );
+    public function get_id() {
+        return $this->id;
     }
 
     public function export( $wc_customer ) {
@@ -46,15 +48,9 @@ class GCW_GC_Cliente extends GCW_GC_Api {
         if( $response_body['code'] == 200 ) {
             $this->id = $response_body['data']['id'];
             $wc_customer->add_meta_data( 'gestaoclick_gc_cliente_id', $this->id, true );
+            return $this->id;
         } else {
             return new WP_Error( 'failed', __( 'GestãoClick: Error on export client to GestãoClick.', 'gestaoclick' ) );
         }
-    }
-
-    public function get_id() {
-        if( $this->id == null ) {
-            return false;
-        }
-        return $this->id;
     }
 }

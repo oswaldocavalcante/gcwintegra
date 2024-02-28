@@ -1,5 +1,7 @@
 <?php
 
+require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-gcw-public-gc-orcamento.php';
+
 class GCW_Public {
 
 	/**
@@ -44,6 +46,12 @@ class GCW_Public {
 	}
 
     public function shortcode_orcamento() {
+
+		if($_POST){
+			$gc_orcamento = new GCW_Public_GC_Orcamento();
+			$gc_orcamento->export($_POST);
+		}
+
         return '
 			<form method="post">
 
@@ -51,11 +59,11 @@ class GCW_Public {
 				<section id="gcw-section-institution">
 					<div class="gcw-field-wrap">
 						<label>' . __('Institution name', 'gestaoclick') . '</label>
-						<input type="text" name="institution-name">
+						<input type="text" name="gcw_cliente_nome" required />
 					</div>
 					<div class="gcw-field-wrap">
 						<label>' . __('Register number', 'gestaoclick') . '</label>
-						<input type="text" name="institution-cnpj">
+						<input type="text" name="gcw_cliente_cpf_cnpj" id="gcw-cliente-cpf-cnpj" required />
 					</div>
 				</section>
 
@@ -63,19 +71,19 @@ class GCW_Public {
 				<section id="gcw-section-responsable">
 					<div class="gcw-field-wrap">
 						<label>' . __('Name', 'gestaoclick') . '</label>
-						<input type="text" name="responsable-name">
+						<input type="text" name="gcw_contato_nome" required />
 					</div>
 					<div class="gcw-field-wrap">
 						<label>' . __('Email', 'gestaoclick') . '</label>
-						<input type="text" name="responsable-email">
+						<input type="email" name="gcw_contato_email" required />
 					</div>
 					<div class="gcw-field-wrap">
 						<label>' . __('Phone number', 'gestaoclick') . '</label>
-						<input type="text" name="responsable-phone">
+						<input type="text" name="gcw_contato_telefone" required />
 					</div>
 					<div class="gcw-field-wrap">
 						<label>' . __('Position', 'gestaoclick') . '</label>
-						<input type="text" name="responsable-position">
+						<input type="text" name="gcw_contato_cargo" required />
 					</div>
 				</section>
 
@@ -84,6 +92,8 @@ class GCW_Public {
 				</section>
 				<a id="gcw-quote-add-item">' . __('Add', 'gestaoclick') . '</a>
 				
+				<button type="submit" class="gcw-quote-button-send">Enviar</button>
+
 			</form>
 		';
     }

@@ -99,4 +99,8 @@ class GCW_GC_Api {
     public function get_endpoint_situacoes() {
         return $this->endpoint_situacoes;
     }
+
+    public function get_endpoint_orcamentos() {
+        return $this->endpoint_orcamentos;
+    }
 }

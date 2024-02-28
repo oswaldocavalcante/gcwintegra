@@ -52,8 +52,8 @@ class GCW_GC_Venda extends GCW_GC_Api {
         if( $wc_customer->get_meta('gestaoclick_gc_cliente_id') ) {
             $gc_cliente_id = $wc_customer->get_meta('gestaoclick_gc_cliente_id');
         } else {
-            $gc_cliente = new GCW_GC_Cliente( $wc_customer );
-            $gc_cliente_id = $gc_cliente->get_id();
+            $gc_cliente = new GCW_GC_Cliente();
+            $gc_cliente_id = $gc_cliente->export( $wc_customer );
         }
 
         $body = array(
