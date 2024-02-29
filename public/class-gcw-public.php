@@ -48,53 +48,10 @@ class GCW_Public {
     public function shortcode_orcamento() {
 
 		if($_POST){
-			$gc_orcamento = new GCW_Public_GC_Orcamento();
-			$gc_orcamento->export($_POST);
+			$gc_orcamento = new GCW_Public_GC_Orcamento($_POST);
+			$gc_orcamento->export();
 		}
 
-        return '
-			<form method="post">
-
-				<h2>' . __('Instituição', 'gestaoclick') . '</h2>
-				<section id="gcw-section-institution" class="gcw-quote-section">
-					<div class="gcw-field-wrap">
-						<label>' . __('Nome da instituição', 'gestaoclick') . '</label>
-						<input type="text" class="gcw-quote-input" name="gcw_cliente_nome" required />
-					</div>
-					<div class="gcw-field-wrap">
-						<label>' . __('CNPJ/CPF', 'gestaoclick') . '</label>
-						<input type="text" class="gcw-quote-input" name="gcw_cliente_cpf_cnpj" id="gcw-cliente-cpf-cnpj" required />
-					</div>
-				</section>
-
-				<h2>' . __('Responsável', 'gestaoclick') . '</h2>
-				<section id="gcw-section-responsable" class="gcw-quote-section">
-					<div class="gcw-field-wrap">
-						<label>' . __('Nome', 'gestaoclick') . '</label>
-						<input type="text" name="gcw_contato_nome" class="gcw-quote-input" required />
-					</div>
-					<div class="gcw-field-wrap">
-						<label>' . __('Email', 'gestaoclick') . '</label>
-						<input type="email" name="gcw_contato_email" class="gcw-quote-input" required />
-					</div>
-					<div class="gcw-field-wrap">
-						<label>' . __('Telefone', 'gestaoclick') . '</label>
-						<input type="text" name="gcw_contato_telefone" class="gcw-quote-input" required />
-					</div>
-					<div class="gcw-field-wrap">
-						<label>' . __('Cargo', 'gestaoclick') . '</label>
-						<input type="text" name="gcw_contato_cargo" class="gcw-quote-input" required />
-					</div>
-				</section>
-
-				<h2>' . __('Orçamento', 'gestaoclick') . '</h2>
-				<section id="gcw-quote-section-items">
-				</section>
-				<a id="gcw-quote-add-item">' . __('Adicionar item', 'gestaoclick') . '</a>
-				
-				<button type="submit" id="gcw-quote-send">Solicitar orçamento</button>
-
-			</form>
-		';
+        return GCW_Public_GC_Orcamento::render_form();
     }
 }
