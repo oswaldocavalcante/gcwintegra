@@ -2,53 +2,37 @@
 
     function add_fieldset(item_id) {
         var section = document.getElementById("gcw-quote-section-items");
-        var fieldset = document.createElement("fieldset");
+
+        var fieldset = document.getElementById("gcw-quote-fieldset-1").cloneNode(true);
         fieldset.setAttribute("id", `gcw-quote-fieldset-${item_id}`);
-        fieldset.setAttribute("class", "gcw-quote-fieldset");
-        fieldset.innerHTML = `
-            <legend>Item ${item_id}</legend>
-            <div class="gcw-field-wrap">
-                <label>Nome</label>
-                <input type="text" class="gcw-quote-name gcw-quote-input" name="gcw_item_nome-${item_id}"  required />
-            </div>
-            <div class="gcw-field-wrap">
-                <label>Descrição</label>
-                <input type="text" class="gcw-quote-description gcw-quote-input" name="gcw_item_descricao-${item_id}"  required />
-            </div>
-            <div class="gcw-field-wrap gcw-field-size">
-            <label>Tamanho</label>
-                <select class="gcw-quote-size gcw-quote-input" name="gcw_item_tamanho-${item_id}"  required >
-                    <option value="Selecionar" selected="selected">Selecionar</option>
-                    <option value="PP">PP</option>
-                    <option value="P">P</option>
-                    <option value="M">M</option>
-                    <option value="G">G</option>
-                    <option value="GG">GG</option>
-                    <option value="XG">XG</option>
-                    <option value="XGG">XGG</option>
-                    <option value="PS">Plus Size</option>
-                </select>
-            </div>
-            <div class="gcw-field-wrap gcw-field-quantity">
-                <label>Quantidade</label>
-                <input type="number" class="gcw-quote-quantity gcw-quote-input" name="gcw_item_quantidade-${item_id}" required value="10" min="10" inputmode="numeric" pattern="\d*" />
-            </div>
-            <a class="gcw-quote-remove" item_id="${item_id}">×</a>
-        `;
+
+        var legend = fieldset.getElementsByClassName("gcw-quote-fieldset-legend");
+        legend[0].innerHTML = `Item ${item_id}`;
+
+        var button_remove = fieldset.getElementsByClassName("gcw-quote-button-remove");
+        button_remove[0].setAttribute('item_id', item_id);
+
+        var name = fieldset.getElementsByClassName(`gcw-quote-name`);
+        name[0].setAttribute('name', `gcw_item_nome-${item_id}`);
+
+        var description = fieldset.getElementsByClassName(`gcw-quote-description`);
+        description[0].setAttribute('name', `gcw_item_descricao-${item_id}`);
+
+        var size = fieldset.getElementsByClassName(`gcw-quote-size`);
+        size[0].setAttribute('name', `gcw_item_tamanho-${item_id}`);
+
+        var quantity = fieldset.getElementsByClassName(`gcw-quote-quantity`);
+        quantity[0].setAttribute('name', `gcw_item_quantidade-${item_id}`);
 
         section.appendChild(fieldset);
     }
-
-    $(window).on('load', () => {
-        add_fieldset(1);
-    });
 
     $(document).on('click', '#gcw-quote-add-item', () => {
         var section = document.getElementById("gcw-quote-section-items");
         add_fieldset(section.children.length+1);
     });
 
-    $(document).on('click', '.gcw-quote-remove', (event) => {
+    $(document).on('click', '.gcw-quote-button-remove', (event) => {
         var item_id = event.target.getAttribute('item_id');
         document.getElementById('gcw-quote-fieldset-' + item_id).remove();
 

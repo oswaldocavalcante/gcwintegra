@@ -41,7 +41,7 @@
     width: 100px;
 }
 
-#gcw-quote-section-items .gcw-quote-fieldset a.gcw-quote-remove {
+#gcw-quote-section-items .gcw-quote-fieldset a.gcw-quote-button-remove {
     position: absolute;
     background-color: #ccc;
     color: #888;
@@ -57,7 +57,7 @@
     text-align: center;
 }
 
-#gcw-quote-section-items .gcw-quote-fieldset a.gcw-quote-remove:hover {
+#gcw-quote-section-items .gcw-quote-fieldset a.gcw-quote-button-remove:hover {
     color:lightcoral;
 }
 
