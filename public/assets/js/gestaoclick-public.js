@@ -1,23 +1,23 @@
 (function ($) {
 
     function add_fieldset(item_id) {
-        var section = document.getElementById("gcw-section-quote");
+        var section = document.getElementById("gcw-quote-section-items");
         var fieldset = document.createElement("fieldset");
         fieldset.setAttribute("id", `gcw-quote-fieldset-${item_id}`);
         fieldset.setAttribute("class", "gcw-quote-fieldset");
         fieldset.innerHTML = `
             <legend>Item ${item_id}</legend>
             <div class="gcw-field-wrap">
-                <label>Name</label>
-                <input type="text" class="gcw-quote-name" name="gcw_item_nome-${item_id}"  required />
+                <label>Nome</label>
+                <input type="text" class="gcw-quote-name gcw-quote-input" name="gcw_item_nome-${item_id}"  required />
             </div>
             <div class="gcw-field-wrap">
-                <label>Description</label>
-                <input type="text" class="gcw-quote-description" name="gcw_item_descricao-${item_id}"  required />
+                <label>Descrição</label>
+                <input type="text" class="gcw-quote-description gcw-quote-input" name="gcw_item_descricao-${item_id}"  required />
             </div>
-            <div class="gcw-field-wrap">
-            <label>Size</label>
-                <select class="gcw-quote-size" name="gcw_item_tamanho-${item_id}"  required >
+            <div class="gcw-field-wrap gcw-field-size">
+            <label>Tamanho</label>
+                <select class="gcw-quote-size gcw-quote-input" name="gcw_item_tamanho-${item_id}"  required >
                     <option value="Selecionar" selected="selected">Selecionar</option>
                     <option value="PP">PP</option>
                     <option value="P">P</option>
@@ -29,11 +29,11 @@
                     <option value="PS">Plus Size</option>
                 </select>
             </div>
-            <div class="gcw-field-wrap">
-                <label>Quantity</label>
-                <input type="number" class="gcw-quote-quantity" name="gcw_item_quantidade-${item_id}"  required />
+            <div class="gcw-field-wrap gcw-field-quantity">
+                <label>Quantidade</label>
+                <input type="number" class="gcw-quote-quantity gcw-quote-input" name="gcw_item_quantidade-${item_id}" required value="10" min="10" inputmode="numeric" pattern="\d*" />
             </div>
-            <a class="gcw-quote-remove" item_id="${item_id}">X</a>
+            <a class="gcw-quote-remove" item_id="${item_id}">×</a>
         `;
 
         section.appendChild(fieldset);
@@ -44,7 +44,7 @@
     });
 
     $(document).on('click', '#gcw-quote-add-item', () => {
-        var section = document.getElementById("gcw-section-quote");
+        var section = document.getElementById("gcw-quote-section-items");
         add_fieldset(section.children.length+1);
     });
 
@@ -52,7 +52,7 @@
         var item_id = event.target.getAttribute('item_id');
         document.getElementById('gcw-quote-fieldset-' + item_id).remove();
 
-        var section = document.getElementById("gcw-section-quote");
+        var section = document.getElementById("gcw-quote-section-items");
         var section_items = section.children;
         
         for (var i = 0; i < section_items.length; i++) {

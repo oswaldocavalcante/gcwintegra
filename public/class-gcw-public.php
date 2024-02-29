@@ -33,7 +33,7 @@ class GCW_Public {
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles() {
-		wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/gestaoclick-public.css', array(), $this->version, 'all');
+		wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'assets/css/gestaoclick-public.css', array(), $this->version, 'all');
 	}
 
 	/**
@@ -55,44 +55,44 @@ class GCW_Public {
         return '
 			<form method="post">
 
-				<h2>' . __('Institution', 'gestaoclick') . '</h2>
-				<section id="gcw-section-institution">
+				<h2>' . __('Instituição', 'gestaoclick') . '</h2>
+				<section id="gcw-section-institution" class="gcw-quote-section">
 					<div class="gcw-field-wrap">
-						<label>' . __('Institution name', 'gestaoclick') . '</label>
-						<input type="text" name="gcw_cliente_nome" required />
+						<label>' . __('Nome da instituição', 'gestaoclick') . '</label>
+						<input type="text" class="gcw-quote-input" name="gcw_cliente_nome" required />
 					</div>
 					<div class="gcw-field-wrap">
-						<label>' . __('Register number', 'gestaoclick') . '</label>
-						<input type="text" name="gcw_cliente_cpf_cnpj" id="gcw-cliente-cpf-cnpj" required />
+						<label>' . __('CNPJ/CPF', 'gestaoclick') . '</label>
+						<input type="text" class="gcw-quote-input" name="gcw_cliente_cpf_cnpj" id="gcw-cliente-cpf-cnpj" required />
 					</div>
 				</section>
 
-				<h2>' . __('Responsable', 'gestaoclick') . '</h2>
-				<section id="gcw-section-responsable">
+				<h2>' . __('Responsável', 'gestaoclick') . '</h2>
+				<section id="gcw-section-responsable" class="gcw-quote-section">
 					<div class="gcw-field-wrap">
-						<label>' . __('Name', 'gestaoclick') . '</label>
-						<input type="text" name="gcw_contato_nome" required />
+						<label>' . __('Nome', 'gestaoclick') . '</label>
+						<input type="text" name="gcw_contato_nome" class="gcw-quote-input" required />
 					</div>
 					<div class="gcw-field-wrap">
 						<label>' . __('Email', 'gestaoclick') . '</label>
-						<input type="email" name="gcw_contato_email" required />
+						<input type="email" name="gcw_contato_email" class="gcw-quote-input" required />
 					</div>
 					<div class="gcw-field-wrap">
-						<label>' . __('Phone number', 'gestaoclick') . '</label>
-						<input type="text" name="gcw_contato_telefone" required />
+						<label>' . __('Telefone', 'gestaoclick') . '</label>
+						<input type="text" name="gcw_contato_telefone" class="gcw-quote-input" required />
 					</div>
 					<div class="gcw-field-wrap">
-						<label>' . __('Position', 'gestaoclick') . '</label>
-						<input type="text" name="gcw_contato_cargo" required />
+						<label>' . __('Cargo', 'gestaoclick') . '</label>
+						<input type="text" name="gcw_contato_cargo" class="gcw-quote-input" required />
 					</div>
 				</section>
 
-				<h2>' . __('Quote', 'gestaoclick') . '</h2>
-				<section id="gcw-section-quote">
+				<h2>' . __('Orçamento', 'gestaoclick') . '</h2>
+				<section id="gcw-quote-section-items">
 				</section>
-				<a id="gcw-quote-add-item">' . __('Add', 'gestaoclick') . '</a>
+				<a id="gcw-quote-add-item">' . __('Adicionar item', 'gestaoclick') . '</a>
 				
-				<button type="submit" class="gcw-quote-button-send">Enviar</button>
+				<button type="submit" id="gcw-quote-send">Solicitar orçamento</button>
 
 			</form>
 		';
