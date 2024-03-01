@@ -8,8 +8,8 @@ class GCW_Public_GC_Cliente extends GCW_GC_Api {
 
     public function __construct() {
         parent::__construct();
-        $this->api_headers =    parent::get_headers();
-        $this->api_endpoint =   parent::get_endpoint_clients();
+        $this->api_headers  = parent::get_headers();
+        $this->api_endpoint = parent::get_endpoint_clients();
     }
 
     public function get_id() {

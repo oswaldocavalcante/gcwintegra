@@ -23,8 +23,6 @@ $products_table->prepare_items();
     <h2>GestãoClick - Importar produtos</h2>
     <form id="events-filter" method="post">
         <input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
-        <?php
-		$products_table->display();
-        ?>
+        <? $products_table->display(); ?>
     </form>
 </div>

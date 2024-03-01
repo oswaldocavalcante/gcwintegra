@@ -23,8 +23,6 @@ $categories_table->prepare_items();
     <h2>GestãoClick - Importar categorias</h2>
     <form id="events-filter" method="post">
         <input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
-        <?php
-		$categories_table->display();
-        ?>
+        <? $categories_table->display(); ?>
     </form>
 </div>

@@ -23,8 +23,6 @@ $attributes_table->prepare_items();
     <h2>GestãoClick - Importar atributos</h2>
     <form id="events-filter" method="post">
         <input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
-        <?php
-		$attributes_table->display();
-        ?>
+        <? $attributes_table->display(); ?>
     </form>
 </div>
