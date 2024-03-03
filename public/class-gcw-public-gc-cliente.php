@@ -17,16 +17,6 @@ class GCW_Public_GC_Cliente extends GCW_GC_Api {
     }
 
     public function export( $body ) {
-        $clientes = $this->fetch_api();
-
-        foreach( $clientes as $cliente ) {
-            if( ($body['cnpj'] != '') && ($body['cnpj'] == $cliente['cnpj']) ) {
-                return $cliente['id'];
-            }
-            elseif( ($body['cpf'] != '') && ($body['cpf'] == $cliente['cpf']) ) {
-                return $cliente['id'];
-            }
-        }
 
         $response = wp_remote_post( 
             $this->api_endpoint, 
@@ -46,22 +36,19 @@ class GCW_Public_GC_Cliente extends GCW_GC_Api {
         }
     }
 
-    public function fetch_api() {
-        $clientes = [];
-        $proxima_pagina = 1;
+    public function get_cliente_by_cpf_cnpj( $cpf_cnpj ) {
 
-        do {
-            $body = wp_remote_retrieve_body( 
-                wp_remote_get( $this->api_endpoint . '?pagina=' . $proxima_pagina, $this->api_headers )
-            );
+        $body = wp_remote_retrieve_body( 
+            wp_remote_get( $this->api_endpoint . '?cpf_cnpj=' . $cpf_cnpj, $this->api_headers )
+        );
 
-            $body_array = json_decode($body, true);
-            $proxima_pagina = $body_array['meta']['proxima_pagina'];
+        $body = json_decode( $body, true );
 
-            $clientes = array_merge( $clientes, $body_array['data'] );
-
-        } while ( $proxima_pagina != null );
-
-        return $clientes;
+        if( is_array($body['data']) ) {
+            $this->id = $body['data'][0]['id'];
+            return $body['data'][0];
+        } else {
+            return false;
+        }
     }
 }

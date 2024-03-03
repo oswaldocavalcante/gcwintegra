@@ -265,6 +265,6 @@ class GCW_Admin {
 
 	public function export_order( $order_id ) {
 		$gc_venda = new GCW_GC_Venda();
-		$gc_venda->export( $order_id, $order );
+		$gc_venda->export( $order_id );
 	}
 }

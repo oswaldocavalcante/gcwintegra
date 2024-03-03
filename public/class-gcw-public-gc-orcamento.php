@@ -14,7 +14,7 @@ class GCW_Public_GC_Orcamento extends GCW_GC_Api {
         $this->cliente_cpf_cnpj = sanitize_text_field( $orcamento['gcw_cliente_cpf_cnpj'] );
 
         $this->contato_nome     = sanitize_text_field( $orcamento['gcw_contato_nome'] );
-        $this->contato_email    = sanitize_text_field( $orcamento['gcw_contato_email'] );
+        $this->contato_email    = sanitize_email( $orcamento['gcw_contato_email'] );
         $this->contato_telefone = sanitize_text_field( $orcamento['gcw_contato_telefone'] );
         $this->contato_cargo    = sanitize_text_field( $orcamento['gcw_contato_cargo'] );
 
@@ -55,7 +55,13 @@ class GCW_Public_GC_Orcamento extends GCW_GC_Api {
     // If a GestaoClick cliente_id exists, get it. Otherwise, export the new client and return his id from GestaoClick.
     public function get_gc_cliente_id($cpf_cnpj) {
 
-        $orcamento_cliente = array(
+        $gc_cliente = new GCW_Public_GC_Cliente();
+
+        if( $gc_cliente->get_cliente_by_cpf_cnpj($cpf_cnpj) ) {
+            return $gc_cliente->get_id();
+        }
+
+        $cliente_data = array(
             'tipo_pessoa'   => strlen($cpf_cnpj) == 18 ? 'PJ' : 'PF',
             'cnpj'          => strlen($cpf_cnpj) == 18 ? $cpf_cnpj : '',
             'cpf'           => strlen($cpf_cnpj) == 14 ? $cpf_cnpj : '',
@@ -63,14 +69,14 @@ class GCW_Public_GC_Orcamento extends GCW_GC_Api {
             'contatos' => array(
                 'contato' => array(
                     'nome'      => $this->contato_nome,
-                    'contato'   => $this->contato_email . ' / ' . $this->contato_telefone,
                     'cargo'     => $this->contato_cargo,
+                    'observacao'   => $this->contato_email . ' / ' . $this->contato_telefone,
                 ),
             ),
         );
 
-        $gc_cliente = new GCW_Public_GC_Cliente();
-        return $gc_cliente->export( $orcamento_cliente );
+        
+        return $gc_cliente->export( $cliente_data );
     }
 
     public function get_gc_items($orcamento) {
