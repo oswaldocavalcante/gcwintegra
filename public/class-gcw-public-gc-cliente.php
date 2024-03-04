@@ -1,10 +1,12 @@
 <?php
 
-require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-gcw-gc-api.php';
+require_once plugin_dir_path(dirname( __FILE__ )) . 'admin/class-gcw-gc-api.php';
 
 class GCW_Public_GC_Cliente extends GCW_GC_Api {
 
     private $id = null;
+    private $api_headers;
+    private $api_endpoint;
 
     public function __construct() {
         parent::__construct();
@@ -16,17 +18,17 @@ class GCW_Public_GC_Cliente extends GCW_GC_Api {
         return $this->id;
     }
 
-    public function export( $body ) {
+    public function export($body) {
 
         $response = wp_remote_post( 
             $this->api_endpoint, 
             array_merge(
                 $this->api_headers,
-                array( 'body' => json_encode($body) ),
+                array('body' => json_encode($body)),
             ) 
         );
 
-        $response_body = json_decode(wp_remote_retrieve_body( $response ), true);
+        $response_body = json_decode(wp_remote_retrieve_body($response), true);
 
         if( is_array($response_body) && $response_body['code'] == 200 ) {
             $this->id = $response_body['data']['id'];
