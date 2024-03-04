@@ -1,6 +1,7 @@
 <?php
 
-require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-gcw-public-gc-orcamento.php';
+require_once plugin_dir_path( dirname( __FILE__ ) ) . 'integrations/gestaoclick/class-gcw-gc-orcamento.php';
+require_once plugin_dir_path( dirname( __FILE__ ) ) . 'integrations/gestaoclick/class-gcw-gc-cliente.php';
 
 class GCW_Public {
 
@@ -48,10 +49,13 @@ class GCW_Public {
     public function shortcode_orcamento() {
 
 		if($_POST){
-			$gc_orcamento = new GCW_Public_GC_Orcamento($_POST);
+
+			$gc_cliente = new GCW_GC_Cliente($_POST, 'form');
+
+			$gc_orcamento = new GCW_GC_Orcamento($_POST, $gc_cliente->get_id(), 'form');
 			$gc_orcamento->export();
 		}
 
-        return GCW_Public_GC_Orcamento::render_form();
+        return GCW_GC_Orcamento::render_form();
     }
 }

@@ -12,17 +12,17 @@
  * @subpackage Wooclick/admin/partials
  */
 
-include WP_PLUGIN_DIR . '/gestaoclick/admin/woocommerce/list-tables/class-gcw-list-table-categories.php';
+require_once plugin_dir_path(dirname(__FILE__)) . 'list-tables/class-gcw-list-table-products.php';
 
-$categories_table = new GCW_List_Table_Categories();
-$categories_table->prepare_items();
+$products_table = new GCW_List_Table_Products();
+$products_table->prepare_items();
 
 ?>
 
 <div class="wrap">
-    <h2>GestãoClick - Importar categorias</h2>
+    <h2>GestãoClick - Importar produtos</h2>
     <form id="events-filter" method="post">
         <input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
-        <? $categories_table->display(); ?>
+        <? $products_table->display(); ?>
     </form>
 </div>

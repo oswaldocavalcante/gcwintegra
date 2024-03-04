@@ -12,17 +12,17 @@
  * @subpackage Wooclick/admin/partials
  */
 
-include WP_PLUGIN_DIR . '/gestaoclick/admin/woocommerce/list-tables/class-gcw-list-table-products.php';
+require_once plugin_dir_path(dirname(__FILE__)) . 'list-tables/class-gcw-list-table-attributes.php';
 
-$products_table = new GCW_List_Table_Products();
-$products_table->prepare_items();
+$attributes_table = new GCW_List_Table_Attributes();
+$attributes_table->prepare_items();
 
 ?>
 
 <div class="wrap">
-    <h2>GestãoClick - Importar produtos</h2>
+    <h2>GestãoClick - Importar atributos</h2>
     <form id="events-filter" method="post">
         <input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
-        <? $products_table->display(); ?>
+        <? $attributes_table->display(); ?>
     </form>
 </div>

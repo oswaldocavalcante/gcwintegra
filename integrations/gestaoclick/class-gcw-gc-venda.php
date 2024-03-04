@@ -1,9 +1,12 @@
 <?php
 
-include_once WP_PLUGIN_DIR . '/gestaoclick/admin/class-gcw-gc-api.php';
-include_once WP_PLUGIN_DIR . '/gestaoclick/admin/gestaoclick/class-gcw-gc-cliente.php';
+require_once plugin_dir_path(dirname(__FILE__)) . 'gestaoclick/class-gcw-gc-api.php';
+require_once plugin_dir_path(dirname(__FILE__)) . 'gestaoclick/class-gcw-gc-cliente.php';
 
 class GCW_GC_Venda extends GCW_GC_Api {
+
+    private $api_headers;
+    private $api_endpoint;
 
     public function __construct() {
         parent::__construct();
@@ -11,7 +14,7 @@ class GCW_GC_Venda extends GCW_GC_Api {
         $this->api_endpoint =   parent::get_endpoint_sales();
     }
 
-    public function export( $order_id ) {
+    public function export( $order_id ) { 
         $order = wc_get_order( $order_id );
         $order_items = $order->get_items();
         $gc_products = [];
@@ -52,8 +55,8 @@ class GCW_GC_Venda extends GCW_GC_Api {
         if( $wc_customer->get_meta('gestaoclick_gc_cliente_id') ) {
             $gc_cliente_id = $wc_customer->get_meta('gestaoclick_gc_cliente_id');
         } else {
-            $gc_cliente = new GCW_GC_Cliente();
-            $gc_cliente_id = $gc_cliente->export( $wc_customer );
+            $gc_cliente = new GCW_GC_Cliente($wc_customer, 'woocommerce');
+            $wc_customer->add_meta_data('gestaoclick_gc_cliente_id', $gc_cliente->get_id(), true);
         }
 
         $body = array(

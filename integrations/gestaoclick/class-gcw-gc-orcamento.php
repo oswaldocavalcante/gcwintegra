@@ -1,55 +1,46 @@
 <?php
 
-require_once plugin_dir_path(dirname(__FILE__)) . "admin/class-gcw-gc-api.php";
-require_once plugin_dir_path(dirname(__FILE__)) . "public/class-gcw-public-gc-cliente.php";
+require_once plugin_dir_path(dirname(__FILE__)) . 'gestaoclick/class-gcw-gc-api.php';
 
-class GCW_Public_GC_Orcamento extends GCW_GC_Api {
+class GCW_GC_Orcamento extends GCW_GC_Api {
     
-    private $id = null;
-
     private $api_headers;
     private $api_endpoint;
+    
+    private $id = null;
+    private $data = array();
+    private $produtos = array();
 
-    private $cliente_nome;
-    private $cliente_cpf_cnpj;
-    private $contato_nome;
-    private $contato_email;
-    private $contato_telefone;
-    private $contato_cargo;
-    private $produtos;
-
-
-    public function __construct($orcamento){
+    public function __construct($data = null, $cliente_id = null, $context = null | 'form') {
         parent::__construct();
         $this->api_headers  = parent::get_headers();
         $this->api_endpoint = parent::get_endpoint_orcamentos();
 
-        $this->cliente_nome     = sanitize_text_field($orcamento["gcw_cliente_nome"]);
-        $this->cliente_cpf_cnpj = sanitize_text_field($orcamento["gcw_cliente_cpf_cnpj"]);
+        if($context == 'form') {
+            $this->produtos = $this->get_form_items($data);
+            $this->data = array(
+                "tipo"              => "produto",
+                "cliente_id"        => $cliente_id,
+                "situacao_id"       => get_option("gcw-settings-export-situacao"),
+                "nome_canal_venda"  => "Internet",
+                "produtos"          => $this->produtos,
+            );
+        }
+    }
 
-        $this->contato_email    = sanitize_email($orcamento["gcw_contato_email"]);
-        $this->contato_nome     = sanitize_text_field($orcamento["gcw_contato_nome"]);
-        $this->contato_telefone = sanitize_text_field($orcamento["gcw_contato_telefone"]);
-        $this->contato_cargo    = sanitize_text_field($orcamento["gcw_contato_cargo"]);
+    public function get_id() {
+        return $this->id;
+    }
 
-        $this->produtos         = $this->get_gc_items($orcamento);
+    public function set_props($props) {
+        $this->data = $props;
     }
 
     public function export(){
-        $gc_cliente_id = $this->get_gc_cliente_id($this->cliente_cpf_cnpj);
-
-        $body = [
-            "tipo"              => "produto",
-            "cliente_id"        => $gc_cliente_id,
-            "situacao_id"       => get_option("gcw-settings-export-situacao"),
-            "transportadora_id" => get_option("gcw-settings-export-trasportadora"),
-            "nome_canal_venda"  => "Internet",
-            "produtos"          => $this->produtos,
-        ];
 
         $response = wp_remote_post(
             $this->api_endpoint,
-            array_merge($this->api_headers, ["body" => json_encode($body)])
+            array_merge($this->api_headers, ["body" => json_encode($this->data)])
         );
 
         $response = json_decode(wp_remote_retrieve_body($response), true);
@@ -62,32 +53,7 @@ class GCW_Public_GC_Orcamento extends GCW_GC_Api {
         }
     }
 
-    // If a GestaoClick cliente_id exists, get it. Otherwise, export the new client and return his id from GestaoClick.
-    public function get_gc_cliente_id($cpf_cnpj){
-        $gc_cliente = new GCW_Public_GC_Cliente();
-
-        if ($gc_cliente->get_cliente_by_cpf_cnpj($cpf_cnpj)) {
-            return $gc_cliente->get_id();
-        }
-
-        $cliente_data = [
-            "tipo_pessoa"   => strlen($cpf_cnpj) == 18 ? "PJ" : "PF",
-            "cnpj"          => strlen($cpf_cnpj) == 18 ? $cpf_cnpj : "",
-            "cpf"           => strlen($cpf_cnpj) == 14 ? $cpf_cnpj : "",
-            "nome"          => $this->cliente_nome,
-            "contatos"      => [
-                "contato" => [
-                    "nome"          => $this->contato_nome,
-                    "cargo"         => $this->contato_cargo,
-                    "observacao"    => $this->contato_email . " / " . $this->contato_telefone,
-                ],
-            ],
-        ];
-
-        return $gc_cliente->export($cliente_data);
-    }
-
-    public function get_gc_items($orcamento){
+    private function get_form_items($orcamento){
         $items = [];
         $item_id = 1;
         for ($i = 6; $i < count($orcamento); $i = $i+4) {

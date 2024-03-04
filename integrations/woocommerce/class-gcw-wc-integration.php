@@ -1,8 +1,8 @@
 <?php
 
-require_once WP_PLUGIN_DIR . '/gestaoclick/admin/class-gcw-gc-api.php';
-require_once WP_PLUGIN_DIR . '/gestaoclick/admin/gestaoclick/class-gcw-gc-transportadoras.php';
-require_once WP_PLUGIN_DIR . '/gestaoclick/admin/gestaoclick/class-gcw-gc-situacoes.php';
+require_once plugin_dir_path(dirname(__FILE__)) . 'gestaoclick/class-gcw-gc-api.php';
+require_once plugin_dir_path(dirname(__FILE__)) . 'gestaoclick/class-gcw-gc-transportadoras.php';
+require_once plugin_dir_path(dirname(__FILE__)) . 'gestaoclick/class-gcw-gc-situacoes.php';
 
 class GCW_WC_Integration extends WC_Integration {
 

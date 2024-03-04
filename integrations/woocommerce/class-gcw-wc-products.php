@@ -12,7 +12,7 @@
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  */
 
-include_once WP_PLUGIN_DIR . '/gestaoclick/admin/class-gcw-gc-api.php';
+require_once plugin_dir_path(dirname(__FILE__)) . 'gestaoclick/class-gcw-gc-api.php';
 
 class GCW_WC_Products extends GCW_GC_Api {
 
@@ -101,8 +101,7 @@ class GCW_WC_Products extends GCW_GC_Api {
             }
         }
 
-        $import_notice = sprintf('%d produtos importados com sucesso.', count($products_selection));
-        set_transient('gestaoclick_import_notice', $import_notice, 30); // Ajuste o tempo conforme necessário
+        wp_admin_notice(sprintf('GestãoClick: %d produtos importados com sucesso.', count($products_selection)), array('type' => 'success', 'dismissible' => true));
     }
 
     private function get_category_ids( $category_name ) {

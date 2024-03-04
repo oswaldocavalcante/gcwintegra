@@ -19,11 +19,11 @@
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  */
 
-include_once WP_PLUGIN_DIR . '/gestaoclick/admin/woocommerce/class-gcw-wc-products.php';
-include_once WP_PLUGIN_DIR . '/gestaoclick/admin/woocommerce/class-gcw-wc-categories.php';
-include_once WP_PLUGIN_DIR . '/gestaoclick/admin/woocommerce/class-gcw-wc-attributes.php';
-include_once WP_PLUGIN_DIR . '/gestaoclick/admin/gestaoclick/class-gcw-gc-venda.php';
-include_once WP_PLUGIN_DIR . '/gestaoclick/admin/class-gcw-cs-webhook.php';
+require_once plugin_dir_path(dirname(__FILE__)) . 'integrations/woocommerce/class-gcw-wc-products.php';
+require_once plugin_dir_path(dirname(__FILE__)) . 'integrations/woocommerce/class-gcw-wc-categories.php';
+require_once plugin_dir_path(dirname(__FILE__)) . 'integrations/woocommerce/class-gcw-wc-attributes.php';
+require_once plugin_dir_path(dirname(__FILE__)) . 'integrations/gestaoclick/class-gcw-gc-venda.php';
+require_once plugin_dir_path(dirname(__FILE__)) . 'integrations/stone/class-gcw-cs-webhook.php';
 
 class GCW_Admin {
 
@@ -49,6 +49,8 @@ class GCW_Admin {
 	private $categories;
 	private $attributes;
 
+	private $cs_webhook;
+
 	/**
 	 * Initialize the class and set its properties.
 	 *
@@ -61,26 +63,27 @@ class GCW_Admin {
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 
-		// Setting up noticies
-		add_action( 'shutdown', array($this, 'check_import_notice'));
+		if (!$this->is_woocommerce_active()) {
+			wp_admin_notice(
+				wp_kses(
+					sprintf( 
+						__('GestãoClick: por favor, instale e ative o %s.', 'gestaoclick'),
+						'<a href="http://wordpress.org/plugins/woocommerce/">' . __('WooCommerce', 'gestaoclick') . '</a>'
+					),
+					array('a' => array('href' => array()))
+				), 
+					array('type' => 'error'));
+		}
 	}
 
 	public function add_woocommerce_integration( $integrations ) {
+		require_once plugin_dir_path(dirname(__FILE__)) . 'integrations/woocommerce/class-gcw-wc-integration.php';
+		$integrations[] = 'GCW_WC_Integration';
 
-		if ( $this->is_woocommerce_active() ) {
-			include_once WP_PLUGIN_DIR . '/gestaoclick/admin/class-gcw-wc-integration.php';
-			$integrations[] = 'GCW_WC_Integration';
-
-			return $integrations;
-		} else {
-			add_action( 'admin_notices', array( $this, 'notice_activate_wc' ) );
-		}
-
-		return null;
+		return $integrations;
 	}	
 
 	public function is_woocommerce_active() {
-
 		$active_plugins = (array) get_option( 'active_plugins', array() );
 		if ( is_multisite() ) {
 			$active_plugins = array_merge( $active_plugins, get_site_option( 'active_sitewide_plugins', array() ) );
@@ -92,26 +95,13 @@ class GCW_Admin {
 		}
 	}
 
-	public function notice_activate_wc() { ?>
-		<div class="error">
-			<p>
-				<?php
-				printf( esc_html__( 'Please install and activate %1$sWooCommerce%2$s to use GestãoClick!' ), '<a href="' . esc_url( admin_url( 'plugin-install.php?tab=search&s=WooCommerce&plugin-search-input=Search+Plugins' ) ) . '">', '</a>' );
-				?>
-			</p>
-		</div>
-		<?php
-	}
-
 	/**
 	 * Register the stylesheets for the admin area.
 	 *
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles() {
-
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/css/gestaoclick-admin.css', array(), $this->version, 'all' );
-		
 	}
 
 	/**
@@ -120,9 +110,7 @@ class GCW_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
-
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/js/gestaoclick-admin.js', array( 'jquery' ), $this->version, false );
-
 	}
 	
 	/**
@@ -213,7 +201,8 @@ class GCW_Admin {
 	 */
 	public function display_products() {
 		$this->products = new GCW_WC_Products();
-		$this->products->display();
+		$this->products->fetch_api();
+		require_once plugin_dir_path(dirname(__FILE__)) . 'admin/views/gcw-admin-display-products.php';
 	}
 
 	/**
@@ -223,7 +212,8 @@ class GCW_Admin {
 	 */
 	public function display_categories() {
 		$this->categories = new GCW_WC_Categories();
-		$this->categories->display();
+		$this->categories->fetch_api();
+		require_once plugin_dir_path(dirname(__FILE__)) . 'admin/views/gcw-admin-display-categories.php';
 	}
 
 	/**
@@ -233,21 +223,9 @@ class GCW_Admin {
 	 */
 	public function display_attributes() {
 		$this->attributes = new GCW_WC_Attributes();
-		$this->attributes->display();
+		$this->attributes->fetch_api();
+		require_once plugin_dir_path(dirname(__FILE__)) . 'admin/views/gcw-admin-display-attributes.php';
 	}
-
-	// /**
-	//  * Display notices on screen.
-	//  *
-	//  * @since    1.0.0
-	//  */
-    public function check_import_notice() {
-        $import_notice = get_transient('gestaoclick_import_notice');
-        if ($import_notice) {
-            echo '<div class="notice notice-success is-dismissible"><p>' . esc_html($import_notice) . '</p></div>';
-            delete_transient('gestaoclick_import_notice');
-        }
-    }
 
 	/**
 	 * Execute the importations of categories and products by cron schdeduled event.

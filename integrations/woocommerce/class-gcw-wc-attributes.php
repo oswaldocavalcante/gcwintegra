@@ -10,7 +10,7 @@
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  */
 
-include_once WP_PLUGIN_DIR . '/gestaoclick/admin/class-gcw-gc-api.php';
+require_once plugin_dir_path(dirname(__FILE__)) . 'gestaoclick/class-gcw-gc-api.php';
  
 class GCW_WC_Attributes extends GCW_GC_Api {
 
@@ -61,8 +61,7 @@ class GCW_WC_Attributes extends GCW_GC_Api {
             $this->save($attribute);
         }
 
-        $import_notice = sprintf('%d atributos importados com sucesso.', count($selected_attributes));
-        set_transient('gestaoclick_import_notice', $import_notice, 30); 
+        wp_admin_notice(sprintf('GestãoClick: %d atributos importados com sucesso.', count($selected_attributes)), array('type' => 'success', 'dismissible' => true));
     }
 
     private function save( $attribute_data ) {

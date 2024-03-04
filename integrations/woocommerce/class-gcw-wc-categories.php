@@ -10,7 +10,7 @@
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  */
 
-include_once WP_PLUGIN_DIR . '/gestaoclick/admin/class-gcw-gc-api.php';
+require_once plugin_dir_path(dirname(__FILE__)) . 'gestaoclick/class-gcw-gc-api.php';
 
 class GCW_WC_Categories extends GCW_GC_Api {
 
@@ -69,8 +69,7 @@ class GCW_WC_Categories extends GCW_GC_Api {
             $this->save( $category );
         }
 
-        $import_notice = sprintf('%d categorias importadas com sucesso.', count($selected_categories));
-        set_transient('gestaoclick_import_notice', $import_notice, 30); 
+        wp_admin_notice(sprintf('GestãoClick: %d categorias importadas com sucesso.', count($selected_categories)), array('type' => 'success', 'dismissible' => true));
     }
 
     private function save( $category ) {
@@ -113,7 +112,7 @@ class GCW_WC_Categories extends GCW_GC_Api {
             $this->fetch_api();
             require_once 'partials/gestaoclick-admin-display-categories.php';
         } else {
-            wp_admin_notice( __( 'GestãoClick: Preencha corretamente suas credenciais de acesso.', 'gestaoclick' ), array( 'error' ) );
+            wp_admin_notice( __( 'GestãoClick: Preencha corretamente suas credenciais de acesso.', 'gestaoclick' ), array('type' => 'error', 'dismissible' => true) );
         }
     }
 }

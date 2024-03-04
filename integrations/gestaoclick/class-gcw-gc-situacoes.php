@@ -1,10 +1,11 @@
 <?php
 
-include_once WP_PLUGIN_DIR . '/gestaoclick/admin/class-gcw-gc-api.php';
+require_once plugin_dir_path(dirname(__FILE__)) . 'gestaoclick/class-gcw-gc-api.php';
 
 class GCW_GC_Situacoes extends GCW_GC_Api {
 
-    private $default = null;
+    private $api_headers;
+    private $api_endpoint;
 
     public function __construct() {
         parent::__construct();
