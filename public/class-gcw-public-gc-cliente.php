@@ -1,10 +1,11 @@
 <?php
 
-require_once plugin_dir_path(dirname( __FILE__ )) . 'admin/class-gcw-gc-api.php';
+require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-gcw-gc-api.php';
 
 class GCW_Public_GC_Cliente extends GCW_GC_Api {
 
     private $id = null;
+    
     private $api_headers;
     private $api_endpoint;
 
@@ -22,10 +23,7 @@ class GCW_Public_GC_Cliente extends GCW_GC_Api {
 
         $response = wp_remote_post( 
             $this->api_endpoint, 
-            array_merge(
-                $this->api_headers,
-                array('body' => json_encode($body)),
-            ) 
+            array_merge($this->api_headers, ['body' => json_encode($body)])
         );
 
         $response_body = json_decode(wp_remote_retrieve_body($response), true);

@@ -4,6 +4,9 @@ require_once plugin_dir_path(dirname(__FILE__)) . "admin/class-gcw-gc-api.php";
 require_once plugin_dir_path(dirname(__FILE__)) . "public/class-gcw-public-gc-cliente.php";
 
 class GCW_Public_GC_Orcamento extends GCW_GC_Api {
+    
+    private $id = null;
+
     private $api_headers;
     private $api_endpoint;
 
@@ -15,7 +18,6 @@ class GCW_Public_GC_Orcamento extends GCW_GC_Api {
     private $contato_cargo;
     private $produtos;
 
-    private $id;
 
     public function __construct($orcamento){
         parent::__construct();
@@ -24,10 +26,12 @@ class GCW_Public_GC_Orcamento extends GCW_GC_Api {
 
         $this->cliente_nome     = sanitize_text_field($orcamento["gcw_cliente_nome"]);
         $this->cliente_cpf_cnpj = sanitize_text_field($orcamento["gcw_cliente_cpf_cnpj"]);
-        $this->contato_nome     = sanitize_text_field($orcamento["gcw_contato_nome"]);
+
         $this->contato_email    = sanitize_email($orcamento["gcw_contato_email"]);
+        $this->contato_nome     = sanitize_text_field($orcamento["gcw_contato_nome"]);
         $this->contato_telefone = sanitize_text_field($orcamento["gcw_contato_telefone"]);
         $this->contato_cargo    = sanitize_text_field($orcamento["gcw_contato_cargo"]);
+
         $this->produtos         = $this->get_gc_items($orcamento);
     }
 
@@ -35,14 +39,12 @@ class GCW_Public_GC_Orcamento extends GCW_GC_Api {
         $gc_cliente_id = $this->get_gc_cliente_id($this->cliente_cpf_cnpj);
 
         $body = [
-            "tipo" => "produto",
-            "cliente_id" => $gc_cliente_id,
-            "situacao_id" => get_option("gcw-settings-export-situacao"),
-            "transportadora_id" => get_option(
-                "gcw-settings-export-trasportadora"
-            ),
-            "nome_canal_venda" => "Internet",
-            "produtos" => $this->produtos,
+            "tipo"              => "produto",
+            "cliente_id"        => $gc_cliente_id,
+            "situacao_id"       => get_option("gcw-settings-export-situacao"),
+            "transportadora_id" => get_option("gcw-settings-export-trasportadora"),
+            "nome_canal_venda"  => "Internet",
+            "produtos"          => $this->produtos,
         ];
 
         $response = wp_remote_post(
@@ -50,10 +52,10 @@ class GCW_Public_GC_Orcamento extends GCW_GC_Api {
             array_merge($this->api_headers, ["body" => json_encode($body)])
         );
 
-        $response_body = json_decode(wp_remote_retrieve_body($response), true);
+        $response = json_decode(wp_remote_retrieve_body($response), true);
 
-        if (is_array($response_body) && $response_body["code"] == 200) {
-            $this->id = $response_body["data"]["id"];
+        if (is_array($response) && $response["code"] == 200) {
+            $this->id = $response["data"]["id"];
             return $this->id;
         } else {
             return new WP_Error("failed", __("GestãoClick: Error on export to GestãoClick.", "gestaoclick"));
@@ -69,16 +71,15 @@ class GCW_Public_GC_Orcamento extends GCW_GC_Api {
         }
 
         $cliente_data = [
-            "tipo_pessoa" => strlen($cpf_cnpj) == 18 ? "PJ" : "PF",
-            "cnpj" => strlen($cpf_cnpj) == 18 ? $cpf_cnpj : "",
-            "cpf" => strlen($cpf_cnpj) == 14 ? $cpf_cnpj : "",
-            "nome" => $this->cliente_nome,
-            "contatos" => [
+            "tipo_pessoa"   => strlen($cpf_cnpj) == 18 ? "PJ" : "PF",
+            "cnpj"          => strlen($cpf_cnpj) == 18 ? $cpf_cnpj : "",
+            "cpf"           => strlen($cpf_cnpj) == 14 ? $cpf_cnpj : "",
+            "nome"          => $this->cliente_nome,
+            "contatos"      => [
                 "contato" => [
-                    "nome" => $this->contato_nome,
-                    "cargo" => $this->contato_cargo,
-                    "observacao" =>
-                        $this->contato_email . " / " . $this->contato_telefone,
+                    "nome"          => $this->contato_nome,
+                    "cargo"         => $this->contato_cargo,
+                    "observacao"    => $this->contato_email . " / " . $this->contato_telefone,
                 ],
             ],
         ];
@@ -92,12 +93,10 @@ class GCW_Public_GC_Orcamento extends GCW_GC_Api {
         for ($i = 6; $i < count($orcamento); $i = $i+4) {
             $items = array_merge($items, [
                 "produto" => [
-                    "nome_produto" =>
-                        sanitize_text_field($orcamento["gcw_item_nome-{$item_id}"]) .
-                        " - " .
-                        sanitize_text_field($orcamento["gcw_item_descricao-{$item_id}"]),
-                    "detalhes" => sanitize_text_field($orcamento["gcw_item_tamanho-{$item_id}"]),
-                    "quantidade" => sanitize_text_field($orcamento["gcw_item_quantidade-{$item_id}"]),
+                    "nome_produto"  =>  sanitize_text_field($orcamento["gcw_item_nome-{$item_id}"]) . " - " .
+                                        sanitize_text_field($orcamento["gcw_item_descricao-{$item_id}"]),
+                    "detalhes"      =>  sanitize_text_field($orcamento["gcw_item_tamanho-{$item_id}"]),
+                    "quantidade"    =>  sanitize_text_field($orcamento["gcw_item_quantidade-{$item_id}"]),
                 ],
             ]);
             ++$item_id;
