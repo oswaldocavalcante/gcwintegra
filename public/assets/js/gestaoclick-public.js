@@ -14,15 +14,18 @@
 
         var name = fieldset.getElementsByClassName(`gcw-quote-name`);
         name[0].setAttribute('name', `gcw_item_nome-${item_id}`);
+        name[0].value = '';
 
         var description = fieldset.getElementsByClassName(`gcw-quote-description`);
         description[0].setAttribute('name', `gcw_item_descricao-${item_id}`);
+        description[0].value = '';
 
         var size = fieldset.getElementsByClassName(`gcw-quote-size`);
         size[0].setAttribute('name', `gcw_item_tamanho-${item_id}`);
 
         var quantity = fieldset.getElementsByClassName(`gcw-quote-quantity`);
         quantity[0].setAttribute('name', `gcw_item_quantidade-${item_id}`);
+        quantity[0].value = '';
 
         section.appendChild(fieldset);
     }
