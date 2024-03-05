@@ -201,8 +201,12 @@ class GCW_Admin {
 	 */
 	public function display_products() {
 		$this->products = new GCW_WC_Products();
-		$this->products->fetch_api();
-		require_once plugin_dir_path(dirname(__FILE__)) . 'admin/views/gcw-admin-display-products.php';
+		if($this->products::test_connection()) {
+			$this->products->fetch_api();
+			require_once plugin_dir_path(dirname(__FILE__)) . 'admin/views/gcw-admin-display-products.php';
+		} else {
+			wp_admin_notice(__('GestãoClick: configure suas credenciais de acesso.', 'gestaoclick'), array('type' => 'error', 'dismissible' => true));
+		}
 	}
 
 	/**
@@ -212,8 +216,12 @@ class GCW_Admin {
 	 */
 	public function display_categories() {
 		$this->categories = new GCW_WC_Categories();
-		$this->categories->fetch_api();
-		require_once plugin_dir_path(dirname(__FILE__)) . 'admin/views/gcw-admin-display-categories.php';
+		if($this->categories::test_connection()) {
+			$this->categories->fetch_api();
+			require_once plugin_dir_path(dirname(__FILE__)) . 'admin/views/gcw-admin-display-categories.php';
+		} else {
+			wp_admin_notice(__('GestãoClick: configure suas credenciais de acesso.', 'gestaoclick'), array('type' => 'error', 'dismissible' => true));
+		}
 	}
 
 	/**
@@ -223,8 +231,12 @@ class GCW_Admin {
 	 */
 	public function display_attributes() {
 		$this->attributes = new GCW_WC_Attributes();
-		$this->attributes->fetch_api();
-		require_once plugin_dir_path(dirname(__FILE__)) . 'admin/views/gcw-admin-display-attributes.php';
+		if($this->attributes::test_connection()){
+			$this->attributes->fetch_api();
+			require_once plugin_dir_path(dirname(__FILE__)) . 'admin/views/gcw-admin-display-attributes.php';
+		} else {
+			wp_admin_notice(__('GestãoClick: configure suas credenciais de acesso.', 'gestaoclick'), array('type' => 'error', 'dismissible' => true));
+		}
 	}
 
 	/**
