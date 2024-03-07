@@ -10,7 +10,7 @@
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  */
 
-require_once plugin_dir_path(dirname(__FILE__)) . 'gestaoclick/class-gcw-gc-api.php';
+require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-api.php';
 
 class GCW_WC_Categories extends GCW_GC_Api {
 

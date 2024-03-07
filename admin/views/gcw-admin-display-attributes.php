@@ -12,7 +12,7 @@
  * @subpackage Wooclick/admin/partials
  */
 
-require_once plugin_dir_path(dirname(__FILE__)) . 'list-tables/class-gcw-list-table-attributes.php';
+require_once GCW_ABSPATH . 'admin/list-tables/class-gcw-list-table-attributes.php';
 
 $attributes_table = new GCW_List_Table_Attributes();
 $attributes_table->prepare_items();

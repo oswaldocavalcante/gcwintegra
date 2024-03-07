@@ -1,18 +1,14 @@
 <?php
 
-// Reference for Products Variables: https://stackoverflow.com/questions/47518280/create-programmatically-a-woocommerce-product-variation-with-new-attribute-value
-
 /**
- * The admin-specific functionality of the plugin.
- *
- * Sync products to WooCommerce from GestãoClick API
+ * Reference for Products Variables: https://stackoverflow.com/questions/47518280/create-programmatically-a-woocommerce-product-variation-with-new-attribute-value
  *
  * @package    Gestaoclick
- * @subpackage Gestaoclick/admin
+ * @subpackage Gestaoclick/integrations
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  */
 
-require_once plugin_dir_path(dirname(__FILE__)) . 'gestaoclick/class-gcw-gc-api.php';
+require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-api.php';
 
 class GCW_WC_Products extends GCW_GC_Api {
 
@@ -51,10 +47,10 @@ class GCW_WC_Products extends GCW_GC_Api {
             include_once WC_ABSPATH . 'includes/abstracts/abstract-wc-product.php';
         }
 
-        $products =             get_option( 'gestaoclick-products' );
-        $products_blacklist =   get_option( 'gcw-settings-products-blacklist' );
-        $categories_selection = get_option( 'gcw-settings-categories-selection' );
-        $products_selection =     array();
+        $products               = get_option( 'gestaoclick-products' );
+        $products_blacklist     = get_option( 'gcw-settings-products-blacklist' );
+        $categories_selection   = get_option( 'gcw-settings-categories-selection' );
+        $products_selection     = array();
 
         if( $categories_selection ) {
             $filtered_categories = array_filter($products, function ($item) use ($categories_selection) {
@@ -78,45 +74,49 @@ class GCW_WC_Products extends GCW_GC_Api {
             $products_selection = $products;
         }
 
-        foreach ($products_selection as $product) {
+        foreach ($products_selection as $product_data) {
             // Check if the product has variations
-            if ($product['possui_variacao'] == '1') {
+            if ($product_data['possui_variacao'] == '1') {
 
                 // Saving the product variable
-                $product_variable = $this->save_product_variable($product);
+                $product = $this->save_product_variable($product_data);
 
                 // Saving the product variable attributes
                 $attributes = [];
-                $attributes[] = $this->save_product_variable_attributes($product['variacoes']);
+                $attributes[] = $this->get_product_variable_attributes($product_data['variacoes']);
 
                 // Adding the attributes to the created product variable
-                $product_variable->set_attributes($attributes);
-                $product_variable->save();
+                $product->set_attributes($attributes);
+                $product->save();
 
                 // Saving the product variable variations
-                $this->save_product_variable_variations($product_variable->get_id(), $product['variacoes']);
+                $this->save_product_variable_variations($product->get_id(), $product_data['variacoes']);
 
             } else {
-                $this->save_product_simple($product);
+                $product = $this->save_product_simple($product_data);
             }
+
+            $filters = $this->get_filters_attributes($product->get_name());
+            $product->set_attributes(array_merge($product->get_attributes(), $filters));
+            $product->save();
         }
 
         wp_admin_notice(sprintf('GestãoClick: %d produtos importados com sucesso.', count($products_selection)), array('type' => 'success', 'dismissible' => true));
     }
 
-    private function get_category_ids( $category_name ) {
-        $category_ids = array();
+    private function get_category_id( $category_name ) {
         $category_object = get_term_by('slug', sanitize_title($category_name), 'product_cat');
 
         if ($category_object != false) {
-            $category_ids[] = $category_object->term_id;
+            $category_id = $category_object->term_id;
+            return $category_id;
+        } else {
+            return false;
         }
-
-        return $category_ids;
     }
 
     private function save_product_simple( $product ) {
-        $category_ids = $this->get_category_ids($product['nome_grupo']);
+        $category_ids[] = $this->get_category_id($product['nome_grupo']);
 
         $product_props = array(
             'sku' =>            $product['codigo_barra'],
@@ -149,10 +149,12 @@ class GCW_WC_Products extends GCW_GC_Api {
 
         $product_simple->set_props($product_props);
         $product_simple->save();
+
+        return $product_simple;
     }
 
     private function save_product_variable( $product ) {
-        $category_ids = $this->get_category_ids($product['nome_grupo']);
+        $category_ids[] = $this->get_category_id($product['nome_grupo']);
 
         $product_props = array(
             'sku' =>            $product['codigo_barra'],
@@ -190,10 +192,10 @@ class GCW_WC_Products extends GCW_GC_Api {
         return $product_variable;
     }
 
-    private function save_product_variable_attributes( $variations ) {
+    private function get_product_variable_attributes( $variations ) {
         $attribute = new WC_Product_Attribute();
         $attribute->set_id(0);
-        $attribute->set_name('modelo');
+        $attribute->set_name('Modelo');
         $attribute->set_visible(true);
         $attribute->set_variation(true);
 
@@ -239,161 +241,124 @@ class GCW_WC_Products extends GCW_GC_Api {
         }
     }
 
-    public function display() {
-        if( GCW_GC_Api::test_connection() ) {
-            $this->fetch_api();
-            require_once 'partials/gestaoclick-admin-display-products.php';
-        } else {
-            wp_admin_notice( __( 'GestãoClick: Preencha corretamente suas credenciais de acesso.', 'gestaoclick' ), array( 'error' ) );
+    private function save_tags($product_id, $product_name)
+    {
+        $tags_selection = get_option('gcw-settings-subcategories-selection');
+        $tags = array();
+        $taxonomy = 'product_tag';
+
+        // Get tags in product name parts
+        $product_name_parts = explode(' - ', $product_name);
+        foreach ($product_name_parts as $name_part) {
+            $tag_candidates = explode('/', $name_part);
+            foreach ($tag_candidates as $tag_candidate){
+                if (in_array($tag_candidate, $tags_selection)) {
+                    $tags[] = $tag_candidate;
+                }
+            }
+        }
+
+        foreach ($tags as $tag_name) {
+            if(in_array($tag_name, $tags_selection)) {
+
+                $tag = term_exists($tag_name, $taxonomy);
+                if (!$tag) {
+                    wp_insert_term($tag_name, $taxonomy);
+                }
+
+                wp_set_object_terms($product_id, $tag_name, $taxonomy, true);
+            }
         }
     }
 
-    // private function save_product_variable($product) {
+    private function get_filters_attributes($product_name)
+    {
+        // Obtém a lista de atributos pré-definidos
+        $attributes_selection = get_option('gcw-settings-subcategories-selection');
+        $attributes_names = array();
+        $attributes = array();
 
-    //     $category_ids = $this->get_category_ids($product['nome_grupo']);
+        // Get filters attributes names in product name parts
+        $product_name_parts = explode(' - ', $product_name);
+        foreach ($product_name_parts as $name_part) {
+            $attributes_candidates = explode('/', $name_part);
+            foreach ($attributes_candidates as $attribute_candidate) {
+                if (in_array($attribute_candidate, $attributes_selection)) {
+                    $attributes_names[] = $attribute_candidate;
+                }
+            }
+        }
 
-    //     $product_props = array(
-    //         'sku' =>            $product['codigo_barra'],
-    //         'name' =>           $product['nome'],
-    //         'regular_price' =>  $product['valor_venda'],
-    //         'sale_price' =>     $product['valor_venda'],
-    //         'price' =>          $product['valor_venda'],
-    //         'description' =>    $product['descricao'],
-    //         'stock_quantity' => $product['estoque'],
-    //         'date_created' =>   $product['cadastrado_em'],
-    //         'date_modified' =>  $product['modificado_em'],
-    //         'description' =>    $product['descricao'],
-    //         'weight' =>         $product['peso'],
-    //         'length' =>         $product['comprimento'],
-    //         'width' =>          $product['largura'],
-    //         'height' =>         $product['altura'],
-    //         'category_ids' =>   $category_ids,
-    //         'manage_stock' =>   'true',
-    //         'backorders' =>     'notify',
-    //     );
+        foreach($attributes_names as $attribute_name) {
+            if (in_array($attribute_name, $attributes_selection)) {
 
-    //     $product_exists = wc_get_product_id_by_sku($product['codigo_barra']);
-    //     $product_variable = null;
+                $taxonomies = wc_get_attribute_taxonomies();
+                $terms = array();
 
-    //     if($product_exists) {
-    //         $product_variable = wc_get_product($product_exists);
-    //         $product_variable->set_props($product_props);
-            
-    //     } else {
-    //         $product_variable = new WC_Product_Variable();
-    //         $product_variable->set_props($product_props);
-    //     }
+                if ($taxonomies){
+                    foreach ($taxonomies as $taxonomy){
+                        if (taxonomy_exists(wc_attribute_taxonomy_name($taxonomy->attribute_name))) {
+                            $attribute = new WC_Product_Attribute();
+                            $attribute->set_id(sizeof($attributes) + 1);
+                            $attribute->set_name('pa_' . $taxonomy->attribute_name);
+                            $attribute->set_visible(true);
+                            $attribute->set_variation(false);
+
+                            $options = array();
+                            $terms = get_terms(wc_attribute_taxonomy_name($taxonomy->attribute_name), 'orderby=name&hide_empty=0');
+                            foreach ($terms as $term){
+                                if(in_array($term->name, $attributes_names)) {
+                                    array_push($options, $term->term_id);
+                                }
+                            }
+                            if($options) {
+                                $attribute->set_options($options);
+                                $attributes[] = $attribute;
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
         
-    //     $product_variable->save();
-    //     $this->add_product_variations( $product_variable, $product['variacoes'] );
-    // }
-
-    // private function add_product_variations( $product_variable, $variations ) {
-    //     foreach ($variations as $variation_data) {
-            
-    //         $attribute_name = 'variation';
-    //         $term_name = $variation_data['variacao']['nome'];
-
-    //         $variation_post = array(
-    //             'post_title'  => $product_variable->get_name(),
-    //             'post_name'   => 'product-'. $product_variable->get_id() .'-variation',
-    //             'post_status' => 'publish',
-    //             'post_parent' => $product_variable->get_id(),
-    //             'post_type'   => 'product_variation',
-    //             'guid'        => $product_variable->get_permalink()
-    //         );
-
-    //         // Creating the product variation
-    //         $variation_id = wp_insert_post( $variation_post );
-
-    //         // Setando o Parent ID
-    //         wp_set_object_terms( $variation_id, $product_variable->get_id(), 'product_variation' );
-
-    //         // Create product variation attribute
-    //         $this->add_product_variation_attribute( $product_variable->get_id(), $variation_id, $attribute_name, $term_name );
-
-    //         ### Associating variation to the product
-    //         $sku = $variation_data['variacao']['codigo'];
-    //         $variation_id_exists = wc_get_product_id_by_sku($sku);
-    //         $variation = null;
-
-    //         if ($variation_id_exists) {
-    //             $variation = wc_get_product($variation_id_exists);
-    //         } else {
-    //             $variation = new WC_Product_Variation( $variation_id );
-    //             $variation->set_parent_id($product_variable->get_id());
-    //             $variation->set_sku($variation_data['variacao']['codigo']);
-    //         }
-
-    //         $variation->set_parent_id($product_variable->get_id());
-    //         $variation->set_price($variation_data['variacao']['valores'][0]['valor_venda']);
-    //         $variation->set_regular_price($variation_data['variacao']['valores'][0]['valor_venda']);
-    //         $variation->set_sale_price($variation_data['variacao']['valores'][0]['valor_venda']);
-    //         $variation->set_stock_quantity($variation_data['variacao']['estoque']);
-    //         $variation->set_manage_stock(true);
-    //         $variation->set_attributes( array(
-    //             'variation' => $variation_data['variacao']['nome'],
-    //         ) );
-    //         $variation_id = $variation->save();
-
-    //         $existing_variations = $product_variable->get_children();
-    //         $existing_variations[] = $variation_id;
-    //         $product_variable->set_children($existing_variations);
-    //     }
-    // }
-
-    // private function add_product_variation_attribute( $product_id, $variation_id, $attribute_name, $term_name) {
-            
-    //     ### 1 - Creating taxonomy for variation attribute
-
-    //     $taxonomy = 'pa_'. sanitize_title( $attribute_name ); // The attribute taxonomy
-    //     clean_taxonomy_cache( $taxonomy );
-
-    //     // If attribute doesn't exists we create it 
-    //     $attribute_id = wc_attribute_taxonomy_id_by_name($attribute_name);
-    //     if (!$attribute_id) {
-    //         $attribute_args = array(
-    //             'name' => $attribute_name,
-    //             'slug' => sanitize_title($attribute_name),
-    //             'type' => 'select',
-    //         );
-    //         $attribute_id = wc_create_attribute($attribute_args);
-    //     }
-
-    //     if (!taxonomy_exists( $taxonomy )) {
-    //         register_taxonomy(
-    //             $taxonomy,
-    //            'product_variation',
-    //             array(
-    //                 'hierarchical' => false,
-    //                 'label' => ucfirst( $attribute_name ),
-    //                 'query_var' => true,
-    //                 'rewrite' => array( 'slug' => sanitize_title($attribute_name) ), // The base slug
-    //             ),
-    //         );
-    //     } 
-
-
-    //     ### 2 - Creating terms for the product attribute
-
-    //     if( ! term_exists( $term_name, $taxonomy ) ) {
-    //         wp_insert_term( $term_name, $taxonomy ); // Create the term
-    //     }
-
-
-
-    //     ### 3 -Associating attribute and its terms to the parent product
-
-    //     $term = get_term_by('name', $term_name, $taxonomy ); // Get the term slug
-
-    //     // Get the post Terms names from the parent variable product.
-    //     $post_term_names = wp_get_post_terms( $product_id, $taxonomy, array('fields' => 'names') );
-
-    //     // Check if the post term exist and if not we set it in the parent variable product.
-    //     if( ! in_array( $term_name, $post_term_names ) ) {
-    //         $wp_set_post_terms = wp_set_post_terms( $product_id, $term_name, $taxonomy, true );
-    //     }
-    //     // Set/save the attribute data in the product variation
-    //     $update_post_meta = update_post_meta( $variation_id, 'attribute_'.$taxonomy, $term->slug );
-    // }
+        return $attributes;
+    }
 }
+
+// $taxonomy = 'pa_' . sanitize_title($attribute_name); // The attribute taxonomy
+// clean_taxonomy_cache($taxonomy);
+
+// // If attribute doesn't exists we create it 
+// $attribute_id = wc_attribute_taxonomy_id_by_name($attribute_name);
+// if (!$attribute_id) {
+//     $attribute_args = array(
+//         'name' => $attribute_name,
+//         'slug' => sanitize_title($attribute_name),
+//         'type' => 'select',
+//     );
+//     $attribute_id = wc_create_attribute($attribute_args);
+// }
+
+// if (!taxonomy_exists($taxonomy)) {
+//     register_taxonomy(
+//         $taxonomy,
+//         'product_variation',
+//         array(
+//             'hierarchical' => false,
+//             'label' => ucfirst($attribute_name),
+//             'query_var' => true,
+//             'rewrite' => array('slug' => sanitize_title($attribute_name)), // The base slug
+//         ),
+//     );
+// }
+
+// array_push($options, $attribute_name);
+// $attribute->set_options($options);
+// ### 2 - Creating terms for the product attribute
+// $term = term_exists($attribute_name, $taxonomy);
+// if (!$term) {
+//     $term = wp_insert_term($attribute_name, $taxonomy); // Create the term
+// }
+
+// wp_set_object_terms($product_id, $term, $taxonomy, true);

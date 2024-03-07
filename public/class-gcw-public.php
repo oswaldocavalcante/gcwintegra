@@ -1,8 +1,8 @@
 <?php
 
-require_once plugin_dir_path(dirname(__FILE__)) . 'integrations/gestaoclick/class-gcw-gc-orcamento.php';
-require_once plugin_dir_path(dirname(__FILE__)) . 'integrations/gestaoclick/class-gcw-gc-cliente.php';
-require_once plugin_dir_path(dirname(__FILE__)) . 'public/views/gcw-public-shortcode-orcamento.php';
+require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-orcamento.php';
+require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-cliente.php';
+require_once GCW_ABSPATH . 'public/shortcodes/gcw-public-shortcode-orcamento.php';
 
 class GCW_Public {
 
@@ -24,6 +24,13 @@ class GCW_Public {
 	 */
 	private $version;
 
+	/**
+	 * Initialize the class and set its properties.
+	 *
+	 * @since    1.0.0
+	 * @param      string    $plugin_name       The name of this plugin.
+	 * @param      string    $version    The version of this plugin.
+	 */
 	public function __construct($plugin_name, $version) {
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
@@ -47,11 +54,17 @@ class GCW_Public {
 		wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'assets/js/gestaoclick-public.js', array('jquery'), $this->version, false);
 	}
 
+	/**
+	 * Insert the Orçamento form in its shortcode place.
+	 *
+	 * @since    1.0.0
+	 */
     public function shortcode_orcamento() {
 
 		if($_POST){
 
 			$gc_cliente = new GCW_GC_Cliente($_POST, 'form');
+			$gc_cliente->export();
 
 			$gc_orcamento = new GCW_GC_Orcamento($_POST, $gc_cliente->get_id(), 'form');
 			$gc_orcamento->export();

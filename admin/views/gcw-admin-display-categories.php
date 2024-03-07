@@ -12,7 +12,7 @@
  * @subpackage Wooclick/admin/partials
  */
 
-require_once plugin_dir_path(dirname(__FILE__)) . 'list-tables/class-gcw-list-table-categories.php';
+require_once GCW_ABSPATH . 'admin/list-tables/class-gcw-list-table-categories.php';
 
 $categories_table = new GCW_List_Table_Categories();
 $categories_table->prepare_items();

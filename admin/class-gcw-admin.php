@@ -19,11 +19,11 @@
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  */
 
-require_once plugin_dir_path(dirname(__FILE__)) . 'integrations/woocommerce/class-gcw-wc-products.php';
-require_once plugin_dir_path(dirname(__FILE__)) . 'integrations/woocommerce/class-gcw-wc-categories.php';
-require_once plugin_dir_path(dirname(__FILE__)) . 'integrations/woocommerce/class-gcw-wc-attributes.php';
-require_once plugin_dir_path(dirname(__FILE__)) . 'integrations/gestaoclick/class-gcw-gc-venda.php';
-require_once plugin_dir_path(dirname(__FILE__)) . 'integrations/stone/class-gcw-cs-webhook.php';
+require_once GCW_ABSPATH . 'integrations/woocommerce/class-gcw-wc-products.php';
+require_once GCW_ABSPATH . 'integrations/woocommerce/class-gcw-wc-categories.php';
+require_once GCW_ABSPATH . 'integrations/woocommerce/class-gcw-wc-attributes.php';
+require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-venda.php';
+require_once GCW_ABSPATH . 'integrations/stone/class-gcw-cs-webhook.php';
 
 class GCW_Admin {
 
@@ -253,8 +253,8 @@ class GCW_Admin {
 		$this->products->import('all');
     }
 
-	public function export_order( $order_id ) {
-		$gc_venda = new GCW_GC_Venda();
-		$gc_venda->export( $order_id );
+	public function export_order($order_id) {
+		$gc_venda = new GCW_GC_Venda($order_id);
+		$gc_venda->export();
 	}
 }

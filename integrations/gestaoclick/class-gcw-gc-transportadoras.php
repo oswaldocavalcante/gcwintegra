@@ -1,6 +1,6 @@
 <?php
 
-require_once plugin_dir_path(dirname(__FILE__)) . 'gestaoclick/class-gcw-gc-api.php';
+require_once 'class-gcw-gc-api.php';
 
 class GCW_GC_Transportadoras extends GCW_GC_Api {
 

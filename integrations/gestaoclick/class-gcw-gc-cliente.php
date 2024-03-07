@@ -1,6 +1,6 @@
 <?php
 
-require_once plugin_dir_path(dirname(__FILE__)) . 'gestaoclick/class-gcw-gc-api.php';
+require_once 'class-gcw-gc-api.php';
 
 class GCW_GC_Cliente extends GCW_GC_Api {
 
@@ -66,10 +66,6 @@ class GCW_GC_Cliente extends GCW_GC_Api {
                     )
                 ),
             );
-
-            if(!$this->get_cliente_by_cpf_cnpj($this->data['cpf'])){
-                $this->export();
-            }
         } elseif ($context == 'form') {
             $cliente_cpf_cnpj = sanitize_text_field($data["gcw_cliente_cpf_cnpj"]);
 
@@ -87,13 +83,6 @@ class GCW_GC_Cliente extends GCW_GC_Api {
                     ],
                 ],
             );
-
-            if ($this->data['tipo_pessoa'] == 'PJ' && !$this->get_cliente_by_cpf_cnpj($this->data['cnpj'])) {
-                $this->export();
-            }
-            elseif ($this->data['tipo_pessoa'] == 'PF' && !$this->get_cliente_by_cpf_cnpj($this->data['cpf'])) {
-                $this->export();
-            }
         }
     }
 
@@ -102,7 +91,10 @@ class GCW_GC_Cliente extends GCW_GC_Api {
     }
 
     public function export() {
-        
+        if ($this->get_cliente_by_cpf_cnpj($this->data['cpf']) || $this->get_cliente_by_cpf_cnpj($this->data['cnpj'])) {
+            return $this->id;
+        }
+
         $response = wp_remote_post( 
             $this->api_endpoint, 
             array_merge(
@@ -122,6 +114,9 @@ class GCW_GC_Cliente extends GCW_GC_Api {
     }
 
     public function get_cliente_by_cpf_cnpj($cpf_cnpj) {
+
+        if ($cpf_cnpj == '')
+            return false;
 
         $body = wp_remote_retrieve_body(
             wp_remote_get($this->api_endpoint . '?cpf_cnpj=' . $cpf_cnpj, $this->api_headers)

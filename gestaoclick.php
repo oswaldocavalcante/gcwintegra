@@ -37,6 +37,10 @@ if ( ! defined( 'WPINC' ) ) {
  */
 define( 'GESTAOCLICK_VERSION', '2.0.0' );
 
+if (!defined('GCW_PLUGIN_FILE')) {
+	define('GCW_PLUGIN_FILE', __FILE__);
+}
+
 /**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-gestaoclick-activator.php
