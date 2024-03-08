@@ -116,7 +116,7 @@ class GCW_WC_Integration extends WC_Integration {
 
         update_option( 'gcw-settings-auto-imports',         $this->get_option('gcw-settings-auto-imports') );
         update_option( 'gcw-settings-categories-selection', explode(',', $this->get_option('gcw-settings-categories-selection')));
-        update_option( 'gcw-settings-attributes-selection', explode(',', $this->get_option('gcw-settings-subcategories-selection')));
+        update_option( 'gcw-settings-attributes-selection', explode(',', $this->get_option('gcw-settings-attributes-selection')));
         update_option( 'gcw-settings-products-blacklist',   explode(',', $this->get_option('gcw-settings-products-blacklist')));
 
         update_option( 'gcw-settings-export-orders',        $this->get_option('gcw-settings-export-orders'));
