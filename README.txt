@@ -1,4 +1,5 @@
-=== Plugin Name ===
+GestãoClick para WooCommerce
+
 Author: Oswaldo Cavalcante
 Donate link: https://oswaldocavalcante.com/
 License: GPLv2 or later
