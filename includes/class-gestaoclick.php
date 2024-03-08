@@ -27,7 +27,8 @@
  * @subpackage Gestaoclick/includes
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  */
-class Gestaoclick {
+class Gestaoclick
+{
 
 	/**
 	 * The loader that's responsible for maintaining and registering all hooks that power
@@ -66,8 +67,9 @@ class Gestaoclick {
 	 *
 	 * @since    1.0.0
 	 */
-	public function __construct() {
-		if ( defined( 'GESTAOCLICK_VERSION' ) ) {
+	public function __construct()
+	{
+		if (defined('GESTAOCLICK_VERSION')) {
 			$this->version = GESTAOCLICK_VERSION;
 		} else {
 			$this->version = '1.0.0';
@@ -98,32 +100,31 @@ class Gestaoclick {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function load_dependencies() {
-
+	private function load_dependencies()
+	{
 		/**
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-gestaoclick-loader.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-gestaoclick-loader.php';
 
 		/**
 		 * The class responsible for defining internationalization functionality
 		 * of the plugin.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-gestaoclick-i18n.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-gestaoclick-i18n.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-gcw-admin.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-gcw-admin.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public area.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-gcw-public.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/class-gcw-public.php';
 
 		$this->loader = new Gestaoclick_Loader();
-
 	}
 
 	/**
@@ -135,12 +136,11 @@ class Gestaoclick {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function set_locale() {
-
+	private function set_locale()
+	{
 		$plugin_i18n = new Gestaoclick_i18n();
 
-		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
-
+		$this->loader->add_action('plugins_loaded', $plugin_i18n, 'load_plugin_textdomain');
 	}
 
 	/**
@@ -150,38 +150,33 @@ class Gestaoclick {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function define_admin_hooks() {
+	private function define_admin_hooks()
+	{
+		$plugin_admin = new GCW_Admin($this->get_plugin_name(), $this->get_version());
 
-		$plugin_admin = new GCW_Admin( $this->get_plugin_name(), $this->get_version() );
+		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
+		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
+		$this->loader->add_action('admin_menu', $plugin_admin, 'add_admin_menu');
+		$this->loader->add_action('admin_init', $plugin_admin, 'register_settings');
+		$this->loader->add_filter('woocommerce_integrations', 	$plugin_admin, 'add_woocommerce_integration');
+		$this->loader->add_action('gestaoclick_update', $plugin_admin, 'import_gestaoclick');
 
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
-		// Add the admin menu
-		$this->loader->add_action( 'admin_menu', $plugin_admin, 'add_admin_menu');
-		// Register general settings
-		$this->loader->add_action( 'admin_init', $plugin_admin, 'register_settings');
-		// Checks if WooCommerce is active and registers in its settings page
-		$this->loader->add_filter( 'woocommerce_integrations', 	$plugin_admin, 'add_woocommerce_integration');
-		// Set the cron hook to execute importations when called
-		$this->loader->add_action( 'gestaoclick_update', $plugin_admin, 'import_gestaoclick');
-
-		if( get_option('gcw-settings-export-orders') == 'yes' ){
-			// Export a paid order to GestãoClick
-			$this->loader->add_action( 'woocommerce_payment_complete_order_status_processing', $plugin_admin, 'export_order' );
+		if (get_option('gcw-settings-export-orders') == 'yes') {
+			$this->loader->add_action('woocommerce_payment_complete_order_status_processing', $plugin_admin, 'export_order');
 		} else {
-			remove_action( 'woocommerce_payment_complete_order_status_processing', 'export_order' );
+			remove_action('woocommerce_payment_complete_order_status_processing', 'export_order');
 		}
 
-		$this->loader->add_action( 'rest_api_init', $plugin_admin, 'add_stone_webhook');
+		$this->loader->add_action('rest_api_init', $plugin_admin, 'add_stone_webhook');
 	}
 
-	private function define_public_hooks() {
+	private function define_public_hooks()
+	{
+		$plugin_public = new GCW_Public($this->get_plugin_name(), $this->get_version());
 
-		$plugin_public = new GCW_Public( $this->get_plugin_name(), $this->get_version() );
-
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-		add_shortcode( 'gestaoclick_orcamento', array($plugin_public, 'shortcode_orcamento') );
+		$this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_styles');
+		$this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_scripts');
+		add_shortcode('gestaoclick_orcamento', array($plugin_public, 'shortcode_orcamento'));
 	}
 
 	/**
@@ -189,7 +184,8 @@ class Gestaoclick {
 	 *
 	 * @since    1.0.0
 	 */
-	public function run() {
+	public function run()
+	{
 		$this->loader->run();
 	}
 
@@ -200,7 +196,8 @@ class Gestaoclick {
 	 * @since     1.0.0
 	 * @return    string    The name of the plugin.
 	 */
-	public function get_plugin_name() {
+	public function get_plugin_name()
+	{
 		return $this->plugin_name;
 	}
 
@@ -210,7 +207,8 @@ class Gestaoclick {
 	 * @since     1.0.0
 	 * @return    Gestaoclick_Loader    Orchestrates the hooks of the plugin.
 	 */
-	public function get_loader() {
+	public function get_loader()
+	{
 		return $this->loader;
 	}
 
@@ -220,8 +218,8 @@ class Gestaoclick {
 	 * @since     1.0.0
 	 * @return    string    The version number of the plugin.
 	 */
-	public function get_version() {
+	public function get_version()
+	{
 		return $this->version;
 	}
-
 }

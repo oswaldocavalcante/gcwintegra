@@ -2,7 +2,7 @@
 
 require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-orcamento.php';
 require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-cliente.php';
-require_once GCW_ABSPATH . 'public/shortcodes/gcw-public-shortcode-orcamento.php';
+require_once GCW_ABSPATH . 'public/shortcodes/class-gcw-shortcode-orcamento.php';
 
 class GCW_Public {
 
@@ -34,6 +34,8 @@ class GCW_Public {
 	public function __construct($plugin_name, $version) {
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
+
+		// add_action('template_redirect', 'process_orcamento_form');
 	}
 
 	/**
@@ -61,8 +63,7 @@ class GCW_Public {
 	 */
     public function shortcode_orcamento() {
 
-		if($_POST){
-
+		if (isset($_POST['gcw_orcamento_nonce']) && wp_verify_nonce($_POST['gcw_orcamento_nonce'], 'gcw_form_orcamento')) {
 			$gc_cliente = new GCW_GC_Cliente($_POST, 'form');
 			$gc_cliente->export();
 
@@ -70,6 +71,11 @@ class GCW_Public {
 			$gc_orcamento->export();
 		}
 
-		return GCW_Public_Shortcode_Orcamento::render_form();
+		return GCW_Shortcode_Orcamento::render_form();
     }
+
+	public function process_orcamento_form() {
+
+
+	}
 }

@@ -57,16 +57,18 @@ class GCW_GC_Orcamento extends GCW_GC_Api {
         $items = [];
         $item_id = 1;
         for ($i = 6; $i < count($orcamento); $i = $i+4) {
-            $items = array_merge($items, [
-                "produto" => [
-                    "nome_produto"  =>  
-                        sanitize_text_field($orcamento["gcw_item_nome-{$item_id}"]) . " - " .
-                        sanitize_text_field($orcamento["gcw_item_descricao-{$item_id}"]),
-                    "detalhes"      =>  sanitize_text_field($orcamento["gcw_item_tamanho-{$item_id}"]),
-                    "quantidade"    =>  sanitize_text_field($orcamento["gcw_item_quantidade-{$item_id}"]),
-                ],
-            ]);
-            ++$item_id;
+            if(array_keys($orcamento)[$i] == "gcw_item_nome-{$item_id}") {
+                array_push($items, array(
+                    "produto" => [
+                        "nome_produto"  => sanitize_text_field($orcamento["gcw_item_nome-{$item_id}"]) . " - " .
+                                            sanitize_text_field($orcamento["gcw_item_descricao-{$item_id}"]),
+                        "detalhes"      =>  sanitize_text_field($orcamento["gcw_item_tamanho-{$item_id}"]),
+                        "quantidade"    =>  sanitize_text_field($orcamento["gcw_item_quantidade-{$item_id}"]),
+                    ],
+                ));
+
+                ++$item_id;
+            }
         }
 
         return $items;

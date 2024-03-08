@@ -85,7 +85,7 @@ a#gcw-quote-add-item:hover {
     border-color: var(--ry-color-1);
 }
 
-button#gcw-quote-send {
+#gcw-quote-send {
     color: #fff;
     background-color: var(--ry-color-2);
     text-decoration: none;
@@ -96,7 +96,7 @@ button#gcw-quote-send {
     font-family: unset;
 }
 
-button#gcw-quote-send:hover {
+#gcw-quote-send:hover {
     color: var(--ry-color-2);
     background-color: var(--ry-color-1);
 }
