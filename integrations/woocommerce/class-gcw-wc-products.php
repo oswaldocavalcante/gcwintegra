@@ -274,7 +274,7 @@ class GCW_WC_Products extends GCW_GC_Api {
     private function get_filters_attributes($product_name)
     {
         // Obtém a lista de atributos pré-definidos
-        $attributes_selection = get_option('gcw-settings-subcategories-selection');
+        $attributes_selection = get_option('gcw-settings-attributes-selection');
         $attributes_names = array();
         $attributes = array();
 
@@ -325,40 +325,3 @@ class GCW_WC_Products extends GCW_GC_Api {
         return $attributes;
     }
 }
-
-// $taxonomy = 'pa_' . sanitize_title($attribute_name); // The attribute taxonomy
-// clean_taxonomy_cache($taxonomy);
-
-// // If attribute doesn't exists we create it 
-// $attribute_id = wc_attribute_taxonomy_id_by_name($attribute_name);
-// if (!$attribute_id) {
-//     $attribute_args = array(
-//         'name' => $attribute_name,
-//         'slug' => sanitize_title($attribute_name),
-//         'type' => 'select',
-//     );
-//     $attribute_id = wc_create_attribute($attribute_args);
-// }
-
-// if (!taxonomy_exists($taxonomy)) {
-//     register_taxonomy(
-//         $taxonomy,
-//         'product_variation',
-//         array(
-//             'hierarchical' => false,
-//             'label' => ucfirst($attribute_name),
-//             'query_var' => true,
-//             'rewrite' => array('slug' => sanitize_title($attribute_name)), // The base slug
-//         ),
-//     );
-// }
-
-// array_push($options, $attribute_name);
-// $attribute->set_options($options);
-// ### 2 - Creating terms for the product attribute
-// $term = term_exists($attribute_name, $taxonomy);
-// if (!$term) {
-//     $term = wp_insert_term($attribute_name, $taxonomy); // Create the term
-// }
-
-// wp_set_object_terms($product_id, $term, $taxonomy, true);

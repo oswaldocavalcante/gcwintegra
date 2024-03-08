@@ -69,11 +69,11 @@ class GCW_WC_Integration extends WC_Integration {
                 'placeholder'   => __('Empresas,Escolas,Informática,...', 'gestaoclick' ),
                 'description'   => __( 'Lista de categorias para importar seus produtos do GestãoClick (nomes das categorias separadas por vírgulas, sem espaços).', 'gestaoclick' ),
             ),
-            'gcw-settings-subcategories-selection' => array(
-                'title'         => __('Seleção de Subcategorias', 'gestaoclick'),
+            'gcw-settings-attributes-selection' => array(
+                'title'         => __('Seleção de Atributos', 'gestaoclick'),
                 'type'          => 'textarea',
                 'placeholder'   => __('Masculino,Feminino,Infantil,...', 'gestaoclick'),
-                'description'   => __('Lista de subcategorias para encontrar nos nomes produtos do GestãoClick (nomes das subcategorias separadas por vírgulas, sem espaços).', 'gestaoclick'),
+                'description'   => __('Lista de atributos para coletar dos nomes dos produtos do GestãoClick a serem usados como filtros para os produtos da sua loja (nomes dos atributos separados por vírgulas, sem espaços). Os atributos precisam ser os mesmos já salvos como Termos no <a href="https://ryanne.local/wp-admin/edit.php?post_type=product&page=product_attributes" target="blank">WooCommerce</a>.', 'gestaoclick'),
             ),
             'gcw-settings-products-blacklist' => array(
                 'title'         => __( 'Produtos proibidos', 'gestaoclick' ),
@@ -111,23 +111,23 @@ class GCW_WC_Integration extends WC_Integration {
     }
 
     public function admin_options() {
-        update_option( 'gcw-api-access-token', 	                $this->get_option('gcw-api-access-token'));
-        update_option( 'gcw-api-secret-access-token', 	        $this->get_option('gcw-api-secret-access-token'));
+        update_option( 'gcw-api-access-token',              $this->get_option('gcw-api-access-token'));
+        update_option( 'gcw-api-secret-access-token',       $this->get_option('gcw-api-secret-access-token'));
 
-        update_option( 'gcw-settings-auto-imports',             $this->get_option('gcw-settings-auto-imports') );
-        update_option( 'gcw-settings-categories-selection',     explode(',', $this->get_option('gcw-settings-categories-selection')));
-        update_option( 'gcw-settings-subcategories-selection',  explode(',', $this->get_option('gcw-settings-subcategories-selection')));
-        update_option( 'gcw-settings-products-blacklist',       explode(',', $this->get_option('gcw-settings-products-blacklist')));
+        update_option( 'gcw-settings-auto-imports',         $this->get_option('gcw-settings-auto-imports') );
+        update_option( 'gcw-settings-categories-selection', explode(',', $this->get_option('gcw-settings-categories-selection')));
+        update_option( 'gcw-settings-attributes-selection', explode(',', $this->get_option('gcw-settings-subcategories-selection')));
+        update_option( 'gcw-settings-products-blacklist',   explode(',', $this->get_option('gcw-settings-products-blacklist')));
 
-        update_option( 'gcw-settings-export-orders',            $this->get_option('gcw-settings-export-orders'));
-        update_option( 'gcw-settings-export-trasportadora',     $this->get_option('gcw-settings-export-trasportadora'));
-        update_option( 'gcw-settings-export-situacao',          $this->get_option('gcw-settings-export-situacao'));
+        update_option( 'gcw-settings-export-orders',        $this->get_option('gcw-settings-export-orders'));
+        update_option( 'gcw-settings-export-trasportadora', $this->get_option('gcw-settings-export-trasportadora'));
+        update_option( 'gcw-settings-export-situacao',      $this->get_option('gcw-settings-export-situacao'));
 
         echo '<div id="gcw_settings">';
         echo '<h2 class="gcw-integration-title">' . esc_html( $this->get_method_title() ) . '</h2>';
 
         if( GCW_GC_Api::test_connection() ) {
-            echo '<span class="gcw-integration-connection dashicons-before dashicons-yes-alt">' . __('Connected', 'gestaoclick') . '</span>';
+            echo '<span class="gcw-integration-connection dashicons-before dashicons-yes-alt">' . __('Conectado', 'gestaoclick') . '</span>';
         } else {
             wp_admin_notice( __( 'GestaoClick: Preencha corretamente suas credenciais de acesso.', 'gestaoclick' ), array( 'error' ) );
         }

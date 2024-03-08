@@ -123,6 +123,7 @@ class GCW_Admin {
 		register_setting('gcw_credentials', 'gcw-api-secret-access-token', 			'string');
 		register_setting('gcw_settings', 	'gcw-settings-auto-imports', 			'boolean');
 		register_setting('gcw_settings', 	'gcw-settings-categories-selection', 	'array');
+		register_setting('gcw_settings', 	'gcw-settings-attributes-selection', 	'array');
 		register_setting('gcw_settings', 	'gcw-settings-products-blacklist', 		'array');
 		register_setting('gcw_settings', 	'gcw-settings-export-orders', 			'boolean');
 		register_setting('gcw_settings', 	'gcw-settings-export-transportadora', 	'string');
