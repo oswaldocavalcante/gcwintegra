@@ -20,9 +20,8 @@ $products_table->prepare_items();
 ?>
 
 <div class="wrap">
-    <h2>GestãoClick - Importar produtos</h2>
+    <h2><?php echo __('GestãoClick - Importar Produtos', 'gestaoclick'); ?></h2>
     <form id="events-filter" method="post">
-        <input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
-        <? $products_table->display(); ?>
+        <?php $products_table->display(); ?>
     </form>
 </div>

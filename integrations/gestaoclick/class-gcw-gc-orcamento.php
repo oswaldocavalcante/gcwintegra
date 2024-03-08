@@ -40,7 +40,7 @@ class GCW_GC_Orcamento extends GCW_GC_Api {
 
         $response = wp_remote_post(
             $this->api_endpoint,
-            array_merge($this->api_headers, ["body" => json_encode($this->data)])
+            array_merge($this->api_headers, ["body" => wp_json_encode($this->data)])
         );
 
         $response = json_decode(wp_remote_retrieve_body($response), true);

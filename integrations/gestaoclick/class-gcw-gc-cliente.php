@@ -99,7 +99,7 @@ class GCW_GC_Cliente extends GCW_GC_Api {
             $this->api_endpoint, 
             array_merge(
                 $this->api_headers,
-                array( 'body' => json_encode($this->data) ),
+                array( 'body' => wp_json_encode($this->data) ),
             ) 
         );
 

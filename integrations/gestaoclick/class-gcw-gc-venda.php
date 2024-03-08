@@ -82,7 +82,7 @@ class GCW_GC_Venda extends GCW_GC_Api {
             $this->api_endpoint, 
             array_merge(
                 $this->api_headers,
-                array( 'body' => json_encode($body) ),
+                array( 'body' => wp_json_encode($body) ),
             ) 
         );
     }

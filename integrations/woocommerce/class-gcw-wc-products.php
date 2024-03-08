@@ -305,7 +305,7 @@ class GCW_WC_Products extends GCW_GC_Api {
                             $attribute->set_variation(false);
 
                             $options = array();
-                            $terms = get_terms(wc_attribute_taxonomy_name($taxonomy->attribute_name), 'orderby=name&hide_empty=0');
+                            $terms = get_terms(wc_attribute_taxonomy_name($taxonomy->attribute_name));
                             foreach ($terms as $term){
                                 if(in_array($term->name, $attributes_names)) {
                                     array_push($options, $term->term_id);
