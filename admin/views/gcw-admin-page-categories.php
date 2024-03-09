@@ -20,7 +20,7 @@ $categories_table->prepare_items();
 ?>
 
 <div class="wrap">
-    <h2><?php echo __('GestãoClick - Importar Categorias', 'gestaoclick'); ?></h2>
+    <h2><?php echo esc_html(__('GestãoClick - Importar Categorias', 'gestaoclick')); ?></h2>
     <form id="events-filter" method="post">
         <?php 
         $categories_table->display();
