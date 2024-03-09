@@ -83,7 +83,7 @@ class GCW_Shortcode_Orcamento
 
             <input type="submit" id="gcw-quote-send" value="<?php echo esc_html(__("Solicitar orçamento", "gestaoclick")); ?>">
 
-            <?php echo wp_nonce_field('gcw_form_orcamento', 'gcw_nonce_orcamento'); ?>
+            <?php wp_nonce_field('gcw_form_orcamento', 'gcw_nonce_orcamento'); ?>
         </form>
 
         <?php
