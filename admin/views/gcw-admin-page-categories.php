@@ -22,6 +22,9 @@ $categories_table->prepare_items();
 <div class="wrap">
     <h2><?php echo __('GestãoClick - Importar Categorias', 'gestaoclick'); ?></h2>
     <form id="events-filter" method="post">
-        <?php $categories_table->display(); ?>
+        <?php 
+        $categories_table->display();
+        wp_nonce_field('gcw_form_categories', 'gcw_nonce_categories');
+        ?>
     </form>
 </div>

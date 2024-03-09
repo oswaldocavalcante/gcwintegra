@@ -106,13 +106,4 @@ class GCW_WC_Categories extends GCW_GC_Api {
             );
         }
     }
-
-    public function display(){
-        if( GCW_GC_Api::test_connection() ) {
-            $this->fetch_api();
-            require_once 'partials/gestaoclick-admin-display-categories.php';
-        } else {
-            wp_admin_notice( __( 'GestãoClick: Preencha corretamente suas credenciais de acesso.', 'gestaoclick' ), array('type' => 'error', 'dismissible' => true) );
-        }
-    }
 }

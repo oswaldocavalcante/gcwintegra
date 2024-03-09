@@ -72,11 +72,11 @@ class GCW_List_Table_Products extends WP_List_Table {
     }
 
     function process_bulk_action() {
-        
-        //Detect when a bulk action is being triggered...
         if( 'import' === $this->current_action() ) {
-            $selected_items = isset($_POST['bulk-action']) ? $_POST['bulk-action'] : array();
-            apply_filters( 'gestaoclick_import_products', $selected_items );
+            if(isset($_POST['gcw_nonce_products']) && wp_verify_nonce($_POST['gcw_nonce_products'], 'gcw_form_products')){
+                $selected_items = isset($_POST['bulk-action']) ? $_POST['bulk-action'] : array();
+                apply_filters('gestaoclick_import_products', $selected_items);
+            }
         }
         if( 'import_all' === $this->current_action() ) {
             apply_filters( 'gestaoclick_import_products', 'all' );
@@ -87,10 +87,10 @@ class GCW_List_Table_Products extends WP_List_Table {
     function usort_reorder($a, $b)
     {
         // If no sort, default to user_login
-        $orderby = (!empty($_GET['orderby'])) ? $_GET['orderby'] : 'nome';
+        $orderby = (!empty($_GET['orderby'])) ? $_GET['orderby'] : 'nome'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
         // If no order, default to asc
-        $order = (!empty($_GET['order'])) ? $_GET['order'] : 'asc';
+        $order = (!empty($_GET['order'])) ? $_GET['order'] : 'asc'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
         // Determine sort order
         $result = strcmp($a[$orderby], $b[$orderby]);

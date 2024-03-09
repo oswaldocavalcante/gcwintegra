@@ -22,6 +22,9 @@ $products_table->prepare_items();
 <div class="wrap">
     <h2><?php echo __('GestãoClick - Importar Produtos', 'gestaoclick'); ?></h2>
     <form id="events-filter" method="post">
-        <?php $products_table->display(); ?>
+        <?php 
+        $products_table->display();
+        wp_nonce_field('gcw_form_products', 'gcw_nonce_products');
+        ?>
     </form>
 </div>

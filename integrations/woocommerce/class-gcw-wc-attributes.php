@@ -80,13 +80,4 @@ class GCW_WC_Attributes extends GCW_GC_Api {
             wp_update_term( $attribute_id, 'pa', array( 'name' => $new_name, 'slug' => sanitize_title( $new_name ) ) );
         }
     }
-
-    public function display() {
-        if( GCW_GC_Api::test_connection() ) {
-            $this->fetch_api();
-            require_once 'partials/gestaoclick-admin-display-attributes.php';
-        } else {
-            wp_admin_notice( __( 'GestãoClick: Preencha corretamente suas credenciais de acesso.', 'gestaoclick' ), array( 'error' ) );
-        }
-    }
 }

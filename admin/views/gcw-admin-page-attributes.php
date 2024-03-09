@@ -22,6 +22,9 @@ $attributes_table->prepare_items();
 <div class="wrap">
     <h2><?php echo __('GestãoClick - Importar Atributos', 'gestaoclick'); ?></h2>
     <form id="events-filter" method="post">
-        <?php $attributes_table->display(); ?>
+        <?php 
+        $attributes_table->display();
+        wp_nonce_field('gcw_form_attributes', 'gcw_nonce_attributes');
+        ?>
     </form>
 </div>

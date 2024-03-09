@@ -63,7 +63,7 @@ class GCW_Public {
 	 */
     public function shortcode_orcamento() {
 
-		if (isset($_POST['gcw_orcamento_nonce']) && wp_verify_nonce($_POST['gcw_orcamento_nonce'], 'gcw_form_orcamento')) {
+		if (isset($_POST['gcw_nonce_orcamento']) && wp_verify_nonce($_POST['gcw_nonce_orcamento'], 'gcw_form_orcamento')) {
 			$gc_cliente = new GCW_GC_Cliente($_POST, 'form');
 			$gc_cliente->export();
 
@@ -73,9 +73,4 @@ class GCW_Public {
 
 		return GCW_Shortcode_Orcamento::render_form();
     }
-
-	public function process_orcamento_form() {
-
-
-	}
 }
