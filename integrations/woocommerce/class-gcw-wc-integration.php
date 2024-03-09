@@ -37,6 +37,7 @@ class GCW_WC_Integration extends WC_Integration {
             'gcw-api-credentials-section' => array(
                 'title'         => __( 'Credenciais de acesso da API', 'gestaoclick' ),
                 'type'          => 'title',
+                // translators: "Placeholder for GestaoClic API Settings link"
                 'description'   => sprintf(__('Veja como obter suas credenciais em <a href="https://gestaoclick.com/integracao_api/configuracoes/gerar_token" target="blank">%s</a>', 'gestaoclick'), 'https://gestaoclick.com/integracao_api/configuracoes/gerar_token'),
             ),
             'gcw-api-access-token' => array(

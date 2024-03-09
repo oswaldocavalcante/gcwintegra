@@ -67,6 +67,7 @@ class GCW_Admin {
 			wp_admin_notice(
 				wp_kses(
 					sprintf( 
+						// translators: "Placeholder for Woocommerce link"
 						__('GestãoClick: por favor, instale e ative o %s.', 'gestaoclick'),
 						'<a href="http://wordpress.org/plugins/woocommerce/">' . __('WooCommerce', 'gestaoclick') . '</a>'
 					),
