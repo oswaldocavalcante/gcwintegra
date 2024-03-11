@@ -75,23 +75,16 @@ class GCW_WC_Products extends GCW_GC_Api {
         }
 
         foreach ($products_selection as $product_data) {
-            // Check if the product has variations
             if ($product_data['possui_variacao'] == '1') {
-
-                // Saving the product variable
                 $product = $this->save_product_variable($product_data);
 
-                // Saving the product variable attributes
                 $attributes = [];
                 $attributes[] = $this->get_product_variable_attributes($product_data['variacoes']);
 
-                // Adding the attributes to the created product variable
                 $product->set_attributes($attributes);
                 $product->save();
 
-                // Saving the product variable variations
                 $this->save_product_variable_variations($product->get_id(), $product_data['variacoes']);
-
             } else {
                 $product = $this->save_product_simple($product_data);
             }
@@ -305,7 +298,10 @@ class GCW_WC_Products extends GCW_GC_Api {
                             $attribute->set_variation(false);
 
                             $options = array();
-                            $terms = get_terms(wc_attribute_taxonomy_name($taxonomy->attribute_name));
+                            $terms = get_terms(array(
+                                'taxonomy' => wc_attribute_taxonomy_name($taxonomy->attribute_name),
+                                'hide_empty' => false,
+                            ));
                             foreach ($terms as $term){
                                 if(in_array($term->name, $attributes_names)) {
                                     array_push($options, $term->term_id);
@@ -317,7 +313,6 @@ class GCW_WC_Products extends GCW_GC_Api {
                             }
                         }
                     }
-
                 }
             }
         }
