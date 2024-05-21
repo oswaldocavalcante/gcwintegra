@@ -4,7 +4,8 @@ require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-orcamento.php'
 require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-cliente.php';
 require_once GCW_ABSPATH . 'public/shortcodes/class-gcw-shortcode-orcamento.php';
 
-class GCW_Public {
+class GCW_Public
+{
 
 	/**
 	 * The ID of this plugin.
@@ -31,11 +32,10 @@ class GCW_Public {
 	 * @param      string    $plugin_name       The name of this plugin.
 	 * @param      string    $version    The version of this plugin.
 	 */
-	public function __construct($plugin_name, $version) {
+	public function __construct($plugin_name, $version)
+	{
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
-
-		// add_action('template_redirect', 'process_orcamento_form');
 	}
 
 	/**
@@ -43,7 +43,8 @@ class GCW_Public {
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_styles() {
+	public function enqueue_styles()
+	{
 		wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'assets/css/gestaoclick-public.css', array(), $this->version, 'all');
 	}
 
@@ -52,7 +53,8 @@ class GCW_Public {
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_scripts() {
+	public function enqueue_scripts()
+	{
 		wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'assets/js/gestaoclick-public.js', array('jquery'), $this->version, false);
 	}
 
@@ -61,8 +63,8 @@ class GCW_Public {
 	 *
 	 * @since    1.0.0
 	 */
-    public function shortcode_orcamento() {
-
+	public function shortcode_orcamento()
+	{
 		if (isset($_POST['gcw_nonce_orcamento']) && wp_verify_nonce($_POST['gcw_nonce_orcamento'], 'gcw_form_orcamento')) {
 			$gc_cliente = new GCW_GC_Cliente($_POST, 'form');
 			$gc_cliente->export();
@@ -72,5 +74,5 @@ class GCW_Public {
 		}
 
 		return GCW_Shortcode_Orcamento::render_form();
-    }
+	}
 }

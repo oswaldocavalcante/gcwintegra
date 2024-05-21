@@ -73,7 +73,8 @@ class GCW_Admin {
 					),
 					array('a' => array('href' => array()))
 				), 
-					array('type' => 'error'));
+				array('type' => 'error')
+			);
 		}
 	}
 
