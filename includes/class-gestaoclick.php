@@ -162,7 +162,7 @@ class Gestaoclick
 		$this->loader->add_action('gestaoclick_update', $plugin_admin, 'import_gestaoclick');
 
 		if (get_option('gcw-settings-export-orders') == 'yes') {
-			$this->loader->add_action('woocommerce_payment_complete_order_status_processing', $plugin_admin, 'export_order');
+			$this->loader->add_filter('woocommerce_checkout_order_processed', $plugin_admin, 'export_order');
 		} else {
 			remove_action('woocommerce_payment_complete_order_status_processing', 'export_order');
 		}

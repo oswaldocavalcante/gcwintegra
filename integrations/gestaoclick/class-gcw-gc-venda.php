@@ -9,7 +9,7 @@ class GCW_GC_Venda extends GCW_GC_Api {
     private $api_endpoint;
 
     private $cliente_id;
-    private $data;
+    private $date;
     private $valor_frete;
     private $produtos = array();
 
@@ -24,11 +24,12 @@ class GCW_GC_Venda extends GCW_GC_Api {
 
         $order_items = $order->get_items();
         foreach ($order_items as $order_item) {
-            $wc_product_id = $order_item->get_changes()['product_id'];
+            $order_item_data = $order_item->get_data();
+            $wc_product_id = $order_item_data['product_id'];
             $wc_product = wc_get_product($wc_product_id);
             $gc_product_id = $wc_product->get_meta('gestaoclick_gc_product_id');
 
-            $wc_variation_id = $order_item->get_changes()['variation_id'];
+            $wc_variation_id = $order_item_data['variation_id'];
             if ($wc_variation_id) {
                 $wc_variation = wc_get_product($wc_variation_id);
                 $gc_variation_id = $wc_variation->get_meta('gestaoclick_gc_variation_id');
@@ -78,12 +79,13 @@ class GCW_GC_Venda extends GCW_GC_Api {
             'produtos'          => $this->produtos,
         );
 
-        wp_remote_post( 
+        $response = wp_remote_post( 
             $this->api_endpoint, 
             array_merge(
                 $this->api_headers,
                 array( 'body' => wp_json_encode($body) ),
             ) 
         );
+
     }
 }
