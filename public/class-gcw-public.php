@@ -2,7 +2,7 @@
 
 require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-orcamento.php';
 require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-cliente.php';
-require_once GCW_ABSPATH . 'public/shortcodes/class-gcw-shortcode-orcamento.php';
+require_once GCW_ABSPATH . 'public/views/class-gcw-shortcode-orcamento.php';
 
 class GCW_Public
 {
@@ -73,6 +73,8 @@ class GCW_Public
 			$gc_orcamento->export();
 		}
 
-		return GCW_Shortcode_Orcamento::render_form();
+		$orcamento = new GCW_Shortcode_Orcamento();
+
+		return $orcamento->render_form();
 	}
 }

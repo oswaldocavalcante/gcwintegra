@@ -14,7 +14,8 @@ class GCW_GC_Venda extends GCW_GC_Api {
     private $transportadora;
     private $produtos = array();
 
-    public function __construct($wc_order_id) {
+    public function __construct($wc_order_id)
+    {
         parent::__construct();
         $this->api_headers  = parent::get_headers();
         $this->api_endpoint = parent::get_endpoint_sales();
@@ -68,8 +69,8 @@ class GCW_GC_Venda extends GCW_GC_Api {
         }
     }
 
-    public function export() { 
- 
+    public function export()
+    {
         $body = array(
             'tipo'              => 'produto',
             'cliente_id'        => $this->cliente_id,
@@ -88,6 +89,5 @@ class GCW_GC_Venda extends GCW_GC_Api {
                 array( 'body' => wp_json_encode($body) ),
             ) 
         );
-
     }
 }

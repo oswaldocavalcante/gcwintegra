@@ -41,6 +41,8 @@ if (!defined('GCW_PLUGIN_FILE')) {
 	define('GCW_PLUGIN_FILE', __FILE__);
 }
 
+define('GCW_ABSPATH', dirname(GCW_PLUGIN_FILE) . '/');
+
 /**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-gestaoclick-activator.php

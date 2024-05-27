@@ -74,7 +74,6 @@ class Gestaoclick
 		} else {
 			$this->version = '1.0.0';
 		}
-		define('GCW_ABSPATH', dirname(GCW_PLUGIN_FILE) . '/');
 
 		$this->plugin_name = 'gestaoclick';
 

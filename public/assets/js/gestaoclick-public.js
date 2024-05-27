@@ -1,5 +1,10 @@
 (function ($) {
 
+    $(document).on('click', '#gcw-quote-add-item', () => {
+        var section = document.getElementById("gcw-quote-section-items");
+        add_fieldset(section.children.length + 1);
+    });
+
     function add_fieldset(item_id) {
         var section = document.getElementById("gcw-quote-section-items");
 
@@ -11,6 +16,7 @@
 
         var button_remove = fieldset.getElementsByClassName("gcw-quote-button-remove");
         button_remove[0].setAttribute('item_id', item_id);
+        button_remove[0].setAttribute('style', 'visibility: visible');
 
         var name = fieldset.getElementsByClassName(`gcw-quote-name`);
         name[0].setAttribute('name', `gcw_item_nome-${item_id}`);
@@ -29,11 +35,6 @@
 
         section.appendChild(fieldset);
     }
-
-    $(document).on('click', '#gcw-quote-add-item', () => {
-        var section = document.getElementById("gcw-quote-section-items");
-        add_fieldset(section.children.length+1);
-    });
 
     $(document).on('click', '.gcw-quote-button-remove', (event) => {
         var item_id = event.target.getAttribute('item_id');

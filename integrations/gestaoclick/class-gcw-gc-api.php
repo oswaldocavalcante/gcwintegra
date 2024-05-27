@@ -2,14 +2,18 @@
 
 class GCW_GC_Api
 {
-
     private $access_token;
     private $secret_access_token;
     private $headers;
 
-    private $endpoint_products;
+    private $endpoint_items;
     private $endpoint_categories;
     private $endpoint_attributes;
+    private $endpoint_sales;
+    private $endpoint_clients;
+    private $endpoint_transportadoras;
+    private $endpoint_situacoes;
+    private $endpoint_orcamentos;
 
     public function __construct()
     {
@@ -23,7 +27,7 @@ class GCW_GC_Api
             ),
         );
 
-        $this->endpoint_products =          'https://api.gestaoclick.com/api/produtos';
+        $this->endpoint_items =             'https://api.gestaoclick.com/api/produtos';
         $this->endpoint_categories =        'https://api.gestaoclick.com/api/grupos_produtos';
         $this->endpoint_attributes =        'https://api.gestaoclick.com/api/grades';
         $this->endpoint_sales =             'https://api.gestaoclick.com/api/vendas';
@@ -61,6 +65,25 @@ class GCW_GC_Api
         else return false;
     }
 
+    public function fetch($endpoint)
+    {
+        $items = [];
+        $proxima_pagina = 1;
+
+        do {
+            $body = wp_remote_retrieve_body(
+                wp_remote_get($endpoint . '?pagina=' . $proxima_pagina, $this->headers)
+            );
+
+            $body_array = json_decode($body, true);
+            $proxima_pagina = $body_array['meta']['proxima_pagina'];
+
+            $items = array_merge($items, $body_array['data']);
+        } while ($proxima_pagina != null);
+
+        return $items;
+    }
+
     public function get_access_token()
     {
         return $this->access_token;
@@ -76,9 +99,9 @@ class GCW_GC_Api
         return $this->headers;
     }
 
-    public function get_endpoint_products()
+    public function get_endpoint_items()
     {
-        return $this->endpoint_products;
+        return $this->endpoint_items;
     }
 
     public function get_endpoint_categories()

@@ -55,6 +55,7 @@
     line-height: 24px;
     cursor: pointer;
     text-align: center;
+    visibility: hidden;
 }
 
 #gcw-quote-section-items .gcw-quote-fieldset a.gcw-quote-button-remove:hover {
