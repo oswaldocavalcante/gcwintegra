@@ -32,6 +32,7 @@ class GCW_GC_Cliente extends GCW_GC_Api {
                 'cep'           => '',
                 'logradouro'    => '',
                 'complemento'   => '',
+                'bairro'        => '',
                 'pais'          => '',
                 'nome_cidade'   => '',
                 'estado'        => '',
