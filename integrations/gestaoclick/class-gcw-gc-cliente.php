@@ -62,7 +62,7 @@ class GCW_GC_Cliente extends GCW_GC_Api {
                         'logradouro'    => $data->get_billing_address_1(),
                         'numero'        => $data->get_meta('billing_number'),
                         'complemento'   => $data->get_billing_address_2(),
-                        'bairro'        => $data->get_meta('billing_neighbourhood'),
+                        'bairro'        => $data->get_meta('billing_neighborhood'),
                         'pais'          => $data->get_billing_country(),
                         'nome_cidade'   => $data->get_billing_city(),
                         'estado'        => $data->get_billing_state(),
