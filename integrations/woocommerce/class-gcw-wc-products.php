@@ -17,7 +17,7 @@ class GCW_WC_Products extends GCW_GC_Api {
 
     public function __construct() {
         parent::__construct();
-        $this->api_endpoint = parent::get_endpoint_products();
+        $this->api_endpoint = parent::get_endpoint_items();
         $this->api_headers =  parent::get_headers();
 
         add_filter( 'gestaoclick_import_products', array( $this, 'import' ) );
