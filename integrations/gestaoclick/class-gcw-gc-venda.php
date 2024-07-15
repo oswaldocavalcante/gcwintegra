@@ -22,22 +22,22 @@ class GCW_GC_Venda extends GCW_GC_Api {
         $this->api_endpoint = parent::get_endpoint_sales();
 
         $order = wc_get_order($wc_order_id);
-        $this->data         = $order->get_date_created()->date('Y-m-d');
-        $this->valor_frete  = $order->get_shipping_total();
-        $this->transportadora = $this->valor_frete == 0 ? '' : get_option('gcw-settings-export-trasportadora');
-        $this->desconto_valor = $order->get_discount_total();
+        $this->desconto_valor   = $order->get_discount_total();
+        $this->data             = $order->get_date_created()->date('Y-m-d');
+        $this->valor_frete      = $order->get_shipping_total();
+        $this->transportadora   = $this->valor_frete == 0 ? '' : get_option('gcw-settings-export-trasportadora');
 
         $order_items = $order->get_items();
         foreach ($order_items as $order_item) {
-            $order_item_data = $order_item->get_data();
-            $wc_product_id = $order_item_data['product_id'];
-            $wc_product = wc_get_product($wc_product_id);
-            $gc_product_id = $wc_product->get_meta('gestaoclick_gc_product_id');
+            $order_item_data    = $order_item->get_data();
+            $wc_product_id      = $order_item_data['product_id'];
+            $wc_product         = wc_get_product($wc_product_id);
+            $gc_product_id      = $wc_product->get_meta('gestaoclick_gc_product_id');
 
             $wc_variation_id = $order_item_data['variation_id'];
             if ($wc_variation_id) {
-                $wc_variation = wc_get_product($wc_variation_id);
-                $gc_variation_id = $wc_variation->get_meta('gestaoclick_gc_variation_id');
+                $wc_variation       = wc_get_product($wc_variation_id);
+                $gc_variation_id    = $wc_variation->get_meta('gestaoclick_gc_variation_id');
 
                 $this->produtos[] = array(
                     'produto' => array(
