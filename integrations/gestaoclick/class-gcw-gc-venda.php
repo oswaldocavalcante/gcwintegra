@@ -12,6 +12,7 @@ class GCW_GC_Venda extends GCW_GC_Api {
     private $data;
     private $valor_frete;
     private $transportadora;
+    private $desconto_valor;
     private $produtos = array();
 
     public function __construct($wc_order_id)
@@ -24,6 +25,7 @@ class GCW_GC_Venda extends GCW_GC_Api {
         $this->data         = $order->get_date_created()->date('Y-m-d');
         $this->valor_frete  = $order->get_shipping_total();
         $this->transportadora = $this->valor_frete == 0 ? '' : get_option('gcw-settings-export-trasportadora');
+        $this->desconto_valor = $order->get_discount_total();
 
         $order_items = $order->get_items();
         foreach ($order_items as $order_item) {
@@ -79,6 +81,7 @@ class GCW_GC_Venda extends GCW_GC_Api {
             'transportadora_id' => $this->transportadora,
             'valor_frete'       => $this->valor_frete,
             'nome_canal_venda'  => 'Internet',
+            'desconto_valor'    => $this->desconto_valor,
             'produtos'          => $this->produtos,
         );
 
