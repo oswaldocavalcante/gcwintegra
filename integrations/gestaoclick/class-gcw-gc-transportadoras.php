@@ -4,7 +4,8 @@ require_once 'class-gcw-gc-api.php';
 
 class GCW_GC_Transportadoras extends GCW_GC_Api {
 
-    private $default = null;
+    private $api_headers;
+    private $api_endpoint;
 
     public function __construct() {
         parent::__construct();

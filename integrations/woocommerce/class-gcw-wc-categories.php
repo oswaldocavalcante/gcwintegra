@@ -81,7 +81,7 @@ class GCW_WC_Categories extends GCW_GC_Api {
             $parent_term_id = 0;
 
             if($category['grupo_pai_id']) { //If category has a parent, get it to update its parent
-                $parent_term_id = $this->get_category_parent($category, $taxonomy);
+                $parent_term_id = $this->get_category_parent_id($category, $taxonomy);
             }
 
             wp_update_term(
@@ -104,7 +104,7 @@ class GCW_WC_Categories extends GCW_GC_Api {
         }
     }
 
-    public function get_category_parent( $category, $taxonomy ) {
+    public function get_category_parent_id( $category, $taxonomy ) {
         $categories = get_option('gestaoclick-categories');
 
         foreach ($categories as $parent_candidate) {
