@@ -77,6 +77,8 @@ class GCW_WC_Products extends GCW_GC_Api {
         }
 
         foreach ($products_selection as $product_data) {
+
+            // Save the product as simple or variable
             if ($product_data['possui_variacao'] == '1') {
                 $product = $this->save_product_variable($product_data);
 
@@ -114,22 +116,21 @@ class GCW_WC_Products extends GCW_GC_Api {
         $category_ids[] = $this->get_category_id($product['nome_grupo']);
 
         $product_props = array(
-            'sku' =>            $product['codigo_barra'],
-            'name' =>           $product['nome'],
-            'regular_price' =>  $product['valor_venda'],
-            'sale_price' =>     $product['valor_venda'],
-            'description' =>    $product['descricao'],
-            'stock_quantity' => $product['estoque'],
-            'date_created' =>   $product['cadastrado_em'],
-            'date_modified' =>  $product['modificado_em'],
-            'description' =>    $product['descricao'],
-            'weight' =>         $product['peso'],
-            'length' =>         $product['comprimento'],
-            'width' =>          $product['largura'],
-            'height' =>         $product['altura'],
-            'category_ids' =>   $category_ids,
-            'manage_stock' =>   'true',
-            'backorders' =>     'no',
+            'sku'           => $product['codigo_barra'],
+            'name'          => $product['nome'],
+            'regular_price' => $product['valor_venda'],
+            'sale_price'    => $product['valor_venda'],
+            'description'   => $product['descricao'],
+            'stock_quantity'=> $product['estoque'],
+            'date_created'  => $product['cadastrado_em'],
+            'date_modified' => $product['modificado_em'],
+            'description'   => $product['descricao'],
+            'weight'        => $product['peso'],
+            'length'        => $product['comprimento'],
+            'width'         => $product['largura'],
+            'height'        => $product['altura'],
+            'manage_stock'  => (int) $product['movimenta_estoque'],
+            'category_ids'  => $category_ids,
         );
 
         $product_exists = wc_get_product_id_by_sku($product_props['sku']);
@@ -152,23 +153,22 @@ class GCW_WC_Products extends GCW_GC_Api {
         $category_ids[] = $this->get_category_id($product['nome_grupo']);
 
         $product_props = array(
-            'sku' =>            $product['codigo_barra'],
-            'name' =>           $product['nome'],
-            'regular_price' =>  $product['valor_venda'],
-            'sale_price' =>     $product['valor_venda'],
-            'price' =>          $product['valor_venda'],
-            'description' =>    $product['descricao'],
-            'stock_quantity' => $product['estoque'],
-            'date_created' =>   $product['cadastrado_em'],
-            'date_modified' =>  $product['modificado_em'],
-            'description' =>    $product['descricao'],
-            'weight' =>         $product['peso'],
-            'length' =>         $product['comprimento'],
-            'width' =>          $product['largura'],
-            'height' =>         $product['altura'],
-            'category_ids' =>   $category_ids,
-            'manage_stock' =>   'true',
-            'backorders' =>     'no',
+            'sku'           => $product['codigo_barra'],
+            'name'          => $product['nome'],
+            'regular_price' => $product['valor_venda'],
+            'sale_price'    => $product['valor_venda'],
+            'price'         => $product['valor_venda'],
+            'description'   => $product['descricao'],
+            'stock_quantity'=> $product['estoque'],
+            'date_created'  => $product['cadastrado_em'],
+            'date_modified' => $product['modificado_em'],
+            'description'   => $product['descricao'],
+            'weight'        => $product['peso'],
+            'length'        => $product['comprimento'],
+            'width'         => $product['largura'],
+            'height'        => $product['altura'],
+            'manage_stock'  => (int) $product['movimenta_estoque'],
+            'category_ids'  => $category_ids,
         );
 
         $product_exists = wc_get_product_id_by_sku($product['codigo_barra']);
@@ -203,7 +203,9 @@ class GCW_WC_Products extends GCW_GC_Api {
         return $attribute;
     }
 
-    private function save_product_variable_variations( $product_variable_id, $variations ) {
+    private function save_product_variable_variations( $parent_product_id, $variations ) {
+        $parent_product = wc_get_product($parent_product_id);
+
         foreach ($variations as $variation_data) {
 
             $sku = $variation_data['variacao']['codigo'];
@@ -218,21 +220,17 @@ class GCW_WC_Products extends GCW_GC_Api {
                 $variation->add_meta_data( 'gestaoclick_gc_variation_id', (int) $variation_data['variacao']['id'], true );
             }
             
-            $variation->set_parent_id($product_variable_id);
+            $variation->set_parent_id($parent_product_id);
+            $variation->set_manage_stock($parent_product->get_manage_stock());
+            $variation->set_stock_status($parent_product->get_manage_stock() ? '' : 'onbackorder');
             $variation->set_status('publish');
             $variation->set_price($variation_data['variacao']['valores'][0]['valor_venda']);
             $variation->set_regular_price($variation_data['variacao']['valores'][0]['valor_venda']);
-            $variation->set_stock_status();
-            $variation->set_manage_stock(true);
             $variation->set_stock_quantity($variation_data['variacao']['estoque']);
-            $attributes = array(
-                'modelo' => $variation_data['variacao']['nome']
-            );
-            $variation->set_attributes($attributes);
+            $variation->set_attributes(array('modelo' => $variation_data['variacao']['nome']));
             $variation->save();
 
-            $product = wc_get_product($product_variable_id);
-            $product->save();
+            $parent_product->save(); //Needed?
         }
     }
 

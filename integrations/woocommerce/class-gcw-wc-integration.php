@@ -75,7 +75,7 @@ class GCW_WC_Integration extends WC_Integration {
             'gcw-settings-categories-selection' => array(
                 'title'         => __( 'Seleção de Categorias', 'gestaoclick' ),
                 'type'          => 'multiselect',
-                'description'   => __( 'Lista de categorias para importar seus produtos do GestãoClick.', 'gestaoclick' ),
+                'description'   => __( 'Selecione as categorias para importar seus produtos do GestãoClick.', 'gestaoclick' ),
                 'options'       => $this->gc_categorias_options,
                 'css' => 'height: 300px;',
             ),
