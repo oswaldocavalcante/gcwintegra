@@ -16,7 +16,8 @@ class GCW_WC_Products extends GCW_GC_Api {
     private $api_headers;
     public $attributes_preset;
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         $this->api_endpoint = parent::get_endpoint_items();
         $this->api_headers =  parent::get_headers();
@@ -25,7 +26,8 @@ class GCW_WC_Products extends GCW_GC_Api {
         add_filter( 'gestaoclick_import_products', array( $this, 'import' ) );
     }
 
-    public function fetch_api() {
+    public function fetch_api() 
+    {
         $products = [];
         $proxima_pagina = 1;
 
@@ -44,7 +46,8 @@ class GCW_WC_Products extends GCW_GC_Api {
         update_option( 'gestaoclick-products', $products );
     }
 
-    public function import( $products_codes ) {
+    public function import( $products_codes ) 
+    {
         if (!class_exists('WC_Product')) {
             include_once WC_ABSPATH . 'includes/abstracts/abstract-wc-product.php';
         }
@@ -101,7 +104,8 @@ class GCW_WC_Products extends GCW_GC_Api {
         wp_admin_notice(sprintf('GestãoClick: %d produtos importados com sucesso.', count($products_selection)), array('type' => 'success', 'dismissible' => true));
     }
 
-    private function get_category_id( $category_name ) {
+    private function get_category_id( $category_name ) 
+    {
         $category_object = get_term_by('slug', sanitize_title($category_name), 'product_cat');
 
         if ($category_object != false) {
@@ -154,7 +158,8 @@ class GCW_WC_Products extends GCW_GC_Api {
         return $product;
     }
 
-    private function get_product_variable_attributes( $variations ) {
+    private function get_product_variable_attributes( $variations )
+    {
         $attribute = new WC_Product_Attribute();
         $attribute->set_id(0);
         $attribute->set_name('Modelo');
@@ -170,7 +175,8 @@ class GCW_WC_Products extends GCW_GC_Api {
         return $attribute;
     }
 
-    private function save_product_variable_variations( $parent_product_id, $variations ) {
+    private function save_product_variable_variations( $parent_product_id, $variations )
+    {
         $parent_product = wc_get_product($parent_product_id);
 
         foreach ($variations as $variation_data) {
