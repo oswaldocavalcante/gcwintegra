@@ -126,15 +126,16 @@ class GCW_WC_Products extends GCW_GC_Api {
             'regular_price' => $product_data['valor_venda'],
             'sale_price'    => $product_data['valor_venda'],
             'description'   => $product_data['descricao'],
-            'stock_quantity'=> $product_data['estoque'],
             'date_created'  => $product_data['cadastrado_em'],
             'date_modified' => $product_data['modificado_em'],
             'description'   => $product_data['descricao'],
-            'weight'        => $product_data['peso'],
-            'length'        => $product_data['comprimento'],
-            'width'         => $product_data['largura'],
-            'height'        => $product_data['altura'],
+            'stock_quantity'=> $product_data['estoque'],
             'manage_stock'  => (int) $product_data['movimenta_estoque'],
+            'stock_status'  => (int) $product_data['movimenta_estoque'] ? '' : 'onbackorder',
+            'weight'        => (int) $product_data['peso']          ? $product_data['peso']         : '',
+            'length'        => (int) $product_data['comprimento']   ? $product_data['comprimento']  : '',
+            'width'         => (int) $product_data['largura']       ? $product_data['largura']      : '',
+            'height'        => (int) $product_data['altura']        ? $product_data['altura']       : '',
             'category_ids'  => $category_ids,
         );
 
@@ -194,50 +195,20 @@ class GCW_WC_Products extends GCW_GC_Api {
             }
             
             $variation->set_parent_id($parent_product_id);
+            $variation->set_status('publish');
             $variation->set_manage_stock($parent_product->get_manage_stock());
             $variation->set_stock_status($parent_product->get_manage_stock() ? '' : 'onbackorder');
-            $variation->set_status('publish');
             $variation->set_price($variation_data['variacao']['valores'][0]['valor_venda']);
             $variation->set_regular_price($variation_data['variacao']['valores'][0]['valor_venda']);
             $variation->set_stock_quantity($variation_data['variacao']['estoque']);
             $variation->set_attributes(array('modelo' => $variation_data['variacao']['nome']));
             $variation->save();
 
-            $parent_product->save();
+            $parent_product->save(); //Can it be moved to after foreach?
         }
     }
 
-    private function save_tags($product_id, $product_name)
-    {
-        $tags_selection = get_option('gcw-settings-subcategories-selection');
-        $tags = array();
-        $taxonomy = 'product_tag';
-
-        // Get tags in product name parts
-        $product_name_parts = explode(' - ', $product_name);
-        foreach ($product_name_parts as $name_part) {
-            $tag_candidates = explode('/', $name_part);
-            foreach ($tag_candidates as $tag_candidate){
-                if (in_array($tag_candidate, $tags_selection)) {
-                    $tags[] = $tag_candidate;
-                }
-            }
-        }
-
-        foreach ($tags as $tag_name) {
-            if(in_array($tag_name, $tags_selection)) {
-
-                $tag = term_exists($tag_name, $taxonomy);
-                if (!$tag) {
-                    wp_insert_term($tag_name, $taxonomy);
-                }
-
-                wp_set_object_terms($product_id, $tag_name, $taxonomy, true);
-            }
-        }
-    }
-
-    // Get all preset of attributes in WooCommerce
+    // Get all preset attributes from WooCommerce to collect them in the product name
     private function get_attributes_preset()
     {
         $taxonomies = wc_get_attribute_taxonomies();
@@ -260,6 +231,7 @@ class GCW_WC_Products extends GCW_GC_Api {
         return $attributes_selection;
     }
 
+    // Collect all attributes in the product name to be used as filters to the shop
     private function get_filters_attributes($product_name)
     {
         // Get all preset of attributes in WooCommerce

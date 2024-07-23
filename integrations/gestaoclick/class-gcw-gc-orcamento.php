@@ -9,7 +9,7 @@ class GCW_GC_Orcamento extends GCW_GC_Api {
     
     private $id = null;
     private $data = array();
-    private $produtos = array();
+    private $products = array();
 
     public function __construct($data = null, $cliente_id = null, $context = null | 'form') {
         parent::__construct();
@@ -17,19 +17,15 @@ class GCW_GC_Orcamento extends GCW_GC_Api {
         $this->api_endpoint = parent::get_endpoint_orcamentos();
 
         if($context == 'form') {
-            $this->produtos = $this->get_form_items($data);
+            $this->products = $this->get_form_items($data);
             $this->data = array(
                 "tipo"              => "produto",
                 "cliente_id"        => $cliente_id,
                 "situacao_id"       => get_option("gcw-settings-export-situacao"),
                 "nome_canal_venda"  => "Internet",
-                "produtos"          => $this->produtos,
+                "products"          => $this->products,
             );
         }
-    }
-
-    public function get_id() {
-        return $this->id;
     }
 
     public function set_props($props) {
@@ -60,7 +56,7 @@ class GCW_GC_Orcamento extends GCW_GC_Api {
             if(array_keys($orcamento)[$i] == "gcw_item_nome-{$item_id}") {
                 array_push($items, array(
                     "produto" => [
-                        "nome_produto"  => sanitize_text_field($orcamento["gcw_item_nome-{$item_id}"]) . " - " .
+                        "nome_produto"  =>  sanitize_text_field($orcamento["gcw_item_nome-{$item_id}"]) . " - " .
                                             sanitize_text_field($orcamento["gcw_item_descricao-{$item_id}"]),
                         "detalhes"      =>  sanitize_text_field($orcamento["gcw_item_tamanho-{$item_id}"]),
                         "quantidade"    =>  sanitize_text_field($orcamento["gcw_item_quantidade-{$item_id}"]),

@@ -2,7 +2,8 @@
 
 require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-orcamento.php';
 require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-cliente.php';
-require_once GCW_ABSPATH . 'public/views/class-gcw-shortcode-orcamento.php';
+require_once GCW_ABSPATH . 'public/views/shortcodes/class-gcw-shortcode-quote-form.php';
+require_once GCW_ABSPATH . 'public/views/shortcodes/class-gcw-shortcode-quote-woocommerce.php';
 
 class GCW_Public
 {
@@ -63,7 +64,7 @@ class GCW_Public
 	 *
 	 * @since    1.0.0
 	 */
-	public function shortcode_orcamento()
+	public function shortcode_quote_form()
 	{
 		if (isset($_POST['gcw_nonce_orcamento']) && wp_verify_nonce($_POST['gcw_nonce_orcamento'], 'gcw_form_orcamento')) {
 			$gc_cliente = new GCW_GC_Cliente($_POST, 'form');
@@ -76,5 +77,213 @@ class GCW_Public
 		$orcamento = new GCW_Shortcode_Orcamento();
 
 		return $orcamento->render_form();
+	}
+
+	public function shortcode_quote_woocommerce()
+	{
+		$quote = new GCW_Shortcode_Quote();
+
+		return $quote->render_quote();
+	}
+
+	public function register_quote_endpoint()
+	{
+		add_rewrite_endpoint('quote', EP_ROOT | EP_PAGES);
+	}
+
+	public function create_quote_post_type()
+	{
+		$labels = array(
+			'name' 				=> 'Orçamentos',
+			'singular_name' 	=> 'Orçamento',
+			'add_new' 			=> 'Adicionar novo',
+			'add_new_item' 		=> 'Adicionar novo Orçamento',
+			'edit_item' 		=> 'Editar Orçamento',
+			'new_item' 			=> 'Novo Orçamento',
+			'all_items' 		=> 'Todos os Orçamentos',
+			'view_item' 		=> 'Ver Orçamento',
+			'search_items' 		=> 'Buscar Orçamentos',
+			'not_found' 		=> 'Nenhum Orçamento encontrado',
+			'not_found_in_trash'=> 'Nenhum Orçamento encontrado na Lixeira',
+			'menu_name' 		=> 'Orçamentos',
+			'show_in_menu' 		=> false,
+		);
+
+		$args = array(
+			'labels' 		=> $labels,
+			'public' 		=> true,
+			'has_archive' 	=> true,
+			'rewrite' 		=> array('slug' => 'quote'),
+			'supports' 		=> array('title', 'editor', 'custom-fields')
+		);
+
+		register_post_type('quote', $args);
+	}
+
+	public function include_template_quote($template) 
+	{
+		if (is_singular('quote')) {
+			// Caminho para o template no diretório do plugin
+			$template = plugin_dir_path(__FILE__) . 'views/templates/single-quote.php';
+			if (file_exists($template)) {
+				return $template;
+			}
+		}
+
+		return $template;
+	}
+
+	public function add_to_quote_button()
+	{
+		$product = wc_get_product(get_the_ID());
+
+		if ($product) {
+			if ($product->get_stock_status() == 'onbackorder') 
+			{
+				wp_enqueue_script(	$this->plugin_name . '-add-to-quote-button', 	plugin_dir_url(__FILE__) . 'assets/js/gcw-add-to-quote-button.js', 	array('jquery'), $this->version, 	false);
+				wp_enqueue_style(	$this->plugin_name . '-add-to-quote-button', 	plugin_dir_url(__FILE__) . 'assets/css/gcw-add-to-quote-button.css', 	array(), $this->version, 			'all');
+				echo '<div id="gcw_add_to_quote_button" class="disabled" product_id="' . get_the_ID() . '">Adicionar ao orçamento</div>';
+
+				// Differs the script for variable and simple products
+				if ($product->has_child()) {
+					wp_enqueue_script($this->plugin_name . '-add-to-quote-variation', 	plugin_dir_url(__FILE__) . 'assets/js/gcw-add-to-quote-variation.js', 	array('jquery'), $this->version, true);
+					wp_localize_script($this->plugin_name . '-add-to-quote-variation', 'gcw_add_to_quote_variation', array(
+						'url' => admin_url('admin-ajax.php'),
+						'nonce' => wp_create_nonce('gcw_add_to_quote_variation')
+					));
+				} else {
+					wp_enqueue_script($this->plugin_name . '-add-to-quote-simple', 	plugin_dir_url(__FILE__) . 'assets/js/gcw-add-to-quote-simple.js', 	array('jquery'), $this->version, true);
+					wp_localize_script($this->plugin_name . '-add-to-quote-simple', 'gcw_add_to_quote_simple', array(
+						'url' => admin_url('admin-ajax.php'),
+						'nonce' => wp_create_nonce('gcw_add_to_quote_simple')
+					));
+				}
+			}
+		}
+	}
+
+	public function ajax_add_to_quote_variation()
+	{
+		if(isset($_POST['variation_id'])) {
+			$parent_id 		= sanitize_text_field($_POST['parent_id']);
+			$variation_id 	= sanitize_text_field($_POST['variation_id']);
+			$quantity 		= sanitize_text_field($_POST['quantity']);
+			$user_id 		= get_current_user_id();
+
+			// Verificar se o usuário já possui uma cotação aberta
+			$args = array(
+				'post_type' 	=> 'quote',
+				'post_status' 	=> 'draft',
+				'author' 		=> $user_id,
+				'meta_query' 	=> array(
+										array(
+											'key' 		=> 'status',
+											'value' 	=> 'open',
+											'compare' 	=> '='
+										)
+				)
+			);
+
+			$quotes = get_posts($args);
+
+			if (empty($quotes)) {
+				// Criar uma nova cotação
+				$quote_id = wp_insert_post(array(
+					'post_title' 	=> 'Orçamento',
+					'post_status' 	=> 'draft',
+					'post_type' 	=> 'quote',
+					'post_author' 	=> $user_id
+				));
+
+				// Marcar a cotação como aberta
+				update_post_meta($quote_id, 'status', 'open');
+			} else {
+				// Usar a cotação existente
+				$quote_id = $quotes[0]->ID;
+			}
+
+			// Adicionar o produto à lista de produtos da cotação
+			$items = get_post_meta($quote_id, 'items', true);
+			if (empty($items)) {
+				$items = array();
+			}
+			$items[] = array(
+				'product_id'=> $variation_id,
+				'quantity'	=> $quantity,
+			);
+			
+			if(update_post_meta($quote_id, 'items', $items)) {
+				$message = 'Produto adicionado ao orçamento com sucesso! <a href="' . esc_url(get_permalink($quote_id)) . '" class="button">Ver orçamento</a>';
+				wc_add_notice($message, 'success');
+				// Redireciona para a página do produto com uma mensagem de sucesso
+				$redirect_url = get_permalink($parent_id);
+				wp_send_json_success(array('redirect_url' => $redirect_url));
+			}
+
+		} else {
+			wp_send_json_error('Não foi possíve adicionar o item ao orçamento.');
+		}
+	}
+
+	public function ajax_add_to_quote_simple()
+	{
+		if (isset($_POST['product_id'])) {
+			$product_id = sanitize_text_field($_POST['product_id']);
+			$quantity 	= sanitize_text_field($_POST['quantity']);
+			$user_id 	= get_current_user_id();
+
+			// Verificar se o usuário já possui uma cotação aberta
+			$args = array(
+				'post_type' => 'quote',
+				'post_status' => 'draft',
+				'author' => $user_id,
+				'meta_query' => array(
+					array(
+						'key' => 'status',
+						'value' => 'open',
+						'compare' => '='
+					)
+				)
+			);
+
+			$quotes = get_posts($args);
+
+			if (empty($quotes)) {
+				// Criar uma nova cotação
+				$quote_id = wp_insert_post(array(
+					'post_title' 	=> 'Orçamento',
+					'post_status' 	=> 'draft',
+					'post_type' 	=> 'quote',
+					'post_author' 	=> $user_id
+				));
+
+				// Marcar a cotação como aberta
+				update_post_meta($quote_id, 'status', 'open');
+			} else {
+				// Usar a cotação existente
+				$quote_id = $quotes[0]->ID;
+			}
+
+			// Adicionar o produto à lista de produtos da cotação
+			$items = get_post_meta($quote_id, 'items', true);
+			if (empty($items)) {
+				$items = array();
+			}
+			$items[] = array(
+				'product_id' => $product_id,
+				'quantity'	=> $quantity,
+			);
+
+			if (update_post_meta($quote_id, 'items', $items)) {
+				$message = 'Produto adicionado ao orçamento com sucesso! <a href="' . esc_url(get_permalink($quote_id)) . '" class="button">Ver orçamento</a>';
+				wc_add_notice($message, 'success');
+				// Redireciona para a página do produto com uma mensagem de sucesso
+				$redirect_url = get_permalink($product_id);
+				wp_send_json_success(array('redirect_url' => $redirect_url));
+			}
+
+		} else {
+			wp_send_json_error('Não foi possíve adicionar o item ao orçamento.');
+		}
 	}
 }

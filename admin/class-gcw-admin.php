@@ -193,6 +193,21 @@ class GCW_Admin {
 		);
 	}
 
+	/**
+	 * Add a post display state for special WC pages in the page list table.
+	 *
+	 * @param array   $post_states An array of post display states.
+	 * @param WP_Post $post        The current post object.
+	 */
+	public function add_display_post_states($post_states, $post)
+	{
+		if ( get_page_by_title('Orçamento')->ID == $post->ID ) {
+			$post_states[] = __('Página do orçamento', 'gestaoclick');
+		}
+
+		return $post_states;
+	}
+
 	public function add_stone_webhook() {
 		$this->cs_webhook = new GCW_CS_Webhook();
 	}

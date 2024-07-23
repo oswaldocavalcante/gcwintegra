@@ -159,6 +159,7 @@ class Gestaoclick
 		$this->loader->add_action('admin_init', $plugin_admin, 'register_settings');
 		$this->loader->add_filter('woocommerce_integrations', 	$plugin_admin, 'add_woocommerce_integration');
 		$this->loader->add_action('gestaoclick_update', $plugin_admin, 'import_gestaoclick');
+		$this->loader->add_action('display_post_states', $plugin_admin, 'add_display_post_states', 10, 2);
 
 		if (get_option('gcw-settings-export-orders') == 'yes') {
 			$this->loader->add_action('woocommerce_order_status_processing', $plugin_admin, 'export_order');
@@ -175,7 +176,16 @@ class Gestaoclick
 
 		$this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_styles');
 		$this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_scripts');
-		add_shortcode('gestaoclick_orcamento', array($plugin_public, 'shortcode_orcamento'));
+		
+		$this->loader->add_action('init', $plugin_public, 'register_quote_endpoint');
+		$this->loader->add_action('init', $plugin_public, 'create_quote_post_type');
+		$this->loader->add_action('template_include', $plugin_public, 'include_template_quote');
+		$this->loader->add_action('woocommerce_after_add_to_cart_button', $plugin_public, 'add_to_quote_button');
+		$this->loader->add_action('wp_ajax_gcw_add_to_quote_variation', $plugin_public, 'ajax_add_to_quote_variation');
+		$this->loader->add_action('wp_ajax_gcw_add_to_quote_simple', $plugin_public, 'ajax_add_to_quote_simple');
+
+		add_shortcode('gestaoclick_orcamento_formulario', array($plugin_public, 'shortcode_quote_form'));
+		add_shortcode('gestaoclick_orcamento_woocommerce', array($plugin_public, 'shortcode_quote_woocommerce'));
 	}
 
 	/**
