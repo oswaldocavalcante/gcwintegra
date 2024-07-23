@@ -86,53 +86,6 @@ class GCW_Public
 		return $quote->render_quote();
 	}
 
-	public function register_quote_endpoint()
-	{
-		add_rewrite_endpoint('quote', EP_ROOT | EP_PAGES);
-	}
-
-	public function create_quote_post_type()
-	{
-		$labels = array(
-			'name' 				=> 'Orçamentos',
-			'singular_name' 	=> 'Orçamento',
-			'add_new' 			=> 'Adicionar novo',
-			'add_new_item' 		=> 'Adicionar novo Orçamento',
-			'edit_item' 		=> 'Editar Orçamento',
-			'new_item' 			=> 'Novo Orçamento',
-			'all_items' 		=> 'Todos os Orçamentos',
-			'view_item' 		=> 'Ver Orçamento',
-			'search_items' 		=> 'Buscar Orçamentos',
-			'not_found' 		=> 'Nenhum Orçamento encontrado',
-			'not_found_in_trash'=> 'Nenhum Orçamento encontrado na Lixeira',
-			'menu_name' 		=> 'Orçamentos',
-			'show_in_menu' 		=> false,
-		);
-
-		$args = array(
-			'labels' 		=> $labels,
-			'public' 		=> true,
-			'has_archive' 	=> true,
-			'rewrite' 		=> array('slug' => 'quote'),
-			'supports' 		=> array('title', 'editor', 'custom-fields')
-		);
-
-		register_post_type('quote', $args);
-	}
-
-	public function include_template_quote($template) 
-	{
-		if (is_singular('quote')) {
-			// Caminho para o template no diretório do plugin
-			$template = plugin_dir_path(__FILE__) . 'views/templates/single-quote.php';
-			if (file_exists($template)) {
-				return $template;
-			}
-		}
-
-		return $template;
-	}
-
 	public function add_to_quote_button()
 	{
 		$product = wc_get_product(get_the_ID());
@@ -189,7 +142,7 @@ class GCW_Public
 			if (empty($quotes)) {
 				// Criar uma nova cotação
 				$quote_id = wp_insert_post(array(
-					'post_title' 	=> 'Orçamento',
+					'post_title' 	=> 'Orçamento ' . sizeof($quotes) + 1,
 					'post_status' 	=> 'draft',
 					'post_type' 	=> 'quote',
 					'post_author' 	=> $user_id

@@ -189,8 +189,56 @@ class GCW_Admin {
 				wp_redirect($url);
 				exit;
 			},
-			3,
+			10,
 		);
+	}
+
+	public function register_quote_endpoint()
+	{
+		add_rewrite_endpoint('quote', EP_ROOT | EP_PAGES);
+	}
+
+	public function create_quote_post_type()
+	{
+		$labels = array(
+			'name' 				=> 'Orçamentos',
+			'singular_name' 	=> 'Orçamento',
+			'add_new' 			=> 'Adicionar novo',
+			'add_new_item' 		=> 'Adicionar novo Orçamento',
+			'edit_item' 		=> 'Editar Orçamento',
+			'new_item' 			=> 'Novo Orçamento',
+			'all_items' 		=> 'Orçamentos',
+			'view_item' 		=> 'Ver Orçamento',
+			'search_items' 		=> 'Buscar Orçamentos',
+			'not_found' 		=> 'Nenhum Orçamento encontrado',
+			'not_found_in_trash' => 'Nenhum Orçamento encontrado na Lixeira',
+			'menu_name' 		=> 'Orçamentos',
+		);
+
+		$args = array(
+			'labels' 		=> $labels,
+			'public' 		=> true,
+			'has_archive' 	=> true,
+			'show_in_menu' 	=> 'gestaoclick',
+			'rewrite' 		=> array('slug' => 'quote'),
+			'supports' 		=> array('title', 'editor', 'custom-fields'),
+			'menu_position' => 4,
+		);
+
+		register_post_type('quote', $args);
+	}
+
+	public function include_template_quote($template)
+	{
+		if (is_singular('quote')) {
+			// Caminho para o template no diretório do plugin
+			$template = GCW_ABSPATH . 'public/views/templates/single-quote.php';
+			if (file_exists($template)) {
+				return $template;
+			}
+		}
+
+		return $template;
 	}
 
 	/**
