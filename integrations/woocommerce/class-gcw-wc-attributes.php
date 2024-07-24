@@ -61,7 +61,7 @@ class GCW_WC_Attributes extends GCW_GC_Api {
     //         $this->save($attribute);
     //     }
 
-    //     do_action('wp_admin_notice', sprintf('GestãoClick: %d atributos importados com sucesso.', count($selected_attributes)), array('type' => 'success', 'dismissible' => true));
+    //     wp_admin_notice(sprintf('GestãoClick: %d atributos importados com sucesso.', count($selected_attributes)), array('type' => 'success', 'dismissible' => true));
     // }
 
     // private function save( $attribute_data ) {

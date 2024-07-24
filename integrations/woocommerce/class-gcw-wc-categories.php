@@ -72,7 +72,7 @@ class GCW_WC_Categories extends GCW_GC_Api {
             $this->save( $category );
         }
 
-        do_action('wp_admin_notice', sprintf('GestãoClick: %d categorias importadas com sucesso.', count($selected_categories)), array('type' => 'success', 'dismissible' => true));
+        wp_admin_notice(sprintf('GestãoClick: %d categorias importadas com sucesso.', count($selected_categories)), array('type' => 'success', 'dismissible' => true));
     }
 
     private function save( $category )

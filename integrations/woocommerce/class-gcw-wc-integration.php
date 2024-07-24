@@ -137,7 +137,7 @@ class GCW_WC_Integration extends WC_Integration {
         if( GCW_GC_Api::test_connection() ) {
             echo '<span class="gcw-integration-connection dashicons-before dashicons-yes-alt">' . esc_html( __('Conectado', 'gestaoclick') ) . '</span>';
         } else {
-            do_action('wp_admin_notice', __( 'GestaoClick: Preencha corretamente suas credenciais de acesso.', 'gestaoclick' ), array( 'error' ) );
+            wp_admin_notice(__( 'GestaoClick: Preencha corretamente suas credenciais de acesso.', 'gestaoclick' ), array( 'error' ) );
         }
 
         $this->set_auto_imports( get_option( 'gcw-settings-auto-imports') );

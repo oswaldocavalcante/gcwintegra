@@ -64,7 +64,7 @@ class GCW_Admin {
 		$this->version = $version;
 
 		if (!$this->is_woocommerce_active()) {
-			do_action( 'wp_admin_notice',
+			wp_admin_notice(
 				wp_kses(
 					sprintf( 
 						// translators: "Placeholder for Woocommerce link"
@@ -271,7 +271,7 @@ class GCW_Admin {
 			$this->products->fetch_api();
 			require_once plugin_dir_path(dirname(__FILE__)) . 'admin/views/gcw-admin-page-products.php';
 		} else {
-			do_action( 'wp_admin_notice', __('GestãoClick: configure suas credenciais de acesso.', 'gestaoclick'), array('type' => 'error', 'dismissible' => true));
+			wp_admin_notice(__('GestãoClick: configure suas credenciais de acesso.', 'gestaoclick'), array('type' => 'error', 'dismissible' => true));
 		}
 	}
 
@@ -286,7 +286,7 @@ class GCW_Admin {
 			$this->categories->fetch_api();
 			require_once plugin_dir_path(dirname(__FILE__)) . 'admin/views/gcw-admin-page-categories.php';
 		} else {
-			do_action('wp_admin_notice', __('GestãoClick: configure suas credenciais de acesso.', 'gestaoclick'), array('type' => 'error', 'dismissible' => true));
+			wp_admin_notice(__('GestãoClick: configure suas credenciais de acesso.', 'gestaoclick'), array('type' => 'error', 'dismissible' => true));
 		}
 	}
 
@@ -301,7 +301,7 @@ class GCW_Admin {
 			$this->attributes->fetch_api();
 			require_once plugin_dir_path(dirname(__FILE__)) . 'admin/views/gcw-admin-page-attributes.php';
 		} else {
-			do_action('wp_admin_notice', __('GestãoClick: configure suas credenciais de acesso.', 'gestaoclick'), array('type' => 'error', 'dismissible' => true));
+			wp_admin_notice(__('GestãoClick: configure suas credenciais de acesso.', 'gestaoclick'), array('type' => 'error', 'dismissible' => true));
 		}
 	}
 
