@@ -3,3 +3,5 @@ public/.DS_Store
 .vscode/launch.json
 .DS_Store
 gestaoclick.code-workspace
+vendor/
+wp-content/

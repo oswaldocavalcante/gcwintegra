@@ -176,9 +176,6 @@ class Gestaoclick
 	private function define_public_hooks()
 	{
 		$plugin_public = new GCW_Public($this->get_plugin_name(), $this->get_version());
-
-		$this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_styles');
-		$this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_scripts');
 		
 		$this->loader->add_action('woocommerce_after_add_to_cart_button', $plugin_public, 'add_to_quote_button');
 		$this->loader->add_action('wp_ajax_gcw_add_to_quote_variation', $plugin_public, 'ajax_add_to_quote_variation');

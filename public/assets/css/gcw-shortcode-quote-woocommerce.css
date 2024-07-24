@@ -1,0 +1,138 @@
+#gcw-quote-woocommerce-container
+{
+    margin-top: 50px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+}
+
+/* Table of quote items */
+
+#gcw-quote-woocommerce-form 
+{
+    /* width: calc(100% - 426px); */
+    /* padding-right: 60px; */
+    background: #fff;
+    flex: 2.8;
+}
+
+#gcw-quote-woocommerce-form table
+{
+    margin-bottom: 0;
+}
+
+#gcw-quote-woocommerce-form table tbody tr:nth-child(odd)
+{
+    background-color: #F8F8F8;
+}
+
+#gcw-quote-woocommerce-form .product-remove a
+{
+    text-decoration: none;
+    color: #bfcad0;
+}
+
+
+#gcw-quote-woocommerce-form .product-remove a:before
+{
+    font-family: WooCommerce;
+    content: '\e013';
+    margin-left: 10px;
+}
+
+#gcw-quote-woocommerce-form .product-remove a:hover
+{
+    color: red;
+}
+
+#gcw-quote-woocommerce-form .product-thumbnail img
+{
+    max-width: 75px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: 1px solid #ebebeb;
+}
+
+#gcw-quote-woocommerce-form td.product-name
+{
+    font-size: 0.9em;
+    line-height: 1.5em;
+}
+
+#gcw-quote-woocommerce-form .product-name a
+{
+    color: #5d707a;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+#gcw-quote-woocommerce-form .product-quantity input
+{
+    width: 80px;
+    border-radius: 7px;
+    padding: 0;
+    text-align: center;
+}
+
+#gcw-quote-woocommerce-form .actions
+{
+    text-align: right;
+    padding: 0px;
+    background-color: #fff;
+}
+
+#gcw-quote-woocommerce-form button[type="submit"]
+{
+    font-family: unset;
+    font-size: 0.9em;
+    padding: 17px 22px;
+    margin: 20px 0;
+    background-color: #5d707a;
+    border-radius: 7px;
+    color: #fff;
+    opacity: 80%;
+}
+
+#gcw-quote-woocommerce-form button[type="submit"]:hover
+{
+    opacity: 100%;
+}
+
+#gcw-quote-woocommerce-form button[type="submit"]::before
+{
+    font-family: WooCommerce;
+    content: '\e014';
+    font-weight: normal;
+    margin-right: 10px;
+}
+
+/* Total price of quote */
+
+#gcw-quote-woocommerce-totals
+{
+    flex: 1;
+    min-width: 350px;
+    height: fit-content;
+    border: 1px solid #ebebeb;
+    border-radius: 10px;
+    background-color: #f8f8f8;
+    /* padding: 30px 40px; */
+    overflow: hidden;
+}
+
+#gcw-quote-woocommerce-totals h2
+{
+    font-size: 1.2em;
+    font-weight: bold;
+    margin: 0;
+    padding: 20px 40px;
+    background-color: #e8ebec;
+    color: #8a959b;
+}
+
+#gcw-quote-woocommerce-totals p
+{
+    padding: 20px 40px;
+    font-size: 1em;
+    margin: 0;
+}

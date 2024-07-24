@@ -40,26 +40,6 @@ class GCW_Public
 	}
 
 	/**
-	 * Register the stylesheets for the public-facing side of the site.
-	 *
-	 * @since    1.0.0
-	 */
-	public function enqueue_styles()
-	{
-		wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'assets/css/gestaoclick-public.css', array(), $this->version, 'all');
-	}
-
-	/**
-	 * Register the JavaScript for the public-facing side of the site.
-	 *
-	 * @since    1.0.0
-	 */
-	public function enqueue_scripts()
-	{
-		wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'assets/js/gestaoclick-public.js', array('jquery'), $this->version, false);
-	}
-
-	/**
 	 * Insert the Orçamento form in its shortcode place.
 	 *
 	 * @since    1.0.0
@@ -74,16 +54,18 @@ class GCW_Public
 			$gc_orcamento->export();
 		}
 
-		$orcamento = new GCW_Shortcode_Orcamento();
+		wp_enqueue_script($this->plugin_name . '-shortcode-quote-form', plugin_dir_url(__FILE__) . 'assets/js/gcw-shortcode-quote-form.js', array('jquery'), $this->version, false);
+		wp_enqueue_style($this->plugin_name . '-shortcode-quote-form', plugin_dir_url(__FILE__) . 'assets/css/gcw-shortcode-quote-form.css', array(), $this->version, 'all');
+		$quote_form = new GCW_Shortcode_Quote_Form();
 
-		return $orcamento->render_form();
+		return $quote_form->render_form();
 	}
 
 	public function shortcode_quote_woocommerce()
 	{
-		$quote = new GCW_Shortcode_Quote();
-
-		return $quote->render_quote();
+		wp_enqueue_style($this->plugin_name . '-shortcode-quote-woocommerce', plugin_dir_url(__FILE__) . 'assets/css/gcw-shortcode-quote-woocommerce.css', 	array(), $this->version, 'all');
+		$quote = new GCW_Shortcode_Quote_WooCommmerce();
+		return $quote->render();
 	}
 
 	public function add_to_quote_button()
@@ -93,8 +75,8 @@ class GCW_Public
 		if ($product) {
 			if ($product->get_stock_status() == 'onbackorder') 
 			{
-				wp_enqueue_script(	$this->plugin_name . '-add-to-quote-button', 	plugin_dir_url(__FILE__) . 'assets/js/gcw-add-to-quote-button.js', 	array('jquery'), $this->version, 	false);
-				wp_enqueue_style(	$this->plugin_name . '-add-to-quote-button', 	plugin_dir_url(__FILE__) . 'assets/css/gcw-add-to-quote-button.css', 	array(), $this->version, 			'all');
+				wp_enqueue_script($this->plugin_name . '-add-to-quote-button', plugin_dir_url(__FILE__) . 'assets/js/gcw-add-to-quote-button.js', array('jquery'), $this->version, false);
+				wp_enqueue_style($this->plugin_name . '-add-to-quote-button', plugin_dir_url(__FILE__) . 'assets/css/gcw-add-to-quote-button.css', array(), $this->version, 'all');
 				echo '<div id="gcw_add_to_quote_button" class="disabled" product_id="' . get_the_ID() . '">Adicionar ao orçamento</div>';
 
 				// Differs the script for variable and simple products

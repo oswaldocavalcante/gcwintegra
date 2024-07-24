@@ -2,7 +2,7 @@
 
 require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-api.php';
 
-class GCW_Shortcode_Orcamento extends GCW_GC_Api
+class GCW_Shortcode_Quote_Form extends GCW_GC_Api
 {
     private $api_endpoint;
     private $api_headers;
