@@ -44,40 +44,40 @@ class GCW_WC_Attributes extends GCW_GC_Api {
         update_option( 'gestaoclick-attributes', $attributes );
     }
 
-    public function import( $attributes_ids ) {
-        $attributes = get_option('gestaoclick-attributes');
-        $selected_attributes = array();
+    // public function import( $attributes_ids ) {
+    //     $attributes = get_option('gestaoclick-attributes');
+    //     $selected_attributes = array();
 
-        // Filtering selected attributes
-        if (is_array($attributes_ids)){
-            $selected_attributes = array_filter($attributes, function ($item) use ($attributes_ids) {
-                return in_array($item['id'], $attributes_ids);
-            });
-        } elseif ($attributes_ids == 'all') {
-            $selected_attributes = $attributes;
-        }
+    //     // Filtering selected attributes
+    //     if (is_array($attributes_ids)){
+    //         $selected_attributes = array_filter($attributes, function ($item) use ($attributes_ids) {
+    //             return in_array($item['id'], $attributes_ids);
+    //         });
+    //     } elseif ($attributes_ids == 'all') {
+    //         $selected_attributes = $attributes;
+    //     }
 
-        foreach ($selected_attributes as $attribute ) {
-            $this->save($attribute);
-        }
+    //     foreach ($selected_attributes as $attribute ) {
+    //         $this->save($attribute);
+    //     }
 
-        wp_admin_notice(sprintf('GestãoClick: %d atributos importados com sucesso.', count($selected_attributes)), array('type' => 'success', 'dismissible' => true));
-    }
+    //     do_action('wp_admin_notice', sprintf('GestãoClick: %d atributos importados com sucesso.', count($selected_attributes)), array('type' => 'success', 'dismissible' => true));
+    // }
 
-    private function save( $attribute_data ) {
-        $attribute_name = $attribute_data['nome'];
-        $attribute = get_term_by('name', $attribute_name, 'pa');
+    // private function save( $attribute_data ) {
+    //     $attribute_name = $attribute_data['nome'];
+    //     $attribute = get_term_by('name', $attribute_name, 'pa');
 
-        if (!$attribute) {
-            $attribute_args = array(
-                'name' => $attribute_name,
-                'slug' => sanitize_title($attribute_name),
-            );
-            $attribute_id = wc_create_attribute($attribute_args);
-        } else {
-            $attribute_id = $attribute->get_id();
-            $attribute->name = $attribute_data['nome'];
-            wp_update_term( $attribute_id, 'pa', array( 'name' => $new_name, 'slug' => sanitize_title( $new_name ) ) );
-        }
-    }
+    //     if (!$attribute) {
+    //         $attribute_args = array(
+    //             'name' => $attribute_name,
+    //             'slug' => sanitize_title($attribute_name),
+    //         );
+    //         $attribute_id = wc_create_attribute($attribute_args);
+    //     } else {
+    //         $attribute_id = $attribute->get_id();
+    //         $attribute->name = $attribute_data['nome'];
+    //         wp_update_term( $attribute_id, 'pa', array( 'name' => $new_name, 'slug' => sanitize_title( $new_name ) ) );
+    //     }
+    // }
 }

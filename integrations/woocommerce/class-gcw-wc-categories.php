@@ -25,7 +25,8 @@ class GCW_WC_Categories extends GCW_GC_Api {
         add_filter( 'gestaoclick_import_categories', array( $this, 'import' ) );
     }
 
-    public function fetch_api() {
+    public function fetch_api()
+    {
         $categories = [];
         $proxima_pagina = 1;
 
@@ -42,16 +43,18 @@ class GCW_WC_Categories extends GCW_GC_Api {
         } while ( $proxima_pagina != null );
 
         update_option( 'gestaoclick-categories', $categories );
+        return $categories;
     }
 
-    public function import( $categories_ids ) {
+    public function import( $categories_ids )
+    {
         $categories             = get_option( 'gestaoclick-categories' );
         $categories_selection   = get_option( 'gcw-settings-categories-selection' );
         $selected_categories    = array();
 
         if( $categories_selection ) {
             $filtered_categories = array_filter($categories, function ($item) use ($categories_selection) {
-                return (in_array($item['nome'], $categories_selection));
+                return (in_array($item['id'], $categories_selection));
             });
             $categories = $filtered_categories;
         }
@@ -69,10 +72,11 @@ class GCW_WC_Categories extends GCW_GC_Api {
             $this->save( $category );
         }
 
-        wp_admin_notice(sprintf('GestãoClick: %d categorias importadas com sucesso.', count($selected_categories)), array('type' => 'success', 'dismissible' => true));
+        do_action('wp_admin_notice', sprintf('GestãoClick: %d categorias importadas com sucesso.', count($selected_categories)), array('type' => 'success', 'dismissible' => true));
     }
 
-    private function save( $category ) {
+    private function save( $category )
+    {
         $taxonomy       = 'product_cat';
         $category_term  = get_term_by( 'slug', sanitize_title($category['nome'] ), $taxonomy );
 
@@ -104,7 +108,8 @@ class GCW_WC_Categories extends GCW_GC_Api {
         }
     }
 
-    public function get_category_parent_id( $category, $taxonomy ) {
+    public function get_category_parent_id( $category, $taxonomy )
+    {
         $categories = get_option('gestaoclick-categories');
 
         foreach ($categories as $parent_candidate) {
@@ -115,5 +120,17 @@ class GCW_WC_Categories extends GCW_GC_Api {
         }
 
         return false;
+    }
+
+    public function get_options_for_settings()
+    {
+        $categorias = $this->fetch_api();
+        $array_options = [];
+
+        foreach ($categorias as $categoria) {
+            $array_options[$categoria['id']] = $categoria['nome'];
+        }
+
+        return $array_options;
     }
 }

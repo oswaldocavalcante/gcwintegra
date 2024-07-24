@@ -3,6 +3,7 @@
 require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-api.php';
 require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-transportadoras.php';
 require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-situacoes.php';
+require_once GCW_ABSPATH . 'integrations/woocommerce/class-gcw-wc-categories.php';
 
 class GCW_WC_Integration extends WC_Integration {
 
@@ -14,7 +15,7 @@ class GCW_WC_Integration extends WC_Integration {
 
     private $gc_transportadoras_options = null;
     private $gc_situacoes_options = null;
-    private $gc_categorias_options = array();
+    private $gc_categorias_options = null;
 
     public function __construct() {
         $this->id = 'gestaoclick';
@@ -31,15 +32,18 @@ class GCW_WC_Integration extends WC_Integration {
     public function init_form_fields() {
         if( GCW_GC_Api::test_connection() ) {
             $gc_transportadoras = new GCW_GC_Transportadoras();
-            $this->gc_transportadoras_options = $gc_transportadoras->get_select_options();
+            $this->gc_transportadoras_options = $gc_transportadoras->get_options_for_settings();
 
             $gc_situacoes = new GCW_GC_Situacoes();
-            $this->gc_situacoes_options = $gc_situacoes->get_select_options();
+            $this->gc_situacoes_options = $gc_situacoes->get_options_for_settings();
 
-            $gc_categorias = get_option('gestaoclick-categories');
-            foreach ($gc_categorias as $gc_categoria) {
-                $this->gc_categorias_options[] = $gc_categoria['nome'];
-            }
+            // $gc_categorias = get_option('gestaoclick-categories'); //TODO: Obter a partir da API
+            // foreach ($gc_categorias as $gc_categoria) {
+            //     $this->gc_categorias_options[] = $gc_categoria['nome'];
+            // }
+
+            $gc_categorias = new GCW_WC_Categories();
+            $this->gc_categorias_options = $gc_categorias->get_options_for_settings();
         }
 
         $this->form_fields = array(
@@ -119,7 +123,7 @@ class GCW_WC_Integration extends WC_Integration {
         update_option( 'gcw-api-secret-access-token',       $this->settings['gcw-api-secret-access-token'] );
 
         update_option( 'gcw-settings-auto-imports',         $this->settings['gcw-settings-auto-imports'] );
-        update_option( 'gcw-settings-categories-selection', array_values(array_intersect_key($this->gc_categorias_options, array_flip($this->settings['gcw-settings-categories-selection']))) );
+        update_option( 'gcw-settings-categories-selection', $this->settings['gcw-settings-categories-selection'] );
         update_option( 'gcw-settings-products-blacklist',   explode(PHP_EOL, $this->settings['gcw-settings-products-blacklist'] ) );
 
         update_option( 'gcw-settings-export-orders',        $this->settings['gcw-settings-export-orders'] );
@@ -133,7 +137,7 @@ class GCW_WC_Integration extends WC_Integration {
         if( GCW_GC_Api::test_connection() ) {
             echo '<span class="gcw-integration-connection dashicons-before dashicons-yes-alt">' . esc_html( __('Conectado', 'gestaoclick') ) . '</span>';
         } else {
-            wp_admin_notice( __( 'GestaoClick: Preencha corretamente suas credenciais de acesso.', 'gestaoclick' ), array( 'error' ) );
+            do_action('wp_admin_notice', __( 'GestaoClick: Preencha corretamente suas credenciais de acesso.', 'gestaoclick' ), array( 'error' ) );
         }
 
         $this->set_auto_imports( get_option( 'gcw-settings-auto-imports') );

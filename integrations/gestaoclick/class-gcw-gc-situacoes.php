@@ -32,7 +32,7 @@ class GCW_GC_Situacoes extends GCW_GC_Api {
         return $situacoes;
     }
 
-    public function get_select_options() {
+    public function get_options_for_settings() {
         $situacoes = $this->fetch_api();
         $array_options = [];
 

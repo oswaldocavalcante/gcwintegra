@@ -32,7 +32,7 @@ class GCW_GC_Transportadoras extends GCW_GC_Api {
         return $transportadoras;
     }
 
-    public function get_select_options() {
+    public function get_options_for_settings() {
         $transportadoras = $this->fetch_api();
         $array_options = [];
 

@@ -48,9 +48,9 @@ class GCW_WC_Products extends GCW_GC_Api {
 
     public function import( $products_codes ) 
     {
-        if (!class_exists('WC_Product')) {
-            include_once WC_ABSPATH . 'includes/abstracts/abstract-wc-product.php';
-        }
+        // if (!class_exists('WC_Product')) {
+        //     include_once WC_ABSPATH . 'includes/abstracts/abstract-wc-product.php';
+        // }
 
         $products               = get_option( 'gestaoclick-products' );
         $products_blacklist     = get_option( 'gcw-settings-products-blacklist' );
@@ -59,7 +59,7 @@ class GCW_WC_Products extends GCW_GC_Api {
 
         if( $categories_selection ) {
             $filtered_categories = array_filter($products, function ($item) use ($categories_selection) {
-                return (in_array($item['nome_grupo'], $categories_selection));
+                return (in_array($item['grupo_id'], $categories_selection));
             });
             $products = $filtered_categories;
         }
@@ -101,7 +101,7 @@ class GCW_WC_Products extends GCW_GC_Api {
             $product->save();
         }
 
-        wp_admin_notice(sprintf('GestãoClick: %d produtos importados com sucesso.', count($products_selection)), array('type' => 'success', 'dismissible' => true));
+        do_action('wp_admin_notice', sprintf('GestãoClick: %d produtos importados com sucesso.', count($products_selection)), array('type' => 'success', 'dismissible' => true));
     }
 
     private function get_category_id( $category_name ) 
