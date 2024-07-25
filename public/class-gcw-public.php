@@ -90,7 +90,7 @@ class GCW_Public
 					wp_enqueue_script($this->plugin_name . '-add-to-quote-simple', 	plugin_dir_url(__FILE__) . 'assets/js/gcw-add-to-quote-simple.js', 	array('jquery'), $this->version, true);
 					wp_localize_script($this->plugin_name . '-add-to-quote-simple', 'gcw_add_to_quote_simple', array(
 						'url' => admin_url('admin-ajax.php'),
-						'nonce' => wp_create_nonce('gcw_add_to_quote_simple')
+						'nonce' => wp_create_nonce('gcw_add_to_quote_simple_nonce')
 					));
 				}
 			}
@@ -105,17 +105,40 @@ class GCW_Public
 			$quantity 		= sanitize_text_field($_POST['quantity']);
 			$user_id 		= get_current_user_id();
 
+			$this->add_item_to_quote($user_id, $variation_id, $quantity, $parent_id);
+		} else {
+			wp_send_json_error('Não foi possível adicionar o item ao orçamento.');
+		}
+	}
+
+	public function ajax_add_to_quote_simple()
+	{
+		if (isset($_POST['product_id'])) {
+			$product_id = sanitize_text_field($_POST['product_id']);
+			$quantity 	= sanitize_text_field($_POST['quantity']);
+			$user_id 	= get_current_user_id();
+
+			$this->add_item_to_quote($user_id, $product_id, $quantity);
+		} else {
+			wp_send_json_error('Não foi possível adicionar o item ao orçamento.');
+		}
+	}
+
+	private function add_item_to_quote($user_id, $item_id, $quantity, $parent_id = null)
+	{
+		// If user is logged in
+		// if($user_id != 0) {
 			// Verificar se o usuário já possui uma cotação aberta
 			$args = array(
 				'post_type' 	=> 'quote',
 				'post_status' 	=> 'draft',
 				'author' 		=> $user_id,
 				'meta_query' 	=> array(
-										array(
-											'key' 		=> 'status',
-											'value' 	=> 'open',
-											'compare' 	=> '='
-										)
+					array(
+						'key' 		=> 'status',
+						'value' 	=> 'open',
+						'compare' 	=> '='
+					)
 				)
 			);
 
@@ -139,86 +162,49 @@ class GCW_Public
 
 			// Adicionar o produto à lista de produtos da cotação
 			$items = get_post_meta($quote_id, 'items', true);
+
+			/**
+			 * Se a lista de itens estiver vazia, criamo-la com o primeiro item.
+			 * Caso contrário, somamos à quantidade do item já existente 
+			 * */
 			if (empty($items)) {
 				$items = array();
-			}
-			$items[] = array(
-				'product_id'=> $variation_id,
-				'quantity'	=> $quantity,
-			);
-			
-			if(update_post_meta($quote_id, 'items', $items)) {
-				$message = 'Produto adicionado ao orçamento com sucesso! <a href="' . esc_url(get_permalink($quote_id)) . '" class="button">Ver orçamento</a>';
-				wc_add_notice($message, 'success');
-				// Redireciona para a página do produto com uma mensagem de sucesso
-				$redirect_url = get_permalink($parent_id);
-				wp_send_json_success(array('redirect_url' => $redirect_url));
-			}
-
-		} else {
-			wp_send_json_error('Não foi possíve adicionar o item ao orçamento.');
-		}
-	}
-
-	public function ajax_add_to_quote_simple()
-	{
-		if (isset($_POST['product_id'])) {
-			$product_id = sanitize_text_field($_POST['product_id']);
-			$quantity 	= sanitize_text_field($_POST['quantity']);
-			$user_id 	= get_current_user_id();
-
-			// Verificar se o usuário já possui uma cotação aberta
-			$args = array(
-				'post_type' => 'quote',
-				'post_status' => 'draft',
-				'author' => $user_id,
-				'meta_query' => array(
-					array(
-						'key' => 'status',
-						'value' => 'open',
-						'compare' => '='
-					)
-				)
-			);
-
-			$quotes = get_posts($args);
-
-			if (empty($quotes)) {
-				// Criar uma nova cotação
-				$quote_id = wp_insert_post(array(
-					'post_title' 	=> 'Orçamento',
-					'post_status' 	=> 'draft',
-					'post_type' 	=> 'quote',
-					'post_author' 	=> $user_id
-				));
-
-				// Marcar a cotação como aberta
-				update_post_meta($quote_id, 'status', 'open');
+				$items[] = array(
+					'product_id' => $item_id,
+					'quantity'	=> $quantity,
+				);
 			} else {
-				// Usar a cotação existente
-				$quote_id = $quotes[0]->ID;
-			}
+				// Varremos a lista de itens no orçamento e se for achado, acrescentamos a quantidade.
+				$item_found = false;
+				foreach ($items as &$item) { // &$item passamos o item por referência alterando o array original
+					if ($item['product_id'] == $item_id) {
+						$item['quantity'] += $quantity;
+						$item_found = true;
+					} 
+				}
+				unset($item);
 
-			// Adicionar o produto à lista de produtos da cotação
-			$items = get_post_meta($quote_id, 'items', true);
-			if (empty($items)) {
-				$items = array();
+				// Se depois de varrer a lista de itens o item não for achado, criamos sua entrada.
+				if(!$item_found) {
+					$items[] = array(
+						'product_id' => $item_id,
+						'quantity'	=> $quantity,
+					);
+				}
 			}
-			$items[] = array(
-				'product_id' => $product_id,
-				'quantity'	=> $quantity,
-			);
 
 			if (update_post_meta($quote_id, 'items', $items)) {
 				$message = 'Produto adicionado ao orçamento com sucesso! <a href="' . esc_url(get_permalink($quote_id)) . '" class="button">Ver orçamento</a>';
-				wc_add_notice($message, 'success');
-				// Redireciona para a página do produto com uma mensagem de sucesso
-				$redirect_url = get_permalink($product_id);
-				wp_send_json_success(array('redirect_url' => $redirect_url));
-			}
+				
+				wc_clear_notices();
+				wc_add_notice($message);
 
-		} else {
-			wp_send_json_error('Não foi possíve adicionar o item ao orçamento.');
-		}
+				// Redireciona para a página do produto com uma mensagem de sucesso
+				$redirect_url = get_permalink( $parent_id ? $parent_id : $item_id );
+				wp_send_json_success(array('redirect_url' => $redirect_url));
+
+				wc_print_notices();
+			}
+		// }
 	}
 }

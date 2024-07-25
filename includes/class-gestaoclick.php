@@ -177,12 +177,15 @@ class Gestaoclick
 	{
 		$plugin_public = new GCW_Public($this->get_plugin_name(), $this->get_version());
 		
-		$this->loader->add_action('woocommerce_after_add_to_cart_button', $plugin_public, 'add_to_quote_button');
-		$this->loader->add_action('wp_ajax_gcw_add_to_quote_variation', $plugin_public, 'ajax_add_to_quote_variation');
-		$this->loader->add_action('wp_ajax_gcw_add_to_quote_simple', $plugin_public, 'ajax_add_to_quote_simple');
+		add_action('woocommerce_after_add_to_cart_button', 	array($plugin_public, 'add_to_quote_button'));
+		add_shortcode('gestaoclick_orcamento_formulario', 	array($plugin_public, 'shortcode_quote_form'));
+		add_shortcode('gestaoclick_orcamento_woocommerce', 	array($plugin_public, 'shortcode_quote_woocommerce'));
 
-		add_shortcode('gestaoclick_orcamento_formulario', array($plugin_public, 'shortcode_quote_form'));
-		add_shortcode('gestaoclick_orcamento_woocommerce', array($plugin_public, 'shortcode_quote_woocommerce'));
+		add_action('wp_ajax_gcw_add_to_quote_variation', 		array($plugin_public, 'ajax_add_to_quote_variation'));
+		add_action('wp_ajax_nopriv_gcw_add_to_quote_variation', array($plugin_public, 'ajax_add_to_quote_variation'));
+
+		add_action('wp_ajax_gcw_add_to_quote_simple', 			array($plugin_public, 'ajax_add_to_quote_simple'));
+		add_action('wp_ajax_nopriv_gcw_add_to_quote_simple', 	array($plugin_public, 'ajax_add_to_quote_simple'));
 	}
 
 	/**

@@ -1,6 +1,5 @@
 (function ($) {
     $gcw_add_to_quote_button = document.querySelector('#gcw_add_to_quote_button');
-    
 
     $(document).ready(function () {
         $gcw_add_to_quote_button.classList.remove('disabled');
