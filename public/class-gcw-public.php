@@ -236,7 +236,6 @@ class GCW_Public
 
 	public function gcw_update_shipping()
 	{
-
 		if (isset($_POST['quote_id']) && isset($_POST['shipping_postcode'])) {
 			$quote_id = intval($_POST['quote_id']);
 			$shipping_postcode = sanitize_text_field($_POST['shipping_postcode']);
@@ -295,7 +294,6 @@ class GCW_Public
 				}
 
 				if (!empty($rates)) {
-					echo '<h2>Opções de envio</h2>';
 					echo '<ul>';
 					foreach ($rates as $rate) {
 						echo '<li>' . esc_html($rate->label) . ': ' . wc_price($rate->cost) . '</li>';

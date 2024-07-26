@@ -38,7 +38,7 @@
 {
     font-family: WooCommerce;
     content: '\e013';
-    margin-left: 10px;
+    /* margin-left: 10px; */
 }
 
 #gcw-quote-form .product-remove a:hover
