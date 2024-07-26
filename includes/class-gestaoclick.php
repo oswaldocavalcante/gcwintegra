@@ -180,12 +180,18 @@ class Gestaoclick
 		add_action('woocommerce_after_add_to_cart_button', 	array($plugin_public, 'add_to_quote_button'));
 		add_shortcode('gestaoclick_orcamento_formulario', 	array($plugin_public, 'shortcode_quote_form'));
 		add_shortcode('gestaoclick_orcamento_woocommerce', 	array($plugin_public, 'shortcode_quote_woocommerce'));
-
+		
 		add_action('wp_ajax_gcw_add_to_quote_variation', 		array($plugin_public, 'ajax_add_to_quote_variation'));
 		add_action('wp_ajax_nopriv_gcw_add_to_quote_variation', array($plugin_public, 'ajax_add_to_quote_variation'));
-
+		
 		add_action('wp_ajax_gcw_add_to_quote_simple', 			array($plugin_public, 'ajax_add_to_quote_simple'));
 		add_action('wp_ajax_nopriv_gcw_add_to_quote_simple', 	array($plugin_public, 'ajax_add_to_quote_simple'));
+		
+		add_action('wp_ajax_gcw_remove_quote_item', 		array($plugin_public, 'ajax_gcw_remove_quote_item'));
+		add_action('wp_ajax_nopriv_gcw_remove_quote_item', 	array($plugin_public, 'ajax_gcw_remove_quote_item'));
+
+		add_action('wp_ajax_gcw_update_shipping',           array($plugin_public, 'gcw_update_shipping'));
+		add_action('wp_ajax_nopriv_gcw_update_shipping',    array($plugin_public, 'gcw_update_shipping'));
 	}
 
 	/**

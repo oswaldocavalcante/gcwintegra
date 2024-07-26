@@ -29,14 +29,6 @@
         var product_id = document.querySelector('input[name="product_id"]').getAttribute('value');
         var quantity = $('.input-text.qty').val();
 
-        console.log('AJAX Data:', {
-            action: 'gcw_add_to_quote_variation',
-            nonce: gcw_add_to_quote_variation.nonce,
-            product_id: product_id,
-            quantity: quantity,
-            variation_id: variation_id,
-        });
-
         if(!$variation_id) {
             alert('Selecione uma variação para adicionar à cotação.');
         } else {

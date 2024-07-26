@@ -63,7 +63,12 @@ class GCW_Public
 
 	public function shortcode_quote_woocommerce()
 	{
+		wp_enqueue_script($this->plugin_name . '-shortcode-quote-woocommerce', plugin_dir_url(__FILE__) . 'assets/js/gcw-shortcode-quote-woocommerce.js', array('jquery'), $this->version, false);
 		wp_enqueue_style($this->plugin_name . '-shortcode-quote-woocommerce', plugin_dir_url(__FILE__) . 'assets/css/gcw-shortcode-quote-woocommerce.css', 	array(), $this->version, 'all');
+		wp_localize_script($this->plugin_name . '-shortcode-quote-woocommerce', 'gcw_quote_ajax_object', array(
+			'url' => admin_url('admin-ajax.php'),
+			'nonce' => wp_create_nonce('gcw_quote_nonce')
+		));
 		$quote = new GCW_Shortcode_Quote_WooCommmerce();
 		return $quote->render();
 	}
@@ -124,7 +129,7 @@ class GCW_Public
 		}
 	}
 
-	private function add_item_to_quote($user_id, $item_id, $quantity, $parent_id = null)
+	public function add_item_to_quote($user_id, $item_id, $quantity, $parent_id = null)
 	{
 		// If user is logged in
 		// if($user_id != 0) {
@@ -207,4 +212,100 @@ class GCW_Public
 			}
 		// }
 	}
+
+	public function ajax_gcw_remove_quote_item()
+	{
+		if(isset($_POST['item_id'])){
+			$user_id = get_current_user_id();
+			$item_id = sanitize_text_field($_POST['item_id']);
+			$quote_id = sanitize_text_field($_POST['quote_id']);
+			
+			$items = get_post_meta($quote_id, 'items', true);
+
+			if(is_array($items)){
+				foreach ($items as $key => $item) {
+					if ($item['product_id'] == $item_id) {
+						unset($items[$key]);
+					}
+				}
+			}
+
+			update_post_meta($quote_id, 'items', $items);
+		}
+	}
+
+	public function gcw_update_shipping()
+	{
+
+		if (isset($_POST['quote_id']) && isset($_POST['shipping_postcode'])) {
+			$quote_id = intval($_POST['quote_id']);
+			$shipping_postcode = sanitize_text_field($_POST['shipping_postcode']);
+
+			WC()->customer->set_shipping_postcode($shipping_postcode);
+			WC()->customer->save();
+
+			$shipping = new WC_Shipping();
+			$packages = array();
+
+			$quote_items = get_post_meta($quote_id, 'items', true);
+			if (is_array($quote_items) && !empty($quote_items)) {
+				$package = array(
+					'contents'        => array(),
+					'contents_cost'   => 0,
+					'applied_coupons' => WC()->cart->get_applied_coupons(),
+					'user'            => array(
+						'ID' => get_current_user_id(),
+					),
+					'destination'     => array(
+						'country'   => WC()->customer->get_shipping_country() ? WC()->customer->get_shipping_country() : 'BR',
+						'state'     => WC()->customer->get_shipping_state() ? WC()->customer->get_shipping_state() : '',
+						'postcode'  => $shipping_postcode,
+						'city'      => WC()->customer->get_shipping_city() ? WC()->customer->get_shipping_city() : '',
+						'address'   => WC()->customer->get_shipping_address() ? WC()->customer->get_shipping_address() : '',
+						'address_2' => WC()->customer->get_shipping_address_2() ? WC()->customer->get_shipping_address_2() : '',
+					)
+				);
+
+				foreach ($quote_items as $quote_item) {
+					$product_id = $quote_item['product_id'];
+					$_product = wc_get_product($product_id);
+					$package['contents'][$product_id] = array(
+						'data'        => $_product,
+						'quantity'    => $quote_item['quantity'],
+						'line_total'  => $_product->get_price() * $quote_item['quantity'],
+						'line_tax'    => 0,
+						'line_subtotal' => $_product->get_price() * $quote_item['quantity'],
+						'line_subtotal_tax' => 0,
+					);
+					$package['contents_cost'] += $_product->get_price() * $quote_item['quantity'];
+				}
+
+				$packages[] = $package;
+
+				$shipping_methods = $shipping->load_shipping_methods();
+
+				$rates = array();
+				foreach ($shipping_methods as $method) {
+					if (!$method->is_available($package)) {
+						continue;
+					}
+
+					$method->calculate_shipping($package);
+					$rates = array_merge($rates, $method->rates);
+				}
+
+				if (!empty($rates)) {
+					echo '<h2>Opções de envio</h2>';
+					echo '<ul>';
+					foreach ($rates as $rate) {
+						echo '<li>' . esc_html($rate->label) . ': ' . wc_price($rate->cost) . '</li>';
+					}
+					echo '</ul>';
+				} else {
+					echo '<p>Não foi possível calcular o custo de envio.</p>';
+				}
+			}
+		}
+		wp_die();
+	}	
 }

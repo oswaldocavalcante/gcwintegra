@@ -1,4 +1,4 @@
-#gcw-quote-woocommerce-container
+#gcw-quote-container
 {
     margin-top: 50px;
     display: flex;
@@ -8,7 +8,7 @@
 
 /* Table of quote items */
 
-#gcw-quote-woocommerce-form 
+#gcw-quote-form 
 {
     /* width: calc(100% - 426px); */
     /* padding-right: 60px; */
@@ -16,36 +16,37 @@
     flex: 2.8;
 }
 
-#gcw-quote-woocommerce-form table
+#gcw-quote-form table
 {
     margin-bottom: 0;
 }
 
-#gcw-quote-woocommerce-form table tbody tr:nth-child(odd)
+#gcw-quote-form table tbody tr:nth-child(odd)
 {
     background-color: #F8F8F8;
 }
 
-#gcw-quote-woocommerce-form .product-remove a
+#gcw-quote-form .product-remove a
 {
     text-decoration: none;
     color: #bfcad0;
+    cursor: pointer;
 }
 
 
-#gcw-quote-woocommerce-form .product-remove a:before
+#gcw-quote-form .product-remove a:before
 {
     font-family: WooCommerce;
     content: '\e013';
     margin-left: 10px;
 }
 
-#gcw-quote-woocommerce-form .product-remove a:hover
+#gcw-quote-form .product-remove a:hover
 {
     color: red;
 }
 
-#gcw-quote-woocommerce-form .product-thumbnail img
+#gcw-quote-form .product-thumbnail img
 {
     max-width: 75px;
     margin: 10px 0;
@@ -53,20 +54,20 @@
     border: 1px solid #ebebeb;
 }
 
-#gcw-quote-woocommerce-form td.product-name
+#gcw-quote-form td.product-name
 {
     font-size: 0.9em;
     line-height: 1.5em;
 }
 
-#gcw-quote-woocommerce-form .product-name a
+#gcw-quote-form .product-name a
 {
     color: #5d5d5d;
     text-decoration: none;
     font-weight: 600;
 }
 
-#gcw-quote-woocommerce-form .product-quantity input
+#gcw-quote-form .product-quantity input
 {
     width: 80px;
     border-radius: 7px;
@@ -74,14 +75,14 @@
     text-align: center;
 }
 
-#gcw-quote-woocommerce-form .actions
+#gcw-quote-form .actions
 {
     text-align: right;
     padding: 0px;
     background-color: #fff;
 }
 
-#gcw-quote-woocommerce-form button[type="submit"]
+#gcw-quote-form button[type="submit"]
 {
     font-family: unset;
     font-size: 0.9em;
@@ -93,12 +94,12 @@
     opacity: 80%;
 }
 
-#gcw-quote-woocommerce-form button[type="submit"]:hover
+#gcw-quote-form button[type="submit"]:hover
 {
     opacity: 100%;
 }
 
-#gcw-quote-woocommerce-form button[type="submit"]::before
+#gcw-quote-form button[type="submit"]::before
 {
     font-family: WooCommerce;
     content: '\e014';
@@ -108,7 +109,7 @@
 
 /* Total price of quote */
 
-#gcw-quote-woocommerce-totals
+#gcw-quote-totals
 {
     flex: 1;
     min-width: 350px;
@@ -120,7 +121,7 @@
     overflow: hidden;
 }
 
-#gcw-quote-woocommerce-totals h2
+#gcw-quote-totals h2
 {
     font-size: 1.2em;
     font-weight: bold;
@@ -130,7 +131,7 @@
     color: #8a959b;
 }
 
-#gcw-quote-woocommerce-totals p
+#gcw-quote-totals p
 {
     padding: 20px 40px;
     font-size: 1em;

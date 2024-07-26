@@ -2,18 +2,25 @@
 
 class GCW_Shortcode_Quote_WooCommmerce
 {
+    public function __construct() {}
+
     public function render()
     {
+        $this->update_quote_quantities();
+        wc_print_notices();
+
         ob_start();
         $quote_id    = $this->get_quote_by_user_id(get_current_user_id())->ID;
         $quote_items = get_post_meta($quote_id, 'items', true);
+        $quote_subtotal = $this->get_quote_subtotal($quote_items);
 
         if (is_array($quote_items) && !empty($quote_items)) :
 ?>
-            <div id="gcw-quote-woocommerce-container">
+            <div id="gcw-quote-container">
 
-                <form id="gcw-quote-woocommerce-form" class="woocommerce-cart-form" action="<?php echo esc_url(home_url()); ?>" method="post">
+                <form id="gcw-quote-form" class="woocommerce-cart-form" method="post" <?php echo esc_html(sprintf('data-quote_id=%s', $quote_id)) ?>>
 
+                    <input type="hidden" name="gcw_quote_id" value="<?php echo esc_attr($quote_id); ?>" />
                     <table id="gcw-quote-woocommerce-table" class="shop_table shop_table_responsive cart woocommerce-cart-form__contents" cellspacing="0">
 
                         <thead>
@@ -27,7 +34,7 @@ class GCW_Shortcode_Quote_WooCommmerce
                             </tr>
                         </thead>
 
-                        <tbody>
+                        <tbody <?php echo esc_html('id=gcw-quote-tbody'); ?>>
                             <?php
                             foreach ($quote_items as $quote_item_key => $quote_item) {
 
@@ -36,17 +43,17 @@ class GCW_Shortcode_Quote_WooCommmerce
                                 $product_name       = get_the_title($product_id);
                                 $product_permalink  = $_product->get_permalink($quote_item);
                             ?>
-                                <tr class="woocommerce-cart-form__cart-item">
+                                <tr <?php echo esc_html(sprintf('id=gcw-quote-row-item-%s', $product_id)); ?>>
 
                                     <td class="product-remove">
                                         <?php
                                         echo apply_filters( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                                             'quote_item_remove_link',
                                             sprintf(
-                                                '<a href="%s" class="remove" aria-label="%s" data-product_id="%s" data-product_sku="%s"></a>',
-                                                esc_url(wc_get_cart_remove_url($quote_item_key)),
+                                                '<a class="gcw-button-remove" class="remove" aria-label="%s" data-product_id="%s" data-product_sku="%s"></a>',
+                                                // esc_url(wc_get_cart_remove_url($quote_item_key)),
                                                 /* translators: %s is the product name */
-                                                esc_attr(sprintf(__('Remove %s from cart', 'woocommerce'), wp_strip_all_tags($product_name))),
+                                                esc_attr(sprintf(__('Remover %s do orçamento', 'gestaoclick'), wp_strip_all_tags($product_name))),
                                                 esc_attr($product_id),
                                                 esc_attr($_product->get_sku())
                                             ),
@@ -105,7 +112,7 @@ class GCW_Shortcode_Quote_WooCommmerce
 
                                         $product_quantity = woocommerce_quantity_input(
                                             array(
-                                                'input_name'   => "quote[{$quote_item_key}][qty]",
+                                                'input_name'   => "gcw_quote_item_quantity[$product_id]",
                                                 'input_value'  => $quote_item['quantity'],
                                                 'max_value'    => $max_quantity,
                                                 'min_value'    => $min_quantity,
@@ -117,6 +124,7 @@ class GCW_Shortcode_Quote_WooCommmerce
 
                                         echo apply_filters('cart_item_quantity', $product_quantity, $quote_item_key, $quote_item); // PHPCS: XSS ok.
                                         ?>
+                                        <input type="hidden" name="gcw_quote_item_id[]" value="<?php echo esc_attr($product_id); ?>" />
                                     </td>
 
                                     <td class="product-subtotal" data-title="<?php esc_attr_e('Subtotal', 'woocommerce'); ?>">
@@ -130,20 +138,33 @@ class GCW_Shortcode_Quote_WooCommmerce
                             }
                             ?>
                             <tr>
-                                <td colspan="6" class="actions">
-                                    <button id="gcw-quote-woocommerce-form-update-button" type="submit" class="button" name="update_quote" value="<?php esc_attr_e('Atualizar orçamento', 'gestaoclick'); ?>"><?php esc_html_e('Atualizar orçamento', 'gestaoclick'); ?></button>
+                                <td class="actions" colspan="6">
+                                    <button id="gcw-quote-update-button" type="submit" class="button" name="update_quote" value="<?php esc_attr_e('Atualizar orçamento', 'gestaoclick'); ?>"><?php esc_html_e('Atualizar orçamento', 'gestaoclick'); ?></button>
                                 </td>
                             </tr>
 
                         </tbody>
-
                     </table>
-
                 </form>
 
-                <div id="gcw-quote-woocommerce-totals">
+                <div id="gcw-quote-totals">
                     <h2>Total no orçamento</h2>
-                    <p>Subtotal</p>
+                    <div id="gcw_quote_totals_subtotal">
+                        <?php echo esc_html__('Subtotal:', 'woocommerce') . wc_price($quote_subtotal); ?>
+                    </div>
+                    <div id="gcw_quote_totals_shipping">
+                        <label for="shipping_postcode">CEP:</label>
+                        <form method="POST" id="gcw_quote_shipping_form">
+                            <input type="text" id="shipping_postcode" name="shipping_postcode" placeholder="Digite seu CEP" />
+                            <button id="gcw-update-shipping-button" type="button" class="button">Calcular Frete</button>
+                        </form>
+                        <div id="gcw-quote-shipping-options"></div>
+                    </div>
+                    <div id="gcw_quote_totals_total">
+                        <?php
+                        
+                        ?>
+                    </div>
                 </div>
 
             </div>
@@ -176,5 +197,42 @@ class GCW_Shortcode_Quote_WooCommmerce
         }
 
         return null; // Nenhuma cotação encontrada
+    }
+
+    public function update_quote_quantities()
+    {
+        if (isset($_POST['update_quote'])) {
+            $quote_id = intval($_POST['gcw_quote_id']);
+            $item_ids = $_POST['gcw_quote_item_id'];
+            $quantities = $_POST['gcw_quote_item_quantity'];
+
+            $quote_items = array();
+
+            foreach ($item_ids as $product_id) {
+                if (isset($quantities[$product_id])) {
+                    $quote_items[] = array(
+                        'product_id' => intval($product_id),
+                        'quantity' => intval($quantities[$product_id])
+                    );
+                }
+            }
+
+            update_post_meta($quote_id, 'items', $quote_items);
+
+            // Adicione uma mensagem de sucesso
+            wc_clear_notices();
+            wc_add_notice(__('Orçamento atualizado com sucesso.', 'gestaoclick'), 'success');
+        }
+    }
+
+    public function get_quote_subtotal($quote_items)
+    {
+        $subtotal = 0;
+        foreach ($quote_items as $item) {
+            $price = (int) wc_get_product($item['product_id'])->get_price();
+            $subtotal += $price * $item['quantity'];
+        }
+
+        return $subtotal;
     }
 }
