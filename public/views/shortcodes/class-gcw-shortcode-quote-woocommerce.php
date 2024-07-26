@@ -2,8 +2,6 @@
 
 class GCW_Shortcode_Quote_WooCommmerce
 {
-    public function __construct() {}
-
     public function render()
     {
         $this->update_quote_quantities();
@@ -19,7 +17,6 @@ class GCW_Shortcode_Quote_WooCommmerce
             <div id="gcw-quote-container">
 
                 <form id="gcw-quote-form" class="woocommerce-cart-form" method="post" <?php echo esc_html(sprintf('data-quote_id=%s', $quote_id)) ?>>
-
                     <input type="hidden" name="gcw_quote_id" value="<?php echo esc_attr($quote_id); ?>" />
                     <table id="gcw-quote-woocommerce-table" class="shop_table shop_table_responsive cart woocommerce-cart-form__contents" cellspacing="0">
 
@@ -162,7 +159,7 @@ class GCW_Shortcode_Quote_WooCommmerce
                     </div>
                     <div id="gcw_quote_totals_total">
                         <?php
-                        
+
                         ?>
                     </div>
                 </div>

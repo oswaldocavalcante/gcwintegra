@@ -28,8 +28,6 @@
     $('#gcw-update-shipping-button').on('click', function () {
         var shipping_postcode = $('#shipping_postcode').val();
 
-        console.log('Update quote shipping: ' + shipping_postcode);
-
         $.ajax({
             url: gcw_quote_ajax_object.url,
             type: 'POST',
