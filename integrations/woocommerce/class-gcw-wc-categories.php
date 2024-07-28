@@ -68,8 +68,13 @@ class GCW_WC_Categories extends GCW_GC_Api {
             $selected_categories = $categories;
         }
 
+        // Runs 1x for registry and 2x for set parent categories
         foreach ($selected_categories as $category ) {
             $this->save( $category );
+        }
+
+        foreach ($selected_categories as $category) {
+            $this->save($category);
         }
 
         wp_admin_notice(sprintf('GestãoClick: %d categorias importadas com sucesso.', count($selected_categories)), array('type' => 'success', 'dismissible' => true));

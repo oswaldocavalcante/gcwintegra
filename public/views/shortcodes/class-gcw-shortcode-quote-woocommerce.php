@@ -8,16 +8,15 @@ class GCW_Shortcode_Quote_WooCommmerce
         wc_print_notices();
 
         ob_start();
-        $quote_id    = $this->get_quote_by_user_id(get_current_user_id())->ID;
-        $quote_items = get_post_meta($quote_id, 'items', true);
+        $quote_items = isset($_SESSION['quote_items']) ? $_SESSION['quote_items'] : array();
         $quote_subtotal = $this->get_quote_subtotal($quote_items);
 
         if (is_array($quote_items) && !empty($quote_items)) :
 ?>
             <div id="gcw-quote-container">
 
-                <form id="gcw-quote-form" class="woocommerce-cart-form" method="post" <?php echo esc_html(sprintf('data-quote_id=%s', $quote_id)) ?>>
-                    <input type="hidden" name="gcw_quote_id" value="<?php echo esc_attr($quote_id); ?>" />
+                <form id="gcw-quote-form" class="woocommerce-cart-form" method="post" >
+
                     <table id="gcw-quote-woocommerce-table" class="shop_table shop_table_responsive cart woocommerce-cart-form__contents" cellspacing="0">
 
                         <thead>
@@ -160,8 +159,11 @@ class GCW_Shortcode_Quote_WooCommmerce
                     <div id="gcw_quote_totals_total">
                         <?php esc_html_e('Total:', 'woocommerce'); ?>
                         <?php
-                            // TODO: Total = $subtotal + shipping_cost (de acordo com o método de envio escolhido pelo usuário)
+                        // TODO: Total = $subtotal + shipping_cost (de acordo com o método de envio escolhido pelo usuário)
                         ?>
+                    </div>
+                    <div id="gcw_quote_totals_save">
+                        <a id="gcw-save-quote-button">Salvar orçamento</a>
                     </div>
                 </div>
 
@@ -200,7 +202,6 @@ class GCW_Shortcode_Quote_WooCommmerce
     public function update_quote_quantities()
     {
         if (isset($_POST['update_quote'])) {
-            $quote_id = intval($_POST['gcw_quote_id']);
             $item_ids = $_POST['gcw_quote_item_id'];
             $quantities = $_POST['gcw_quote_item_quantity'];
 
@@ -215,7 +216,7 @@ class GCW_Shortcode_Quote_WooCommmerce
                 }
             }
 
-            update_post_meta($quote_id, 'items', $quote_items);
+            $_SESSION['quote_items'] = $quote_items;
 
             // Adicione uma mensagem de sucesso
             wc_clear_notices();

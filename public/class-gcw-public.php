@@ -39,6 +39,16 @@ class GCW_Public
 		$this->version = $version;
 	}
 
+	public function session_start()
+	{
+		if (!session_id()) {
+			$session = session_start();
+			$content = $_SESSION;
+			$_SESSION['teste'] = 'meu teste';
+			$content = $_SESSION;
+		}
+	}
+
 	/**
 	 * Insert the Orçamento form in its shortcode place.
 	 *
@@ -108,9 +118,8 @@ class GCW_Public
 			$parent_id 		= sanitize_text_field($_POST['parent_id']);
 			$variation_id 	= sanitize_text_field($_POST['variation_id']);
 			$quantity 		= sanitize_text_field($_POST['quantity']);
-			$user_id 		= get_current_user_id();
 
-			$this->add_item_to_quote($user_id, $variation_id, $quantity, $parent_id);
+			$this->add_item_to_quote($variation_id, $quantity, $parent_id);
 		} else {
 			wp_send_json_error('Não foi possível adicionar o item ao orçamento.');
 		}
@@ -121,18 +130,55 @@ class GCW_Public
 		if (isset($_POST['product_id'])) {
 			$product_id = sanitize_text_field($_POST['product_id']);
 			$quantity 	= sanitize_text_field($_POST['quantity']);
-			$user_id 	= get_current_user_id();
 
-			$this->add_item_to_quote($user_id, $product_id, $quantity);
+			$this->add_item_to_quote($product_id, $quantity);
 		} else {
 			wp_send_json_error('Não foi possível adicionar o item ao orçamento.');
 		}
 	}
 
-	public function add_item_to_quote($user_id, $item_id, $quantity, $parent_id = null)
+	function add_item_to_quote($product_id, $quantity, $parent_id = null)
 	{
+		// Obter os itens do orçamento da sessão
+		$quote_items = isset($_SESSION['quote_items']) ? $_SESSION['quote_items'] : array();
+
+		// Verificar se o item já está no orçamento
+		$item_found = false;
+		foreach ($quote_items as &$item) {
+			if ($item['product_id'] == $product_id) {
+				$item['quantity'] += $quantity;
+				$item_found = true;
+			}
+		}
+
+		// Se o item não estiver no orçamento, adicioná-lo
+		if (!$item_found) {
+			$quote_items[] = array(
+				'product_id' => $product_id,
+				'quantity'   => $quantity,
+			);
+		}
+
+		// Salvar os itens do orçamento na sessão
+		$_SESSION['quote_items'] = $quote_items;
+
+		$message = 'Produto adicionado ao orçamento com sucesso! <a href="' . esc_url(home_url() . '/orcamento') . '" class="button">Ver orçamento</a>';
+		wc_clear_notices();
+		wc_add_notice($message);
+
+		// Redireciona para a página do produto com uma mensagem de sucesso
+		$redirect_url = get_permalink($parent_id ? $parent_id : $product_id);
+		wp_send_json_success(array('redirect_url' => $redirect_url));
+
+		wc_print_notices();
+	}
+
+	public function add_item_to_quote2($item_id, $quantity, $parent_id = null)
+	{
+		$user_id = get_current_user_id();
+
 		// If user is logged in
-		// if($user_id != 0) {
+		if($user_id != 0) {
 			// Verificar se o usuário já possui uma cotação aberta
 			$args = array(
 				'post_type' 	=> 'quote',
@@ -210,17 +256,14 @@ class GCW_Public
 
 				wc_print_notices();
 			}
-		// }
+		}
 	}
 
 	public function ajax_gcw_remove_quote_item()
 	{
 		if(isset($_POST['item_id'])){
-			$user_id = get_current_user_id();
 			$item_id = sanitize_text_field($_POST['item_id']);
-			$quote_id = sanitize_text_field($_POST['quote_id']);
-			
-			$items = get_post_meta($quote_id, 'items', true);
+			$items = $_SESSION['quote_items'];
 
 			if(is_array($items)){
 				foreach ($items as $key => $item) {
@@ -230,14 +273,13 @@ class GCW_Public
 				}
 			}
 
-			update_post_meta($quote_id, 'items', $items);
+			$_SESSION['quote_items'] = $items;
 		}
 	}
 
-	public function gcw_update_shipping()
+	public function ajax_update_shipping()
 	{
-		if (isset($_POST['quote_id']) && isset($_POST['shipping_postcode'])) {
-			$quote_id = intval($_POST['quote_id']);
+		if (isset($_POST['shipping_postcode'])) {
 			$shipping_postcode = sanitize_text_field($_POST['shipping_postcode']);
 
 			WC()->customer->set_shipping_postcode($shipping_postcode);
@@ -246,7 +288,7 @@ class GCW_Public
 			$shipping = new WC_Shipping();
 			$packages = array();
 
-			$quote_items = get_post_meta($quote_id, 'items', true);
+			$quote_items = $_SESSION['quote_items'];
 			if (is_array($quote_items) && !empty($quote_items)) {
 				$package = array(
 					'contents'        => array(),
@@ -305,5 +347,33 @@ class GCW_Public
 			}
 		}
 		wp_die();
-	}	
+	}
+
+	function ajax_save_quote()
+	{
+		if (!is_user_logged_in()) {
+			wp_send_json_error('Você precisa estar logado para salvar o orçamento.');
+			return;
+		}
+
+		$user_id = get_current_user_id();
+		$quote_items = isset($_SESSION['quote_items']) ? $_SESSION['quote_items'] : array();
+
+		// Criar um novo post do tipo 'quote'
+		$quote_id = wp_insert_post(array(
+			'post_title'  => 'Orçamento ' . current_time('Y-m-d H:i:s'),
+			'post_status' => 'draft',
+			'post_type'   => 'quote',
+			'post_author' => $user_id
+		));
+
+		// Marcar a cotação como aberta
+		update_post_meta($quote_id, 'status', 'open');
+		update_post_meta($quote_id, 'items', $quote_items);
+
+		// Limpar os itens do orçamento da sessão
+		unset($_SESSION['quote_items']);
+
+		wp_send_json_success(array('redirect_url' => get_permalink($quote_id)));
+	}
 }

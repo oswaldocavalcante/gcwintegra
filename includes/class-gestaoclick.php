@@ -190,8 +190,12 @@ class Gestaoclick
 		add_action('wp_ajax_gcw_remove_quote_item', 		array($plugin_public, 'ajax_gcw_remove_quote_item'));
 		add_action('wp_ajax_nopriv_gcw_remove_quote_item', 	array($plugin_public, 'ajax_gcw_remove_quote_item'));
 
-		add_action('wp_ajax_gcw_update_shipping',           array($plugin_public, 'gcw_update_shipping'));
-		add_action('wp_ajax_nopriv_gcw_update_shipping',    array($plugin_public, 'gcw_update_shipping'));
+		add_action('wp_ajax_gcw_update_shipping',           array($plugin_public, 'ajax_update_shipping'));
+		add_action('wp_ajax_nopriv_gcw_update_shipping',    array($plugin_public, 'ajax_update_shipping'));
+
+		add_action('init', 							array($plugin_public, 'session_start'));
+		add_action('wp_ajax_gcw_save_quote', 		array($plugin_public, 'ajax_save_quote'));
+		add_action('wp_ajax_nopriv_gcw_save_quote', array($plugin_public, 'ajax_save_quote'));
 	}
 
 	/**
