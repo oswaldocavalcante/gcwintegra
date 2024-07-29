@@ -169,6 +169,44 @@ class GCW_Shortcode_Quote_WooCommmerce
 
                 </div>
 
+                <?php if (!is_user_logged_in()) : ?>
+                    <form id="gcw_registration_form" method="post">
+                        <h2><?php echo esc_html(__("Instituição", "gestaoclick")); ?></h2>
+                        <section id="gcw-section-institution" class="gcw-quote-section">
+                            <div class="gcw-field-wrap">
+                                <label><?php echo esc_html(__("Nome fantasia", "gestaoclick")); ?></label>
+                                <input type="text" class="gcw-quote-input" name="gcw_cliente_nome" required />
+                            </div>
+                            <div class="gcw-field-wrap">
+                                <label><?php echo esc_html(__("CNPJ/CPF", "gestaoclick")); ?></label>
+                                <input type="text" class="gcw-quote-input" name="gcw_cliente_cpf_cnpj" id="gcw-cliente-cpf-cnpj" required />
+                            </div>
+                        </section>
+
+                        <h2><?php echo esc_html(__("Responsável", "gestaoclick")); ?></h2>
+                        <section id="gcw-section-responsable" class="gcw-quote-section">
+                            <div class="gcw-field-wrap">
+                                <label><?php echo esc_html(__("Nome e sobrenome", "gestaoclick")); ?></label>
+                                <input type="text" name="gcw_contato_nome" class="gcw-quote-input" required />
+                            </div>
+                            <div class="gcw-field-wrap">
+                                <label><?php echo esc_html(__("Email", "gestaoclick")); ?></label>
+                                <input type="email" name="gcw_contato_email" class="gcw-quote-input" required />
+                            </div>
+                            <div class="gcw-field-wrap">
+                                <label><?php echo esc_html(__("Telefone", "gestaoclick")); ?></label>
+                                <input type="text" name="gcw_contato_telefone" class="gcw-quote-input" required />
+                            </div>
+                            <div class="gcw-field-wrap">
+                                <label><?php echo esc_html(__("Cargo", "gestaoclick")); ?></label>
+                                <input type="text" name="gcw_contato_cargo" class="gcw-quote-input" required />
+                            </div>
+                        </section>
+
+                        <input type="submit" name="gcw_register_submit" value="<?php echo esc_attr__("Registrar", "gestaoclick"); ?>" />
+                    </form>
+                <?php endif; ?>
+
             </div>
 <?php
         else :
@@ -178,6 +216,9 @@ class GCW_Shortcode_Quote_WooCommmerce
         return ob_get_clean();
     }
 
+    /**
+     * @Deprecated
+     */
     public function get_quote_by_user_id($user_id)
     {
         $args = array(

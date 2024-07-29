@@ -84,8 +84,29 @@ jQuery(document).ready(function($) {
         });
     });
 
-    $('#gcw_save_quote_button').on('click', function () {
+    $('#gcw_registration_form').on('submit', function (event) {
 
+        event.preventDefault(); // Previne o comportamento padrão do formulário
+
+        var formData = $(this).serialize(); // Serializa os dados do formulário
+
+        alert(formData);
+
+        $.ajax({
+            url: gcw_quote_ajax_object.url, // URL do AJAX
+            type: 'POST',
+            data: formData + '&action=gcw_register_user', // Adiciona o action para o handler
+            success: function (response) {
+                if (response.success) {
+                    window.location.href = response.data.redirect_url; // Redireciona para a URL fornecida
+                } else {
+                    $('#gcw_register_errors').html(response.data.message); // Exibe mensagem de erro
+                }
+            }
+        });
+    });
+
+    $('#gcw_save_quote_button').on('click', function () {
         $.ajax({
             url: gcw_quote_ajax_object.url,
             type: 'POST',
@@ -94,7 +115,16 @@ jQuery(document).ready(function($) {
                 nonce: gcw_quote_ajax_object.nonce,
             },
             success: function (response) {
-                console.log('Orçamento salvo: ' + response);
+                if (response.success) {
+                    window.location.href = response.data.redirect_url;
+                } else {
+                    if (response.data.redirect_url) {
+                        // alert(response.data.message);
+                        window.location.href = response.data.redirect_url;
+                    } else {
+                        console.log('Error: ' + response.data.message);
+                    }
+                }
             },
             error: function (xhr, status, error) {
                 console.log('AJAX Error: ' + status + ' - ' + error);

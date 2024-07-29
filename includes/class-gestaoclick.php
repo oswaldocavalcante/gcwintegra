@@ -196,6 +196,9 @@ class Gestaoclick
 		add_action('wp_ajax_gcw_selected_shipping_method', 			array($plugin_public, 'ajax_selected_shipping_method'));
 		add_action('wp_ajax_nopriv_gcw_selected_shipping_method', 	array($plugin_public, 'ajax_selected_shipping_method'));
 
+		add_action('wp_ajax_gcw_register_user', 		array($plugin_public, 'ajax_register_user'));
+		add_action('wp_ajax_nopriv_gcw_register_user', 	array($plugin_public, 'ajax_register_user'));
+
 		add_action('init', 							array($plugin_public, 'session_start'));
 		add_action('wp_ajax_gcw_save_quote', 		array($plugin_public, 'ajax_save_quote'));
 		add_action('wp_ajax_nopriv_gcw_save_quote', array($plugin_public, 'ajax_save_quote'));

@@ -43,9 +43,6 @@ class GCW_Public
 	{
 		if (!session_id()) {
 			$session = session_start();
-			$content = $_SESSION;
-			$_SESSION['teste'] = 'meu teste';
-			$content = $_SESSION;
 		}
 	}
 
@@ -285,10 +282,17 @@ class GCW_Public
 		}
 	}
 
-	function ajax_save_quote()
+	public function ajax_save_quote()
 	{
 		if (!is_user_logged_in()) {
-			wp_send_json_error('Você precisa estar logado para salvar o orçamento.');
+			// Adiciona o parâmetro de redirecionamento
+			$redirect_url = wc_get_page_permalink('myaccount') . '?redirect_to=' . (home_url() . '/orcamento'); 
+			wc_add_notice('Você precisa estar logado para enviar o orçamento.', 'notice');
+			wp_send_json_error(array(
+				'message' 		=> 'Você precisa estar logado para enviar o orçamento.', 
+				'redirect_url' 	=> $redirect_url)
+			);
+
 			return;
 		}
 
@@ -311,5 +315,46 @@ class GCW_Public
 		unset($_SESSION['quote_items']);
 
 		wp_send_json_success(array('redirect_url' => get_permalink($quote_id)));
+	}
+
+	public function ajax_register_user()
+	{
+		// Valida e sanitiza os dados do formulário
+		$email = sanitize_email($_POST['gcw_contato_email']);
+		$nome = sanitize_text_field($_POST['gcw_contato_nome']);
+		$telefone = sanitize_text_field($_POST['gcw_contato_telefone']);
+		$cargo = sanitize_text_field($_POST['gcw_contato_cargo']);
+		$nome_fantasia = sanitize_text_field($_POST['gcw_cliente_nome']);
+		$cpf_cnpj = sanitize_text_field($_POST['gcw_cliente_cpf_cnpj']);
+
+		// Verifica se o email já está registrado
+		if (email_exists($email)) {
+			wp_send_json_error(array('message' => 'Este e-mail já está registrado.'));
+		}
+
+		// Cria o usuário
+		$user_id = wp_create_user($email, wp_generate_password(), $email);
+
+		if (is_wp_error($user_id)) {
+			wp_send_json_error(array('message' => 'Erro ao criar o usuário. Tente novamente.'));
+		}
+
+		// Atualiza os dados do usuário
+		wp_update_user(array(
+			'ID' => $user_id,
+			'first_name' => $nome,
+			'last_name' => $nome,
+		));
+
+		// Atualiza os meta dados do usuário
+		update_user_meta($user_id, 'telefone', $telefone);
+		update_user_meta($user_id, 'cargo', $cargo);
+		update_user_meta($user_id, 'nome_fantasia', $nome_fantasia);
+		update_user_meta($user_id, 'cpf_cnpj', $cpf_cnpj);
+
+		// Conecta o usuário
+		wp_set_auth_cookie($user_id);
+
+		wp_send_json_success(array('redirect_url' => home_url('/orcamento')));
 	}
 }
