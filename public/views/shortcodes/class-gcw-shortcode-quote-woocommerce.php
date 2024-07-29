@@ -150,8 +150,8 @@ class GCW_Shortcode_Quote_WooCommmerce
                     </div>
                     <div id="gcw_quote_totals_shipping">
                         <?php echo esc_html_e('Shipping:', 'woocommerce'); ?>
-                        <div id="gcw-quote-shipping-options"></div>
-                        <div id="shipping_address"></div>
+                        <div id="gcw_quote_shipping_options"></div>
+                        <div id="gcw_quote_shipping_address"></div>
                         <form method="POST" id="gcw_quote_shipping_form">
                             <input type="text" id="shipping_postcode" name="shipping_postcode" placeholder="Digite seu CEP" />
                             <button id="gcw-update-shipping-button" type="button" class="button">Calcular Frete</button>
@@ -159,9 +159,7 @@ class GCW_Shortcode_Quote_WooCommmerce
                     </div>
                     <div id="gcw_quote_totals_total">
                         <?php esc_html_e('Total:', 'woocommerce'); ?>
-                        <?php
-                        // TODO: Total = $subtotal + shipping_cost (de acordo com o método de envio escolhido pelo usuário)
-                        ?>
+                        <div id="gcw_quote_total_display"></div>
                     </div>
                     <div id="gcw_quote_totals_save">
                         <a id="gcw-save-quote-button">Salvar orçamento</a>

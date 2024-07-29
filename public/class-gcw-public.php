@@ -202,7 +202,6 @@ class GCW_Public
 				$package = array(
 					'contents' => array(),
 					'contents_cost' => 0,
-					// 'applied_coupons' => WC()->cart->get_applied_coupons(),
 					'destination' => array(
 						'country' => 'BR',
 						'postcode' => $shipping_postcode,
@@ -227,11 +226,13 @@ class GCW_Public
 				$available_rates = $this->calculate_shipping_for_package($package);
 
 				if (!empty($available_rates)) {
-					$html = '<ul>';
+					$html = '<form><ul id="shipping_method" class="woocommerce-shipping-methods">';
 					foreach ($available_rates as $rate) {
-						$html .= '<li>' . esc_html($rate->label) . ': ' . wc_price($rate->cost) . '</li>';
+						$html .= '<li><input class="gcw_shipping_method_radio" name="shipping_method" type="radio" value="' . esc_attr($rate->cost) . '" data-method-id="' . esc_attr($rate->id) . '" ><label>'
+						. esc_html($rate->label) . ': ' . wc_price($rate->cost) . 
+						'</label></li>';
 					}
-					$html .= '</ul>';
+					$html .= '</ul></form>';
 					wp_send_json_success(array('html' => $html));
 				} else {
 					wp_send_json_error('Nenhuma opção de frete disponível.');
@@ -254,6 +255,34 @@ class GCW_Public
 		}
 
 		return $available_rates;
+	}
+
+	public function ajax_selected_shipping_method()
+	{
+		if (isset($_POST['shipping_method']) && isset($_POST['shipping_cost'])) {
+			$shipping_method = sanitize_text_field($_POST['shipping_method']);
+			$shipping_cost = floatval($_POST['shipping_cost']);
+
+			// Calcula o custo total do orçamento (frete + subtotal)
+			$quote_items = $_SESSION['quote_items'];
+			$subtotal = 0;
+
+			if (is_array($quote_items) && !empty($quote_items)) {
+				foreach ($quote_items as $quote_item) {
+					$product_id = $quote_item['product_id'];
+					$_product = wc_get_product($product_id);
+					$subtotal += $_product->get_price() * $quote_item['quantity'];
+				}
+			}
+
+			$total_cost = $subtotal + $shipping_cost;
+
+			wp_send_json_success(array(
+				'total_cost' => wc_price($total_cost)
+			));
+		} else {
+			wp_send_json_error(array('message' => 'Método de envio ou custo do frete não especificado.'));
+		}
 	}
 
 	function ajax_save_quote()
