@@ -25,21 +25,42 @@
     $('#gcw-update-shipping-button').on('click', function () {
         var shipping_postcode = $('#shipping_postcode').val();
 
-        $.ajax({
-            url: gcw_quote_ajax_object.url,
-            type: 'POST',
-            data: {
-                action: 'gcw_update_shipping',
-                nonce: gcw_quote_ajax_object.nonce,
-                shipping_postcode: shipping_postcode
-            },
-            success: function (response) {
-                $('#gcw-quote-shipping-options').html(response);
-            },
-            error: function (xhr, status, error) {
-                console.log('AJAX Error: ' + status + ' - ' + error);
-            }
-        });
+        if (shipping_postcode !== "") {
+
+            $.ajax({
+                url: 'https://viacep.com.br/ws/' + shipping_postcode + '/json/',
+                type: 'GET',
+                success: function (response) {
+                    if (!response.erro) {
+                        $('#shipping_address').html(
+                            '<p>' + response.logradouro + ', ' + response.bairro + ', ' + response.localidade + ' - ' + response.uf + '</p>'
+                        );
+
+                        $.ajax({
+                            url: gcw_quote_ajax_object.url,
+                            type: 'POST',
+                            data: {
+                                action: 'gcw_update_shipping',
+                                nonce: gcw_quote_ajax_object.nonce,
+                                shipping_postcode: shipping_postcode
+                            },
+                            success: function (response) {
+                                $('#gcw-quote-shipping-options').html(response.data.html);
+                            },
+                            error: function (xhr, status, error) {
+                                console.log('AJAX Error: ' + status + ' - ' + error);
+                            }
+                        });
+
+                    } else {
+                        alert("CEP não encontrado.");
+                    }
+                }
+            });
+
+        } else {
+            alert("Informe um CEP.");
+        }
     });
 
     $('#gcw-save-quote-button').on('click', function () {

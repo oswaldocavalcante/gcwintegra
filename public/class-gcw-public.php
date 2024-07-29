@@ -163,7 +163,7 @@ class GCW_Public
 		$_SESSION['quote_items'] = $quote_items;
 
 		$message = 'Produto adicionado ao orçamento com sucesso! <a href="' . esc_url(home_url() . '/orcamento') . '" class="button">Ver orçamento</a>';
-		wc_clear_notices();
+
 		wc_add_notice($message);
 
 		// Redireciona para a página do produto com uma mensagem de sucesso
@@ -281,29 +281,17 @@ class GCW_Public
 	{
 		if (isset($_POST['shipping_postcode'])) {
 			$shipping_postcode = sanitize_text_field($_POST['shipping_postcode']);
+			$quote_items = isset($_SESSION['quote_items']) ? $_SESSION['quote_items'] : array();
 
-			WC()->customer->set_shipping_postcode($shipping_postcode);
-			WC()->customer->save();
-
-			$shipping = new WC_Shipping();
-			$packages = array();
-
-			$quote_items = $_SESSION['quote_items'];
+			// Criar um pacote para o cálculo do frete
 			if (is_array($quote_items) && !empty($quote_items)) {
 				$package = array(
-					'contents'        => array(),
-					'contents_cost'   => 0,
-					'applied_coupons' => WC()->cart->get_applied_coupons(),
-					'user'            => array(
-						'ID' => get_current_user_id(),
-					),
-					'destination'     => array(
-						'country'   => WC()->customer->get_shipping_country() ? WC()->customer->get_shipping_country() : 'BR',
-						'state'     => WC()->customer->get_shipping_state() ? WC()->customer->get_shipping_state() : '',
-						'postcode'  => $shipping_postcode,
-						'city'      => WC()->customer->get_shipping_city() ? WC()->customer->get_shipping_city() : '',
-						'address'   => WC()->customer->get_shipping_address() ? WC()->customer->get_shipping_address() : '',
-						'address_2' => WC()->customer->get_shipping_address_2() ? WC()->customer->get_shipping_address_2() : '',
+					'contents' => array(),
+					'contents_cost' => 0,
+					// 'applied_coupons' => WC()->cart->get_applied_coupons(),
+					'destination' => array(
+						'country' => 'BR',
+						'postcode' => $shipping_postcode,
 					)
 				);
 
@@ -311,42 +299,47 @@ class GCW_Public
 					$product_id = $quote_item['product_id'];
 					$_product = wc_get_product($product_id);
 					$package['contents'][$product_id] = array(
-						'data'        => $_product,
-						'quantity'    => $quote_item['quantity'],
-						'line_total'  => $_product->get_price() * $quote_item['quantity'],
-						'line_tax'    => 0,
+						'data' => $_product,
+						'quantity' => $quote_item['quantity'],
+						'line_total' => $_product->get_price() * $quote_item['quantity'],
+						'line_tax' => 0,
 						'line_subtotal' => $_product->get_price() * $quote_item['quantity'],
 						'line_subtotal_tax' => 0,
 					);
 					$package['contents_cost'] += $_product->get_price() * $quote_item['quantity'];
 				}
 
-				$packages[] = $package;
+				// Calcular frete para o pacote
+				$available_rates = $this->calculate_shipping_for_package($package);
 
-				$shipping_methods = $shipping->load_shipping_methods();
-
-				$rates = array();
-				foreach ($shipping_methods as $method) {
-					if (!$method->is_available($package)) {
-						continue;
+				if (!empty($available_rates)) {
+					$html = '<ul>';
+					foreach ($available_rates as $rate) {
+						$html .= '<li>' . esc_html($rate->label) . ': ' . wc_price($rate->cost) . '</li>';
 					}
-
-					$method->calculate_shipping($package);
-					$rates = array_merge($rates, $method->rates);
-				}
-
-				if (!empty($rates)) {
-					echo '<ul>';
-					foreach ($rates as $rate) {
-						echo '<li>' . esc_html($rate->label) . ': ' . wc_price($rate->cost) . '</li>';
-					}
-					echo '</ul>';
+					$html .= '</ul>';
+					wp_send_json_success(array('html' => $html));
 				} else {
-					echo '<p>Não foi possível calcular o custo de envio.</p>';
+					wp_send_json_error('Nenhuma opção de frete disponível.');
 				}
 			}
 		}
 		wp_die();
+	}
+
+	private function calculate_shipping_for_package($package)
+	{
+		// Obter a zona de envio correspondente ao pacote
+		$shipping_zone = WC_Shipping_Zones::get_zone_matching_package($package);
+		$shipping_methods = $shipping_zone->get_shipping_methods(true);
+
+		$available_rates = array();
+		foreach ($shipping_methods as $method) {
+			$method->calculate_shipping($package);
+			$available_rates = array_merge($available_rates, $method->rates);
+		}
+
+		return $available_rates;
 	}
 
 	function ajax_save_quote()

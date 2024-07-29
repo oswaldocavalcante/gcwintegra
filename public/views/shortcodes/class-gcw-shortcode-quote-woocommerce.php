@@ -15,7 +15,7 @@ class GCW_Shortcode_Quote_WooCommmerce
 ?>
             <div id="gcw-quote-container">
 
-                <form id="gcw-quote-form" class="woocommerce-cart-form" method="post" >
+                <form id="gcw-quote-form" class="woocommerce-cart-form" method="post">
 
                     <table id="gcw-quote-woocommerce-table" class="shop_table shop_table_responsive cart woocommerce-cart-form__contents" cellspacing="0">
 
@@ -151,6 +151,7 @@ class GCW_Shortcode_Quote_WooCommmerce
                     <div id="gcw_quote_totals_shipping">
                         <?php echo esc_html_e('Shipping:', 'woocommerce'); ?>
                         <div id="gcw-quote-shipping-options"></div>
+                        <div id="shipping_address"></div>
                         <form method="POST" id="gcw_quote_shipping_form">
                             <input type="text" id="shipping_postcode" name="shipping_postcode" placeholder="Digite seu CEP" />
                             <button id="gcw-update-shipping-button" type="button" class="button">Calcular Frete</button>
