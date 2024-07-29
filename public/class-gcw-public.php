@@ -226,7 +226,7 @@ class GCW_Public
 				$available_rates = $this->calculate_shipping_for_package($package);
 
 				if (!empty($available_rates)) {
-					$html = '<form><ul id="shipping_method" class="woocommerce-shipping-methods">';
+					$html = '<form><ul>';
 					foreach ($available_rates as $rate) {
 						$html .= '<li><input class="gcw_shipping_method_radio" name="shipping_method" type="radio" value="' . esc_attr($rate->cost) . '" data-method-id="' . esc_attr($rate->id) . '" ><label>'
 						. esc_html($rate->label) . ': ' . wc_price($rate->cost) . 

@@ -144,26 +144,29 @@ class GCW_Shortcode_Quote_WooCommmerce
                 </form>
 
                 <div id="gcw-quote-totals">
+
                     <h2>Total no orçamento</h2>
-                    <div id="gcw_quote_totals_subtotal">
-                        <?php echo esc_html_e('Subtotal:', 'woocommerce') . wc_price($quote_subtotal); ?>
+                    <div id="gcw_quote_totals_subtotal" class="gcw_quote_totals_section">
+                        <span><?php echo esc_html_e('Subtotal', 'woocommerce'); ?></span>
+                        <span><?php echo wc_price($quote_subtotal); ?></span>
                     </div>
-                    <div id="gcw_quote_totals_shipping">
-                        <?php echo esc_html_e('Shipping:', 'woocommerce'); ?>
+                    <div id="gcw_quote_totals_shipping" class="gcw_quote_totals_section">
+                        <p><?php echo esc_html_e('Shipping', 'woocommerce'); ?></p>
                         <div id="gcw_quote_shipping_options"></div>
                         <div id="gcw_quote_shipping_address"></div>
                         <form method="POST" id="gcw_quote_shipping_form">
                             <input type="text" id="shipping_postcode" name="shipping_postcode" placeholder="Digite seu CEP" />
-                            <button id="gcw-update-shipping-button" type="button" class="button">Calcular Frete</button>
+                            <button id="gcw-update-shipping-button" type="button" class="button">Calcular</button>
                         </form>
                     </div>
-                    <div id="gcw_quote_totals_total">
-                        <?php esc_html_e('Total:', 'woocommerce'); ?>
+                    <div id="gcw_quote_totals_total" class="gcw_quote_totals_section">
+                        <span><?php esc_html_e('Total', 'woocommerce'); ?></span>
                         <div id="gcw_quote_total_display"></div>
                     </div>
                     <div id="gcw_quote_totals_save">
-                        <a id="gcw-save-quote-button">Salvar orçamento</a>
+                        <a id="gcw_save_quote_button">Enviar orçamento</a>
                     </div>
+
                 </div>
 
             </div>

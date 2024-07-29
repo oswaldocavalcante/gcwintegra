@@ -4,6 +4,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 40px;
+    font-weight: 500;
 }
 
 /* Table of quote items */
@@ -114,7 +115,7 @@
     flex: 1;
     min-width: 350px;
     height: fit-content;
-    border: 1px solid #ebebeb;
+    border: 1px solid #ccc;
     border-radius: 10px;
     background-color: #f8f8f8;
     /* padding: 30px 40px; */
@@ -126,9 +127,10 @@
     font-size: 1.2em;
     font-weight: bold;
     margin: 0;
-    padding: 20px 40px;
+    padding: 25px 40px;
     background-color: #e8ebec;
     color: #8a959b;
+    /* text-align: center; */
 }
 
 #gcw-quote-totals p
@@ -136,4 +138,101 @@
     padding: 20px 40px;
     font-size: 1em;
     margin: 0;
+}
+
+.gcw_quote_totals_section
+{
+    padding: 20px 40px;
+    border-bottom: 1px solid #ccc;
+}
+
+#gcw_quote_totals_subtotal
+,#gcw_quote_totals_total
+{
+    display: flex;
+    justify-content: space-between;
+}
+
+#gcw_quote_totals_shipping p
+{
+    margin: 0px 0px 20px;
+    padding: 0;
+}
+
+#gcw_quote_shipping_options ul
+{
+    list-style: none;
+    margin: 0 0 20px 15px;
+}
+
+#gcw_quote_shipping_options li
+{
+    margin-bottom: 10px;
+    font-size: 0.9em;
+}
+
+#gcw_quote_shipping_options li bdi
+{
+    font-weight: bold;
+}
+
+#gcw_quote_shipping_options input
+{
+    margin-right: 10px;
+}
+
+#gcw_quote_shipping_address p
+{
+    font-size: 0.8em;
+    font-weight: bold;
+    color: #5d5d5d;
+    margin: 25px 0 10px 15px;
+}
+
+#gcw_quote_shipping_form
+{
+    position: relative;
+    margin-bottom: 5px;
+}
+
+#gcw_quote_shipping_form input
+{
+    border-radius: 10px;
+    border: 2px solid #ddd;
+    height: 46px;
+    font-family: unset;
+    padding-left: 15px;
+    outline-offset: -4px;
+}
+
+#gcw_quote_shipping_form button
+{
+    background-color: #5d707a;
+    color: #fff;
+    padding: 11px 20px;
+    border-radius: 7px;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    font-family: unset;
+    font-size: 14px;
+}
+
+#gcw_quote_totals_total
+{
+    font-weight: bold;
+    background-color: #ebeeef;
+}
+
+#gcw_save_quote_button
+{
+    cursor: pointer;
+    margin: 20px;
+    padding: 15px;
+    background-color: #5d707a;
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 7px;
+    color: #fff;
 }

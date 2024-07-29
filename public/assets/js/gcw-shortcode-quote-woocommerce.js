@@ -84,7 +84,7 @@ jQuery(document).ready(function($) {
         });
     });
 
-    $('#gcw-save-quote-button').on('click', function () {
+    $('#gcw_save_quote_button').on('click', function () {
 
         $.ajax({
             url: gcw_quote_ajax_object.url,
