@@ -177,6 +177,7 @@ class Gestaoclick
 	{
 		$plugin_public = new GCW_Public($this->get_plugin_name(), $this->get_version());
 		
+		add_action('init', 									array($plugin_public, 'session_start'));
 		add_action('woocommerce_after_add_to_cart_button', 	array($plugin_public, 'add_to_quote_button'));
 		add_shortcode('gestaoclick_orcamento_formulario', 	array($plugin_public, 'shortcode_quote_form'));
 		add_shortcode('gestaoclick_orcamento_woocommerce', 	array($plugin_public, 'shortcode_quote_woocommerce'));
@@ -199,7 +200,6 @@ class Gestaoclick
 		add_action('wp_ajax_gcw_register_user', 		array($plugin_public, 'ajax_register_user'));
 		add_action('wp_ajax_nopriv_gcw_register_user', 	array($plugin_public, 'ajax_register_user'));
 
-		add_action('init', 							array($plugin_public, 'session_start'));
 		add_action('wp_ajax_gcw_save_quote', 		array($plugin_public, 'ajax_save_quote'));
 		add_action('wp_ajax_nopriv_gcw_save_quote', array($plugin_public, 'ajax_save_quote'));
 	}

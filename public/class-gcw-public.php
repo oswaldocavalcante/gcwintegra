@@ -61,19 +61,19 @@ class GCW_Public
 			$gc_orcamento->export();
 		}
 
-		wp_enqueue_script($this->plugin_name . '-shortcode-quote-form', plugin_dir_url(__FILE__) . 'assets/js/gcw-shortcode-quote-form.js', array('jquery'), $this->version, false);
-		wp_enqueue_style($this->plugin_name . '-shortcode-quote-form', plugin_dir_url(__FILE__) . 'assets/css/gcw-shortcode-quote-form.css', array(), $this->version, 'all');
+		wp_enqueue_script(	$this->plugin_name . '-shortcode-quote-form', plugin_dir_url(__FILE__) . 'assets/js/gcw-shortcode-quote-form.js', 	array('jquery'), $this->version, false);
+		wp_enqueue_style(	$this->plugin_name . '-shortcode-quote-form', plugin_dir_url(__FILE__) . 'assets/css/gcw-shortcode-quote-form.css', array(), $this->version, 'all');
 		$quote_form = new GCW_Shortcode_Quote_Form();
 
-		return $quote_form->render_form();
+		return $quote_form->render();
 	}
 
 	public function shortcode_quote_woocommerce()
 	{
-		wp_enqueue_script($this->plugin_name . '-shortcode-quote-woocommerce', plugin_dir_url(__FILE__) . 'assets/js/gcw-shortcode-quote-woocommerce.js', array('jquery'), $this->version, false);
-		wp_enqueue_style($this->plugin_name . '-shortcode-quote-woocommerce', plugin_dir_url(__FILE__) . 'assets/css/gcw-shortcode-quote-woocommerce.css', 	array(), $this->version, 'all');
-		wp_localize_script($this->plugin_name . '-shortcode-quote-woocommerce', 'gcw_quote_ajax_object', array(
-			'url' => admin_url('admin-ajax.php'),
+		wp_enqueue_script(	$this->plugin_name . '-shortcode-quote-woocommerce', plugin_dir_url(__FILE__) . 'assets/js/gcw-shortcode-quote-woocommerce.js', 	array('jquery'), $this->version, false);
+		wp_enqueue_style(	$this->plugin_name . '-shortcode-quote-woocommerce', plugin_dir_url(__FILE__) . 'assets/css/gcw-shortcode-quote-woocommerce.css', 	array(), $this->version, 'all');
+		wp_localize_script(	$this->plugin_name . '-shortcode-quote-woocommerce', 'gcw_quote_ajax_object', array(
+			'url' 	=> admin_url('admin-ajax.php'),
 			'nonce' => wp_create_nonce('gcw_quote_nonce')
 		));
 		$quote = new GCW_Shortcode_Quote_WooCommmerce();

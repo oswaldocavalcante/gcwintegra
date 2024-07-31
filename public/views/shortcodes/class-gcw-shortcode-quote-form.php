@@ -2,40 +2,9 @@
 
 require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-api.php';
 
-class GCW_Shortcode_Quote_Form extends GCW_GC_Api
+class GCW_Shortcode_Quote_Form
 {
-    private $api_endpoint;
-    private $api_headers;
-    private $products;
-
-    public function __construct()
-    {
-        parent::__construct();
-        $this->api_endpoint =   parent::get_endpoint_items() . '?grupo_id=938374';
-        $this->api_headers =    parent::get_headers();
-        // $this->products =       $this->fetch_api();
-    }
-
-    public function fetch_api()
-    {
-        $items = [];
-        $proxima_pagina = 1;
-
-        do {
-            $body = wp_remote_retrieve_body(
-                wp_remote_get($this->api_endpoint . '&pagina=' . $proxima_pagina, $this->api_headers)
-            );
-
-            $body_array = json_decode($body, true);
-            $proxima_pagina = $body_array['meta']['proxima_pagina'];
-
-            $items = array_merge($items, $body_array['data']);
-        } while ($proxima_pagina != null);
-
-        return $items;
-    }
-
-    public function render_form()
+    public function render()
     {
         ob_start();
         ?>
