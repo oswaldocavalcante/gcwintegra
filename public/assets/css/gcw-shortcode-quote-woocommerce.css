@@ -9,7 +9,7 @@
 
 /* Table of quote items */
 
-#gcw-quote-form 
+#gcw_quote_forms_container
 {
     /* width: calc(100% - 426px); */
     /* padding-right: 60px; */
@@ -79,34 +79,38 @@
 #gcw-quote-form .actions
 {
     text-align: right;
-    padding: 0px;
+    padding: 0px !important;
     background-color: #fff;
 }
 
 #gcw-quote-form button[type="submit"]
+,#gcw_registration_form input[type="submit"]
 {
     font-family: unset;
     font-size: 0.9em;
     padding: 17px 22px;
-    margin: 20px 0;
+    margin: 10px 0 50px;
     background-color: #5d707a;
     border-radius: 7px;
     color: #fff;
     opacity: 80%;
+    float: right;
+    font-weight: 500;
 }
 
 #gcw-quote-form button[type="submit"]:hover
+,#gcw_registration_form input[type="submit"]:hover
 {
     opacity: 100%;
 }
 
-#gcw-quote-form button[type="submit"]::before
+/* #gcw-quote-form button[type="submit"]::before
 {
     font-family: WooCommerce;
     content: '\e014';
     font-weight: normal;
     margin-right: 10px;
-}
+} */
 
 /* Total price of quote */
 
@@ -192,7 +196,7 @@
 #gcw_quote_shipping_form
 {
     position: relative;
-    margin-bottom: 5px;
+    margin-bottom: 20px;
 }
 
 #gcw_quote_shipping_form input
@@ -235,4 +239,57 @@
     text-decoration: none;
     border-radius: 7px;
     color: #fff;
+}
+
+/* Registration form */
+
+#gcw_quote_forms_container
+{
+    max-width: 100%;
+}
+
+#gcw_quote_forms_container h2
+{
+    font-size: 1.4em;
+    margin-top: 0;
+    color: #8a959b;
+}
+
+#gcw_registration_form
+{
+    margin-bottom: 50px;
+}
+
+.gcw-quote-section
+{
+    display: flex;
+    gap: 25px;
+    flex-wrap: wrap;
+    max-width: 100%;
+    margin-bottom: 30px;
+}
+
+.gcw-field-wrap
+{
+    flex: 1;
+    flex-wrap: wrap;
+    min-width: 300px;
+}
+
+.gcw-field-wrap label
+{
+    display: block;
+    margin-bottom: 10px;
+}
+
+.gcw-field-wrap input
+{
+    border-radius: 10px;
+    border: 2px solid #ddd;
+    font-family: unset;
+}
+
+#gcw_field_name
+{
+    min-width: 100%;
 }

@@ -1,4 +1,6 @@
 jQuery(document).ready(function($) {
+    var total_price_value = 0;
+
     // Remove quote item
     $('.gcw-button-remove').on('click', (event) => {
         const item_id = event.target.getAttribute('data-product_id');
@@ -35,13 +37,20 @@ jQuery(document).ready(function($) {
                             '<p>' + response.logradouro + ', ' + response.bairro + ', ' + response.localidade + ' - ' + response.uf + '</p>'
                         );
 
+                        var shipping_address = $('#gcw_quote_shipping_address').html();
+
+                        // Limpar total ao recalcular fretes
+                        $('#gcw_quote_total_display').html('');
+
+
                         $.ajax({
                             url: gcw_quote_ajax_object.url,
                             type: 'POST',
                             data: {
                                 action: 'gcw_update_shipping',
                                 nonce: gcw_quote_ajax_object.nonce,
-                                shipping_postcode: shipping_postcode
+                                shipping_postcode: shipping_postcode,
+                                shipping_address: shipping_address
                             },
                             success: function (response) {
                                 $('#gcw_quote_shipping_options').html(response.data.html);
@@ -76,7 +85,8 @@ jQuery(document).ready(function($) {
                 shipping_cost: shippingCost
             },
             success: function (response) {
-                $('#gcw_quote_total_display').html(response.data.total_cost);
+                $('#gcw_quote_total_display').html(response.data.total_price_html);
+                total_price_value = response.data.total_price_value;
             },
             error: function (xhr, status, error) {
                 console.log('AJAX Error: ' + status + ' - ' + error);
@@ -107,6 +117,7 @@ jQuery(document).ready(function($) {
     });
 
     $('#gcw_save_quote_button').on('click', function () {
+
         $.ajax({
             url: gcw_quote_ajax_object.url,
             type: 'POST',
@@ -118,12 +129,8 @@ jQuery(document).ready(function($) {
                 if (response.success) {
                     window.location.href = response.data.redirect_url;
                 } else {
-                    if (response.data.redirect_url) {
-                        // alert(response.data.message);
-                        window.location.href = response.data.redirect_url;
-                    } else {
-                        console.log('Error: ' + response.data.message);
-                    }
+                    alert(response.data.message);
+                    $('#gcw_registration_form').slideDown();
                 }
             },
             error: function (xhr, status, error) {

@@ -159,7 +159,7 @@ class GCW_Public
 		// Salvar os itens do orçamento na sessão
 		$_SESSION['quote_items'] = $quote_items;
 
-		$message = 'Produto adicionado ao orçamento com sucesso! <a href="' . esc_url(home_url() . '/orcamento') . '" class="button">Ver orçamento</a>';
+		$message = 'Produto adicionado ao orçamento com sucesso! <a href="' . esc_url(home_url('orcamento')) . '" class="button">Ver orçamento</a>';
 
 		wc_add_notice($message);
 
@@ -193,6 +193,9 @@ class GCW_Public
 		if (isset($_POST['shipping_postcode'])) {
 			$shipping_postcode = sanitize_text_field($_POST['shipping_postcode']);
 			$quote_items = isset($_SESSION['quote_items']) ? $_SESSION['quote_items'] : array();
+
+			$_SESSION['shipping_postcode'] = $shipping_postcode;
+			$_SESSION['shipping_address'] = sanitize_text_field($_POST['shipping_address']);
 
 			// Criar um pacote para o cálculo do frete
 			if (is_array($quote_items) && !empty($quote_items)) {
@@ -230,6 +233,7 @@ class GCW_Public
 						'</label></li>';
 					}
 					$html .= '</ul></form>';
+					$_SESSION['shipping_options'] = $html;
 					wp_send_json_success(array('html' => $html));
 				} else {
 					wp_send_json_error('Nenhuma opção de frete disponível.');
@@ -259,6 +263,7 @@ class GCW_Public
 		if (isset($_POST['shipping_method']) && isset($_POST['shipping_cost'])) {
 			$shipping_method = sanitize_text_field($_POST['shipping_method']);
 			$shipping_cost = floatval($_POST['shipping_cost']);
+			$_SESSION['shipping_cost'] = $shipping_cost;
 
 			// Calcula o custo total do orçamento (frete + subtotal)
 			$quote_items = $_SESSION['quote_items'];
@@ -272,10 +277,11 @@ class GCW_Public
 				}
 			}
 
-			$total_cost = $subtotal + $shipping_cost;
+			$total_price_value = $subtotal + $shipping_cost;
 
 			wp_send_json_success(array(
-				'total_cost' => wc_price($total_cost)
+				'total_price_html' 	=> wc_price($total_price_value),
+				'total_price_value' => $total_price_value
 			));
 		} else {
 			wp_send_json_error(array('message' => 'Método de envio ou custo do frete não especificado.'));
@@ -286,12 +292,8 @@ class GCW_Public
 	{
 		if (!is_user_logged_in()) {
 			// Adiciona o parâmetro de redirecionamento
-			$redirect_url = wc_get_page_permalink('myaccount') . '?redirect_to=' . (home_url() . '/orcamento'); 
-			wc_add_notice('Você precisa estar logado para enviar o orçamento.', 'notice');
-			wp_send_json_error(array(
-				'message' 		=> 'Você precisa estar logado para enviar o orçamento.', 
-				'redirect_url' 	=> $redirect_url)
-			);
+			$redirect_url = wc_get_page_permalink('myaccount') . '?redirect_to=' . (home_url('orcamento')); 
+			wp_send_json_error(array('message' => 'Você precisa estar logado para enviar o orçamento.'));
 
 			return;
 		}
@@ -320,12 +322,12 @@ class GCW_Public
 	public function ajax_register_user()
 	{
 		// Valida e sanitiza os dados do formulário
-		$email = sanitize_email($_POST['gcw_contato_email']);
-		$nome = sanitize_text_field($_POST['gcw_contato_nome']);
-		$telefone = sanitize_text_field($_POST['gcw_contato_telefone']);
-		$cargo = sanitize_text_field($_POST['gcw_contato_cargo']);
-		$nome_fantasia = sanitize_text_field($_POST['gcw_cliente_nome']);
-		$cpf_cnpj = sanitize_text_field($_POST['gcw_cliente_cpf_cnpj']);
+		$email 			= sanitize_email($_POST['gcw_contato_email']);
+		$nome 			= sanitize_text_field($_POST['gcw_contato_nome']);
+		$telefone 		= sanitize_text_field($_POST['gcw_contato_telefone']);
+		$cargo 			= sanitize_text_field($_POST['gcw_contato_cargo']);
+		$nome_fantasia 	= sanitize_text_field($_POST['gcw_cliente_nome']);
+		$cpf_cnpj 		= sanitize_text_field($_POST['gcw_cliente_cpf_cnpj']);
 
 		// Verifica se o email já está registrado
 		if (email_exists($email)) {
@@ -355,6 +357,6 @@ class GCW_Public
 		// Conecta o usuário
 		wp_set_auth_cookie($user_id);
 
-		wp_send_json_success(array('redirect_url' => home_url('/orcamento')));
+		wp_send_json_success(array('redirect_url' => home_url('orcamento')));
 	}
 }

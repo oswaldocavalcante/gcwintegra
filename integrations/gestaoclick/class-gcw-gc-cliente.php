@@ -44,7 +44,7 @@ class GCW_GC_Cliente extends GCW_GC_Api {
      * @param object|array  $data Data core to create a new client and export to GestãoClick
      * @param string $context Context to select which way the client should be created
     */
-    public function __construct($data = null, $context = null | 'woocommerce' | 'form') {
+    public function __construct($data = null, $context = null | 'woocommerce' | 'form' | 'quote') {
         parent::__construct();
         $this->api_headers =    parent::get_headers();
         $this->api_endpoint =   parent::get_endpoint_clients();
@@ -78,11 +78,11 @@ class GCW_GC_Cliente extends GCW_GC_Api {
                 "cpf"           => strlen($cliente_cpf_cnpj) == 14 ? $cliente_cpf_cnpj : "",
                 "nome"          => sanitize_text_field($data["gcw_cliente_nome"]),
                 "contatos"      => [
-                    "contato" => [
-                        "nome"          => sanitize_text_field($data["gcw_contato_nome"]),
-                        "cargo"         => sanitize_text_field($data["gcw_contato_cargo"]),
-                        "observacao"    => sanitize_email($data["gcw_contato_email"]) . " / " . 
-                                        sanitize_text_field($data["gcw_contato_telefone"]),
+                    "contato"   => [
+                        "nome"          =>  sanitize_text_field($data["gcw_contato_nome"]),
+                        "cargo"         =>  sanitize_text_field($data["gcw_contato_cargo"]),
+                        "observacao"    =>  sanitize_email($data["gcw_contato_email"]) . " / " . 
+                                            sanitize_text_field($data["gcw_contato_telefone"]),
                     ],
                 ],
             );
