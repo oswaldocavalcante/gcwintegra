@@ -109,25 +109,28 @@ jQuery(document).ready(function($) {
 
     $('#gcw_save_quote_button').on('click', function () {
 
-        // if ($('input.gcw_shipping_method_radio').)
-        $.ajax({
-            url: gcw_quote_ajax_object.url,
-            type: 'POST',
-            data: {
-                action: 'gcw_save_quote',
-                nonce: gcw_quote_ajax_object.nonce,
-            },
-            success: function (response) {
-                if (response.success) {
-                    window.location.href = response.data.redirect_url;
-                } else {
-                    alert(response.data.message);
-                    $('#gcw_registration_form').slideDown();
+        if ($('input[name="shipping_method"]:checked').val()) {
+            $.ajax({
+                url: gcw_quote_ajax_object.url,
+                type: 'POST',
+                data: {
+                    action: 'gcw_save_quote',
+                    nonce: gcw_quote_ajax_object.nonce,
+                },
+                success: function (response) {
+                    if (response.success) {
+                        // window.location.href = response.data.redirect_url;
+                    } else {
+                        alert(response.data.message);
+                        $('#gcw_registration_form').slideDown();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log('AJAX Error: ' + status + ' - ' + error);
                 }
-            },
-            error: function (xhr, status, error) {
-                console.log('AJAX Error: ' + status + ' - ' + error);
-            }
-        });
+            });
+        } else {
+            alert('Você precisa selecionar um método de envio.');
+        }
     });
 });
