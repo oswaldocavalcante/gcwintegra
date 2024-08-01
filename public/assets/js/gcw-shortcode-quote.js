@@ -1,6 +1,4 @@
 jQuery(document).ready(function($) {
-    var total_price_value = 0;
-
     // Remove quote item
     $('.gcw-button-remove').on('click', (event) => {
         const item_id = event.target.getAttribute('data-product_id');
@@ -39,10 +37,6 @@ jQuery(document).ready(function($) {
 
                         var shipping_address = $('#gcw_quote_shipping_address').html();
 
-                        // Limpar total ao recalcular fretes
-                        $('#gcw_quote_total_display').html('');
-
-
                         $.ajax({
                             url: gcw_quote_ajax_object.url,
                             type: 'POST',
@@ -73,20 +67,17 @@ jQuery(document).ready(function($) {
 
     // Calcula o total do orçamento com o método de envio escolhido
     $(document).on('change', 'input.gcw_shipping_method_radio', function () {
-        var shippingCost = $(this).val();
-        var selectedMethod = $(this).data('method-id');
+        var selectedMethod_id = $(this).data('method-id');
 
         $.ajax({
             url: gcw_quote_ajax_object.url,
             type: 'POST',
             data: {
                 action: 'gcw_selected_shipping_method',
-                shipping_method: selectedMethod,
-                shipping_cost: shippingCost
+                shipping_method_id: selectedMethod_id,
             },
             success: function (response) {
                 $('#gcw_quote_total_display').html(response.data.total_price_html);
-                total_price_value = response.data.total_price_value;
             },
             error: function (xhr, status, error) {
                 console.log('AJAX Error: ' + status + ' - ' + error);
@@ -118,6 +109,7 @@ jQuery(document).ready(function($) {
 
     $('#gcw_save_quote_button').on('click', function () {
 
+        // if ($('input.gcw_shipping_method_radio').)
         $.ajax({
             url: gcw_quote_ajax_object.url,
             type: 'POST',
