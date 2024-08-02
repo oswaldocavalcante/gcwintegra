@@ -35,13 +35,14 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'GESTAOCLICK_VERSION', '2.2.2' );
+define( 'GCW_VERSION', '2.2.2' );
 
 if (!defined('GCW_PLUGIN_FILE')) {
 	define('GCW_PLUGIN_FILE', __FILE__);
 }
 
 define('GCW_ABSPATH', dirname(GCW_PLUGIN_FILE) . '/');
+define('GCW_URL', plugins_url('/', __FILE__));
 
 /**
  * The code that runs during plugin activation.

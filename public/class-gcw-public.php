@@ -4,6 +4,7 @@ require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-orcamento.php'
 require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-cliente.php';
 require_once GCW_ABSPATH . 'public/views/shortcodes/class-gcw-shortcode-quote-form.php';
 require_once GCW_ABSPATH . 'public/views/shortcodes/class-gcw-shortcode-quote.php';
+require_once GCW_ABSPATH . 'public/views/shortcodes/class-gcw-shortcode-quote-checkout.php';
 
 class GCW_Public
 {
@@ -27,6 +28,7 @@ class GCW_Public
 	private $version;
 
 	private $quote;
+	private $quote_checkout;
 
 	/**
 	 * Initialize the class and set its properties.
@@ -41,6 +43,7 @@ class GCW_Public
 		$this->version 		= $version;
 
 		$this->quote = new GCW_Shortcode_Quote();
+		$this->quote_checkout = new GCW_Shortcode_Quote_Checkout();
 	}
 
 	public function session_start()
@@ -74,14 +77,25 @@ class GCW_Public
 
 	public function shortcode_quote()
 	{
-		wp_enqueue_script(	$this->plugin_name 	. '-shortcode-quote', plugin_dir_url(__FILE__) . 'assets/js/gcw-shortcode-quote.js', 		array('jquery'), $this->version, false);
-		wp_enqueue_style(	$this->plugin_name 	. '-shortcode-quote', plugin_dir_url(__FILE__) . 'assets/css/gcw-shortcode-quote.css', 	array(), $this->version, 'all');
-		wp_localize_script(	$this->plugin_name 	. '-shortcode-quote', 'gcw_quote_ajax_object', array(
-			'url' 	=> admin_url('admin-ajax.php'),
-			'nonce' => wp_create_nonce('gcw_quote_nonce')
+		wp_enqueue_script('gcw-shortcode-quote', GCW_URL . 'public/assets/js/gcw-shortcode-quote.js',     array('jquery'), GCW_VERSION, false);
+		wp_enqueue_style('gcw-shortcode-quote', GCW_URL . 'public/assets/css/gcw-shortcode-quote.css',     array(), GCW_VERSION, 'all');
+		wp_localize_script('gcw-shortcode-quote', 'gcw_quote_ajax_object', array(
+			'url'   => admin_url('admin-ajax.php'),
+			'nonce' => wp_create_nonce('gcw_quote_nonce'),
 		));
-
+		
 		return $this->quote->render();
+	}
+
+	public function shortcode_quote_checkout()
+	{
+		wp_enqueue_script('wc-checkout', WC()->plugin_url() . '/assets/js/frontend/checkout.js', array('jquery'), WC()->version, true);
+
+		wp_enqueue_script('gcw-shortcode-quote', plugin_dir_url(__FILE__) . 'assets/js/gcw-shortcode-quote-checkout.js', array('jquery'), GCW_VERSION, false);
+		wp_enqueue_style('gcw-shortcode-quote', plugin_dir_url(__FILE__) . 'assets/css/gcw-shortcode-quote.css', 	array(), GCW_VERSION, 'all');
+
+		
+		return $this->quote_checkout->render();
 	}
 
 	public function add_to_quote_button()

@@ -19,11 +19,8 @@ class GCW_Shortcode_Quote
         add_action('wp_ajax_gcw_selected_shipping_method',            array($this, 'ajax_selected_shipping_method'));
         add_action('wp_ajax_nopriv_gcw_selected_shipping_method',     array($this, 'ajax_selected_shipping_method'));
 
-        add_action('wp_ajax_gcw_register_user',         array($this, 'ajax_register_user'));
-        add_action('wp_ajax_nopriv_gcw_register_user',  array($this, 'ajax_register_user'));
-
-        add_action('wp_ajax_gcw_save_quote',        array($this, 'ajax_save_quote'));
-        add_action('wp_ajax_nopriv_gcw_save_quote', array($this, 'ajax_save_quote'));
+        add_action('wp_ajax_gcw_save_quote',        array($this, 'ajax_proceed_to_checkout'));
+        add_action('wp_ajax_nopriv_gcw_save_quote', array($this, 'ajax_proceed_to_checkout'));
     }
 
     public function render()
@@ -35,219 +32,181 @@ class GCW_Shortcode_Quote
         $quote_items = isset($_SESSION['quote_items']) ? $_SESSION['quote_items'] : array();
 
         if (is_array($quote_items) && !empty($quote_items)) :
-        $quote_subtotal = $this->get_quote_subtotal($quote_items);
-        ?>
-            <div id="gcw-quote-container">
+            $quote_subtotal = $this->get_quote_subtotal($quote_items);
+            ?>
+                <div id="gcw-quote-container">
 
-                <div id="gcw_quote_forms_container">
+                    <div id="gcw_quote_forms_container">
+                        <form id="gcw-quote-form" class="woocommerce-cart-form" method="post">
+                            <table id="gcw-quote-woocommerce-table" class="shop_table shop_table_responsive cart woocommerce-cart-form__contents" cellspacing="0">
 
-                <?php if (!is_user_logged_in()) : ?>
-                    <form id="gcw_registration_form" method="post" style="display: none">
-                        <h2><?php echo esc_html(__("Empresa", "gestaoclick")); ?></h2>
-                        <section id="gcw-section-institution" class="gcw-quote-section">
-                            <div class="gcw-field-wrap">
-                                <label><?php echo esc_html(__("Nome fantasia", "gestaoclick")); ?></label>
-                                <input type="text" class="gcw-quote-input" name="gcw_cliente_nome" required />
-                            </div>
-                            <div class="gcw-field-wrap">
-                                <label><?php echo esc_html(__("CNPJ/CPF", "gestaoclick")); ?></label>
-                                <input type="text" class="gcw-quote-input" name="gcw_cliente_cpf_cnpj" id="gcw-cliente-cpf-cnpj" required />
-                            </div>
-                        </section>
-
-                        <h2><?php echo esc_html(__("Responsável", "gestaoclick")); ?></h2>
-                        <section id="gcw-section-responsable" class="gcw-quote-section">
-                            <div class="gcw-field-wrap" id="gcw_field_name">
-                                <label><?php echo esc_html(__("Nome e sobrenome", "gestaoclick")); ?></label>
-                                <input type="text" name="gcw_contato_nome" class="gcw-quote-input" required />
-                            </div>
-                            <div class="gcw-field-wrap">
-                                <label><?php echo esc_html(__("Email", "gestaoclick")); ?></label>
-                                <input type="email" name="gcw_contato_email" class="gcw-quote-input" required />
-                            </div>
-                            <div class="gcw-field-wrap">
-                                <label><?php echo esc_html(__("Telefone", "gestaoclick")); ?></label>
-                                <input type="text" name="gcw_contato_telefone" class="gcw-quote-input" required />
-                            </div>
-                        </section>
-
-                        <input type="submit" name="gcw_register_submit" value="<?php echo esc_attr__("Criar conta", "gestaoclick"); ?>" />
-                    </form>
-                <?php endif; ?>
-
-                    <form id="gcw-quote-form" class="woocommerce-cart-form" method="post">
-                        <table id="gcw-quote-woocommerce-table" class="shop_table shop_table_responsive cart woocommerce-cart-form__contents" cellspacing="0">
-
-                            <thead>
-                                <tr>
-                                    <th class="product-remove"> <span class="screen-reader-text"><?php esc_html_e('Remove item', 'woocommerce'); ?></span></th>
-                                    <th class="product-thumbnail"> <span class="screen-reader-text"><?php esc_html_e('Thumbnail image', 'woocommerce'); ?></span></th>
-                                    <th class="product-name"> <?php esc_html_e('Product', 'woocommerce'); ?></th>
-                                    <th class="product-price"> <?php esc_html_e('Price', 'woocommerce'); ?></th>
-                                    <th class="product-quantity"> <?php esc_html_e('Quantity', 'woocommerce'); ?></th>
-                                    <th class="product-subtotal"> <?php esc_html_e('Subtotal', 'woocommerce'); ?></th>
-                                </tr>
-                            </thead>
-
-                            <tbody <?php echo esc_html('id=gcw-quote-tbody'); ?>>
-                                <?php
-                                foreach ($quote_items as $quote_item_key => $quote_item) {
-
-                                    $product_id         = $quote_item['product_id'];
-                                    $_product           = wc_get_product($product_id);
-                                    $product_name       = get_the_title($product_id);
-                                    $product_permalink  = $_product->get_permalink($quote_item);
-                                ?>
-                                    <tr <?php echo esc_html(sprintf('id=gcw-quote-row-item-%s', $product_id)); ?>>
-
-                                        <td class="product-remove">
-                                            <?php
-                                            echo apply_filters( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-                                                'quote_item_remove_link',
-                                                sprintf(
-                                                    '<a class="gcw-button-remove" class="remove" aria-label="%s" data-product_id="%s" data-product_sku="%s"></a>',
-                                                    // esc_url(wc_get_cart_remove_url($quote_item_key)),
-                                                    /* translators: %s is the product name */
-                                                    esc_attr(sprintf(__('Remover %s do orçamento', 'gestaoclick'), wp_strip_all_tags($product_name))),
-                                                    esc_attr($product_id),
-                                                    esc_attr($_product->get_sku())
-                                                ),
-                                                $quote_item_key
-                                            );
-                                            ?>
-                                        </td>
-
-                                        <td class="product-thumbnail">
-                                            <?php
-                                            $thumbnail = apply_filters('quote_item_thumbnail', $_product->get_image(), $quote_item, $quote_item_key);
-
-                                            if (!$product_permalink) {
-                                                echo $thumbnail; // PHPCS: XSS ok.
-                                            } else {
-                                                printf('<a href="%s">%s</a>', esc_url($product_permalink), $thumbnail); // PHPCS: XSS ok.
-                                            }
-                                            ?>
-                                        </td>
-
-                                        <td class="product-name" data-title="<?php esc_attr_e('Product', 'woocommerce'); ?>">
-                                            <?php
-                                            if (!$product_permalink) {
-                                                echo wp_kses_post($product_name . '&nbsp;');
-                                            } else {
-                                                echo wp_kses_post(apply_filters('quote_item_name', sprintf('<a href="%s">%s</a>', esc_url($product_permalink), $_product->get_name()), $quote_item, $quote_item_key));
-                                            }
-
-                                            do_action('quote_item_name', $quote_item, $quote_item_key);
-
-                                            // // Meta data.
-                                            // echo quote_item_data($quote_item); // PHPCS: XSS ok.
-
-                                            // Backorder notification.
-                                            if ($_product->backorders_require_notification() && $_product->is_on_backorder($quote_item['quantity'])) {
-                                                echo wp_kses_post(apply_filters('quote_item_backorder_notification', '<p class="backorder_notification">' . esc_html__('Available on backorder', 'woocommerce') . '</p>', $product_id));
-                                            }
-                                            ?>
-                                        </td>
-
-                                        <td class="product-price" data-title="<?php esc_attr_e('Price', 'woocommerce'); ?>">
-                                            <?php
-                                            echo $_product->get_price(); // PHPCS: XSS ok.
-                                            ?>
-                                        </td>
-
-                                        <td class="product-quantity" data-title="<?php esc_attr_e('Quantity', 'woocommerce'); ?>">
-                                            <?php
-                                            if ($_product->is_sold_individually()) {
-                                                $min_quantity = 1;
-                                                $max_quantity = 1;
-                                            } else {
-                                                $min_quantity = 0;
-                                                $max_quantity = $_product->get_max_purchase_quantity();
-                                            }
-
-                                            $product_quantity = woocommerce_quantity_input(
-                                                array(
-                                                    'input_name'   => "gcw_quote_item_quantity[$product_id]",
-                                                    'input_value'  => $quote_item['quantity'],
-                                                    'max_value'    => $max_quantity,
-                                                    'min_value'    => $min_quantity,
-                                                    'product_name' => $product_name,
-                                                ),
-                                                $_product,
-                                                false
-                                            );
-
-                                            echo apply_filters('cart_item_quantity', $product_quantity, $quote_item_key, $quote_item); // PHPCS: XSS ok.
-                                            ?>
-                                            <input type="hidden" name="gcw_quote_item_id[]" value="<?php echo esc_attr($product_id); ?>" />
-                                        </td>
-
-                                        <td class="product-subtotal" data-title="<?php esc_attr_e('Subtotal', 'woocommerce'); ?>">
-                                            <?php
-                                            echo apply_filters('cart_item_subtotal', WC()->cart->get_product_subtotal($_product, $quote_item['quantity']), $quote_item, $quote_item_key); // PHPCS: XSS ok.
-                                            ?>
-                                        </td>
-
+                                <thead>
+                                    <tr>
+                                        <th class="product-remove"> <span class="screen-reader-text"><?php esc_html_e('Remove item', 'woocommerce'); ?></span></th>
+                                        <th class="product-thumbnail"> <span class="screen-reader-text"><?php esc_html_e('Thumbnail image', 'woocommerce'); ?></span></th>
+                                        <th class="product-name"> <?php esc_html_e('Product', 'woocommerce'); ?></th>
+                                        <th class="product-price"> <?php esc_html_e('Price', 'woocommerce'); ?></th>
+                                        <th class="product-quantity"> <?php esc_html_e('Quantity', 'woocommerce'); ?></th>
+                                        <th class="product-subtotal"> <?php esc_html_e('Subtotal', 'woocommerce'); ?></th>
                                     </tr>
+                                </thead>
+
+                                <tbody <?php echo esc_html('id=gcw-quote-tbody'); ?>>
+                                    <?php
+                                    foreach ($quote_items as $quote_item_key => $quote_item) {
+
+                                        $product_id         = $quote_item['product_id'];
+                                        $_product           = wc_get_product($product_id);
+                                        $product_name       = get_the_title($product_id);
+                                        $product_permalink  = $_product->get_permalink($quote_item);
+                                    ?>
+                                        <tr <?php echo esc_html(sprintf('id=gcw-quote-row-item-%s', $product_id)); ?>>
+
+                                            <td class="product-remove">
+                                                <?php
+                                                echo apply_filters( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                                                    'quote_item_remove_link',
+                                                    sprintf(
+                                                        '<a class="gcw-button-remove" class="remove" aria-label="%s" data-product_id="%s" data-product_sku="%s"></a>',
+                                                        // esc_url(wc_get_cart_remove_url($quote_item_key)),
+                                                        /* translators: %s is the product name */
+                                                        esc_attr(sprintf(__('Remover %s do orçamento', 'gestaoclick'), wp_strip_all_tags($product_name))),
+                                                        esc_attr($product_id),
+                                                        esc_attr($_product->get_sku())
+                                                    ),
+                                                    $quote_item_key
+                                                );
+                                                ?>
+                                            </td>
+
+                                            <td class="product-thumbnail">
+                                                <?php
+                                                $thumbnail = apply_filters('quote_item_thumbnail', $_product->get_image(), $quote_item, $quote_item_key);
+
+                                                if (!$product_permalink) {
+                                                    echo $thumbnail; // PHPCS: XSS ok.
+                                                } else {
+                                                    printf('<a href="%s">%s</a>', esc_url($product_permalink), $thumbnail); // PHPCS: XSS ok.
+                                                }
+                                                ?>
+                                            </td>
+
+                                            <td class="product-name" data-title="<?php esc_attr_e('Product', 'woocommerce'); ?>">
+                                                <?php
+                                                if (!$product_permalink) {
+                                                    echo wp_kses_post($product_name . '&nbsp;');
+                                                } else {
+                                                    echo wp_kses_post(apply_filters('quote_item_name', sprintf('<a href="%s">%s</a>', esc_url($product_permalink), $_product->get_name()), $quote_item, $quote_item_key));
+                                                }
+
+                                                do_action('quote_item_name', $quote_item, $quote_item_key);
+
+                                                // // Meta data.
+                                                // echo quote_item_data($quote_item); // PHPCS: XSS ok.
+
+                                                // Backorder notification.
+                                                if ($_product->backorders_require_notification() && $_product->is_on_backorder($quote_item['quantity'])) {
+                                                    echo wp_kses_post(apply_filters('quote_item_backorder_notification', '<p class="backorder_notification">' . esc_html__('Available on backorder', 'woocommerce') . '</p>', $product_id));
+                                                }
+                                                ?>
+                                            </td>
+
+                                            <td class="product-price" data-title="<?php esc_attr_e('Price', 'woocommerce'); ?>">
+                                                <?php
+                                                echo $_product->get_price(); // PHPCS: XSS ok.
+                                                ?>
+                                            </td>
+
+                                            <td class="product-quantity" data-title="<?php esc_attr_e('Quantity', 'woocommerce'); ?>">
+                                                <?php
+                                                if ($_product->is_sold_individually()) {
+                                                    $min_quantity = 1;
+                                                    $max_quantity = 1;
+                                                } else {
+                                                    $min_quantity = 0;
+                                                    $max_quantity = $_product->get_max_purchase_quantity();
+                                                }
+
+                                                $product_quantity = woocommerce_quantity_input(
+                                                    array(
+                                                        'input_name'   => "gcw_quote_item_quantity[$product_id]",
+                                                        'input_value'  => $quote_item['quantity'],
+                                                        'max_value'    => $max_quantity,
+                                                        'min_value'    => $min_quantity,
+                                                        'product_name' => $product_name,
+                                                    ),
+                                                    $_product,
+                                                    false
+                                                );
+
+                                                echo apply_filters('cart_item_quantity', $product_quantity, $quote_item_key, $quote_item); // PHPCS: XSS ok.
+                                                ?>
+                                                <input type="hidden" name="gcw_quote_item_id[]" value="<?php echo esc_attr($product_id); ?>" />
+                                            </td>
+
+                                            <td class="product-subtotal" data-title="<?php esc_attr_e('Subtotal', 'woocommerce'); ?>">
+                                                <?php
+                                                echo apply_filters('cart_item_subtotal', WC()->cart->get_product_subtotal($_product, $quote_item['quantity']), $quote_item, $quote_item_key); // PHPCS: XSS ok.
+                                                ?>
+                                            </td>
+
+                                        </tr>
+                                    <?php
+                                    }
+                                    ?>
+                                    <tr>
+                                        <td class="actions" colspan="6">
+                                            <button id="gcw-quote-update-button" type="submit" class="button" name="update_quote" value="<?php esc_attr_e('Atualizar orçamento', 'gestaoclick'); ?>"><?php esc_html_e('Atualizar orçamento', 'gestaoclick'); ?></button>
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </form>
+                    </div>
+
+                    <div id="gcw-quote-totals">
+
+                        <h2>Total no orçamento</h2>
+                        <div id="gcw_quote_totals_subtotal" class="gcw_quote_totals_section">
+                            <span><?php echo esc_html_e('Subtotal', 'woocommerce'); ?></span>
+                            <span><?php echo wc_price($quote_subtotal); ?></span>
+                        </div>
+                        <div id="gcw_quote_totals_shipping" class="gcw_quote_totals_section">
+                            <p><?php echo esc_html_e('Shipping', 'woocommerce'); ?></p>
+                            <div id="gcw_quote_shipping_options">
+                                <?php echo isset($_SESSION['shipping_options']) ? $_SESSION['shipping_options'] : ''; ?>
+                            </div>
+                            <div id="gcw_quote_shipping_address">
                                 <?php
+                                if (isset($_SESSION['shipping_address'])) {
+                                    echo '<p>' . esc_html($_SESSION['shipping_address']) . '</p>';
                                 }
                                 ?>
-                                <tr>
-                                    <td class="actions" colspan="6">
-                                        <button id="gcw-quote-update-button" type="submit" class="button" name="update_quote" value="<?php esc_attr_e('Atualizar orçamento', 'gestaoclick'); ?>"><?php esc_html_e('Atualizar orçamento', 'gestaoclick'); ?></button>
-                                    </td>
-                                </tr>
-
-                            </tbody>
-                        </table>
-                    </form>
-
-                </div>
-
-                <div id="gcw-quote-totals">
-
-                    <h2>Total no orçamento</h2>
-                    <div id="gcw_quote_totals_subtotal" class="gcw_quote_totals_section">
-                        <span><?php echo esc_html_e('Subtotal', 'woocommerce'); ?></span>
-                        <span><?php echo wc_price($quote_subtotal); ?></span>
-                    </div>
-                    <div id="gcw_quote_totals_shipping" class="gcw_quote_totals_section">
-                        <p><?php echo esc_html_e('Shipping', 'woocommerce'); ?></p>
-                        <div id="gcw_quote_shipping_options">
-                            <?php echo isset($_SESSION['shipping_options']) ? $_SESSION['shipping_options'] : ''; ?>
-                        </div>
-                        <div id="gcw_quote_shipping_address">
-                            <?php
-                                if (isset($_SESSION['shipping_address'])) {
-                                    echo '<p>'.esc_html($_SESSION['shipping_address']).'</p>';
-                                }
-                            ?>
-                        </div>
-                        <form method="POST" id="gcw_quote_shipping_form">
-                            <input type="text" id="shipping_postcode" name="shipping_postcode" placeholder="Digite seu CEP" 
-                                <?php
+                            </div>
+                            <form method="POST" id="gcw_quote_shipping_form">
+                                <input type="text" id="shipping_postcode" name="shipping_postcode" placeholder="Digite seu CEP"
+                                    <?php
                                     if (isset($_SESSION['shipping_postcode'])) {
                                         esc_attr_e(sprintf("value=%s", $_SESSION['shipping_postcode']));
                                     }
-                                ?> 
-                            />
-                            <button id="gcw-update-shipping-button" type="button" class="button">Calcular</button>
-                        </form>
-                    </div>
-                    <div id="gcw_quote_totals_total" class="gcw_quote_totals_section">
-                        <span><?php esc_html_e('Total', 'woocommerce'); ?></span>
-                        <div id="gcw_quote_total_display"></div>
-                    </div>
-                    <div id="gcw_quote_totals_save">
-                        <a id="gcw_save_quote_button">Enviar orçamento</a>
+                                    ?> />
+                                <button id="gcw-update-shipping-button" type="button" class="button">Calcular</button>
+                            </form>
+                        </div>
+                        <div id="gcw_quote_totals_total" class="gcw_quote_totals_section">
+                            <span><?php esc_html_e('Total', 'woocommerce'); ?></span>
+                            <div id="gcw_quote_total_display"></div>
+                        </div>
+                        <div id="gcw_quote_totals_save">
+                            <a id="gcw_save_quote_button">Finalizar orçamento</a>
+                        </div>
+
                     </div>
 
                 </div>
-
-            </div>
-        <?php
-        else :
-            echo '<p>Nenhum item encontrado neste orçamento.</p>';
+            <?php
+        else : echo '<p>Nenhum item encontrado neste orçamento.</p>';
         endif;
 
         return ob_get_clean();
@@ -396,7 +355,7 @@ class GCW_Shortcode_Quote
         if (isset($_POST['shipping_postcode'])) {
             // Desfaz a seleção do método de envio
             unset($_SESSION['has_selected_shipping_method']);
-            
+
             $shipping_postcode = sanitize_text_field($_POST['shipping_postcode']);
             $quote_items = isset($_SESSION['quote_items']) ? $_SESSION['quote_items'] : array();
 
@@ -435,7 +394,7 @@ class GCW_Shortcode_Quote
                     $html = '<form><ul>';
                     foreach ($_SESSION['shipping_rates'] as $rate) {
                         $html .= '<li><input class="gcw_shipping_method_radio" name="shipping_method" type="radio" data-method-id="' . esc_attr($rate->id) . '" ><label>'
-                        . esc_html($rate->label) . ': ' . wc_price($rate->cost) .
+                            . esc_html($rate->label) . ': ' . wc_price($rate->cost) .
                             '</label></li>';
                     }
                     $html .= '</ul></form>';
@@ -501,82 +460,15 @@ class GCW_Shortcode_Quote
         }
     }
 
-    public function ajax_save_quote() //TODO: Enviar ao GestãoClick
+    public function ajax_proceed_to_checkout()
     {
-        if (!is_user_logged_in()) {
-            // Adiciona o parâmetro de redirecionamento
-            // $redirect_url = wc_get_page_permalink('myaccount') . '?redirect_to=' . (home_url('orcamento'));
-            wp_send_json_error(array('message' => 'Você precisa estar logado para enviar o orçamento.'));
-
-            return;
-        }
-
-        if(!isset($_SESSION['has_selected_shipping_method'])) {
+        if (!isset($_SESSION['has_selected_shipping_method'])) {
             wp_send_json_error(array('message' => 'Você precisa selecionar um método de envio.'));
 
             return;
         }
 
-        $user_id = get_current_user_id();
-        $quote_items = isset($_SESSION['quote_items']) ? $_SESSION['quote_items'] : array();
-
-        // Criar um novo post do tipo 'quote'
-        $quote_id = wp_insert_post(array(
-            'post_title'  => 'Orçamento ' . current_time('Y-m-d H:i:s'),
-            'post_status' => 'draft',
-            'post_type'   => 'quote',
-            'post_author' => $user_id
-        ));
-
-        // Marcar a cotação como aberta
-        update_post_meta($quote_id, 'status', 'open');
-        update_post_meta($quote_id, 'items', $quote_items);
-
-        // Limpar os itens do orçamento da sessão
-        unset($_SESSION['quote_items']);
-
-        wp_send_json_success(array('redirect_url' => get_permalink($quote_id)));
-    }
-
-    public function ajax_register_user()
-    {
-        // Valida e sanitiza os dados do formulário
-        $email          = sanitize_email($_POST['gcw_contato_email']);
-        $nome           = sanitize_text_field($_POST['gcw_contato_nome']);
-        $telefone       = sanitize_text_field($_POST['gcw_contato_telefone']);
-        $cargo          = sanitize_text_field($_POST['gcw_contato_cargo']);
-        $nome_fantasia  = sanitize_text_field($_POST['gcw_cliente_nome']);
-        $cpf_cnpj       = sanitize_text_field($_POST['gcw_cliente_cpf_cnpj']);
-
-        // Verifica se o email já está registrado
-        if (email_exists($email)) {
-            wp_send_json_error(array('message' => 'Este e-mail já está registrado.'));
-        }
-
-        // Cria o usuário
-        $user_id = wp_create_user($email, wp_generate_password(), $email);
-
-        if (is_wp_error($user_id)) {
-            wp_send_json_error(array('message' => 'Erro ao criar o usuário. Tente novamente.'));
-        }
-
-        // Atualiza os dados do usuário
-        wp_update_user(array(
-            'ID' => $user_id,
-            'first_name' => $nome,
-            'last_name' => $nome,
-        ));
-
-        // Atualiza os meta dados do usuário
-        update_user_meta($user_id, 'telefone', $telefone);
-        update_user_meta($user_id, 'cargo', $cargo);
-        update_user_meta($user_id, 'nome_fantasia', $nome_fantasia);
-        update_user_meta($user_id, 'cpf_cnpj', $cpf_cnpj);
-
-        // Conecta o usuário
-        wp_set_auth_cookie($user_id);
-
-        wp_send_json_success(array('redirect_url' => home_url('orcamento')));
+        wp_send_json_success(array('redirect_url' => home_url('finalizar-orcamento')));
     }
 
 }

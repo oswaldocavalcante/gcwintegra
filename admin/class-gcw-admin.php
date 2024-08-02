@@ -252,6 +252,9 @@ class GCW_Admin {
 		if ( get_page_by_title('Orçamento')->ID == $post->ID ) {
 			$post_states[] = __('Página do orçamento', 'gestaoclick');
 		}
+		if (get_page_by_title('Finalizar Orçamento')->ID == $post->ID) {
+			$post_states[] = __('Página de finalização do orçamento', 'gestaoclick');
+		}
 
 		return $post_states;
 	}

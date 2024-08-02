@@ -85,28 +85,6 @@ jQuery(document).ready(function($) {
         });
     });
 
-    $('#gcw_registration_form').on('submit', function (event) {
-
-        event.preventDefault(); // Previne o comportamento padrão do formulário
-
-        var formData = $(this).serialize(); // Serializa os dados do formulário
-
-        alert(formData);
-
-        $.ajax({
-            url: gcw_quote_ajax_object.url, // URL do AJAX
-            type: 'POST',
-            data: formData + '&action=gcw_register_user', // Adiciona o action para o handler
-            success: function (response) {
-                if (response.success) {
-                    window.location.href = response.data.redirect_url; // Redireciona para a URL fornecida
-                } else {
-                    $('#gcw_register_errors').html(response.data.message); // Exibe mensagem de erro
-                }
-            }
-        });
-    });
-
     $('#gcw_save_quote_button').on('click', function () {
 
         if ($('input[name="shipping_method"]:checked').val()) {
@@ -119,10 +97,9 @@ jQuery(document).ready(function($) {
                 },
                 success: function (response) {
                     if (response.success) {
-                        // window.location.href = response.data.redirect_url;
+                        window.location.href = response.data.redirect_url;
                     } else {
                         alert(response.data.message);
-                        $('#gcw_registration_form').slideDown();
                     }
                 },
                 error: function (xhr, status, error) {
