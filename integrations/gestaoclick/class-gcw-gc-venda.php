@@ -65,7 +65,7 @@ class GCW_GC_Venda extends GCW_GC_Api {
         if ($wc_customer->get_meta('gestaoclick_gc_cliente_id')) {
             $this->cliente_id = $wc_customer->get_meta('gestaoclick_gc_cliente_id');
         } else {
-            $gc_cliente = new GCW_GC_Cliente($wc_customer, 'woocommerce');
+            $gc_cliente = new GCW_GC_Cliente($wc_customer, 'order');
             $this->cliente_id = $gc_cliente->export();
             $wc_customer->add_meta_data('gestaoclick_gc_cliente_id', $this->cliente_id, true);
         }

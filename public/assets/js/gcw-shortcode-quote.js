@@ -32,7 +32,7 @@ jQuery(document).ready(function($) {
                 success: function (response) {
                     if (!response.erro) {
                         $('#gcw_quote_shipping_address').html(
-                            '<p>' + response.logradouro + ', ' + response.bairro + ', ' + response.localidade + ' - ' + response.uf + '</p>'
+                            '<p>' + response.logradouro + ', ' + response.bairro + ', ' + response.localidade + '/' + response.uf + '.</p>'
                         );
 
                         var shipping_address = $('#gcw_quote_shipping_address').html();

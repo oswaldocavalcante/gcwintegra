@@ -89,12 +89,9 @@ class GCW_Public
 
 	public function shortcode_quote_checkout()
 	{
-		wp_enqueue_script('wc-checkout', WC()->plugin_url() . '/assets/js/frontend/checkout.js', array('jquery'), WC()->version, true);
+		wp_enqueue_script('gcw-shortcode-quote-checkout', GCW_URL . 'public/assets/js/gcw-shortcode-quote-checkout.js', array('jquery'), GCW_VERSION, false);
+		wp_enqueue_style('gcw-shortcode-quote', GCW_URL . 'public/assets/css/gcw-shortcode-quote.css', 	array(), GCW_VERSION, 'all');
 
-		wp_enqueue_script('gcw-shortcode-quote', plugin_dir_url(__FILE__) . 'assets/js/gcw-shortcode-quote-checkout.js', array('jquery'), GCW_VERSION, false);
-		wp_enqueue_style('gcw-shortcode-quote', plugin_dir_url(__FILE__) . 'assets/css/gcw-shortcode-quote.css', 	array(), GCW_VERSION, 'all');
-
-		
 		return $this->quote_checkout->render();
 	}
 

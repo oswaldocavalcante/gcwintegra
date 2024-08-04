@@ -31,6 +31,7 @@ class GCW_GC_Cliente extends GCW_GC_Api {
             'endereco'  => array(
                 'cep'           => '',
                 'logradouro'    => '',
+                'numero'        => '',
                 'complemento'   => '',
                 'bairro'        => '',
                 'pais'          => '',
@@ -41,15 +42,15 @@ class GCW_GC_Cliente extends GCW_GC_Api {
     );
 
     /** 
-     * @param object|array  $data Data core to create a new client and export to GestãoClick
+     * @param WC_Customer | array  $data Data core to create a new client and export to GestãoClick
      * @param string $context Context to select which way the client should be created
     */
-    public function __construct($data = null, $context = null | 'woocommerce' | 'form' | 'quote') {
+    public function __construct( $data, $context = 'order' | 'form' | 'quote') {
         parent::__construct();
         $this->api_headers =    parent::get_headers();
         $this->api_endpoint =   parent::get_endpoint_clients();
 
-        if($context == 'woocommerce') {
+        if($context == 'order') {
             $this->data = array(
                 'tipo_pessoa'   => 'PF',
                 'nome'          => $data->get_first_name() . ' ' . $data->get_last_name(),
@@ -69,7 +70,35 @@ class GCW_GC_Cliente extends GCW_GC_Api {
                     )
                 ),
             );
-        } elseif ($context == 'form') {
+        } elseif ($context == 'quote') {
+            $this->data = array(
+                'tipo_pessoa'   => 'PJ',
+                'nome'          => $data->get_billing_company(),
+                'cnpj'          => $data->get_meta('billing_cnpj'),
+                'email'         => $data->get_billing_email(),
+                'telefone'      => $data->get_billing_phone(),
+                'contatos'      => array(
+                    'contato'   => array(
+                        'nome'          => $data->get_billing_first_name() . $data->get_billing_last_name(),
+                        'contato'       => $data->get_billing_phone(),
+                        'observacao'    => $data->get_billing_email(),
+                    )
+                ),
+                'enderecos'     => array(
+                    'endereco'  => array(
+                        'cep'           => $data->get_billing_postcode(),
+                        'logradouro'    => $data->get_billing_address_1(),
+                        'complemento'   => $data->get_billing_address_2(),
+                        'numero'        => $data->get_meta('billing_number'),
+                        'bairro'        => $data->get_meta('billing_neighborhood'),
+                        'pais'          => $data->get_billing_country(),
+                        'nome_cidade'   => $data->get_billing_city(),
+                        'estado'        => $data->get_billing_state(),
+                    )
+                ),
+            );
+        } 
+        elseif ($context == 'form') {
             $cliente_cpf_cnpj = sanitize_text_field($data["gcw_cliente_cpf_cnpj"]);
 
             $this->data = array(
@@ -112,7 +141,7 @@ class GCW_GC_Cliente extends GCW_GC_Api {
             $this->id = $response_body['data']['id'];
             return $this->id;
         } else {
-            return new WP_Error( 'failed', __( 'GestãoClick: Error on export client to GestãoClick.', 'gestaoclick' ) );
+            return false;
         }
     }
 

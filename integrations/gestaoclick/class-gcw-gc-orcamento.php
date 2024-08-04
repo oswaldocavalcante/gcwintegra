@@ -11,7 +11,10 @@ class GCW_GC_Orcamento extends GCW_GC_Api {
     private $data = array();
     private $products = array();
 
-    public function __construct($data = null, $cliente_id = null, $context = null | 'form') {
+    /**
+     * @param WC_Package $package
+     */
+    public function __construct($data, $cliente_id, $context = 'form' | 'quote') {
         parent::__construct();
         $this->api_headers  = parent::get_headers();
         $this->api_endpoint = parent::get_endpoint_orcamentos();
@@ -24,6 +27,16 @@ class GCW_GC_Orcamento extends GCW_GC_Api {
                 "situacao_id"       => get_option("gcw-settings-export-situacao"),
                 "nome_canal_venda"  => "Internet",
                 "products"          => $this->products,
+            );
+        } elseif($context == 'quote')
+        {
+            // Obter lista de produtos no formato necessário
+            $this->data = array(
+                'tipo'              => 'produto',
+                'cliente_id'        => $cliente_id,
+                'situacao_id'       => get_option('gcw-settings-export-situacao'),
+                'nome_canal_vendas' => 'Internet',
+                'products'          => $this->products,
             );
         }
     }
@@ -45,7 +58,7 @@ class GCW_GC_Orcamento extends GCW_GC_Api {
             $this->id = $response["data"]["id"];
             return $this->id;
         } else {
-            return new WP_Error("failed", __("GestãoClick: Error on export to GestãoClick.", "gestaoclick"));
+            return false;
         }
     }
 
