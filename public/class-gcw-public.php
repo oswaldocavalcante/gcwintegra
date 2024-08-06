@@ -90,7 +90,12 @@ class GCW_Public
 	public function shortcode_quote_checkout()
 	{
 		wp_enqueue_script('gcw-shortcode-quote-checkout', GCW_URL . 'public/assets/js/gcw-shortcode-quote-checkout.js', array('jquery'), GCW_VERSION, false);
+		wp_enqueue_style('gcw-shortcode-quote-checkout', GCW_URL . 'public/assets/css/gcw-shortcode-quote-checkout.css', array(), GCW_VERSION, 'all');
 		wp_enqueue_style('gcw-shortcode-quote', GCW_URL . 'public/assets/css/gcw-shortcode-quote.css', 	array(), GCW_VERSION, 'all');
+		wp_localize_script('gcw-shortcode-quote-checkout', 'gcw_quote_ajax_object', array(
+			'url'   => admin_url('admin-ajax.php'),
+			'nonce' => wp_create_nonce('gcw_quote_nonce'),
+		));
 
 		return $this->quote_checkout->render();
 	}

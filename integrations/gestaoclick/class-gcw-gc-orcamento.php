@@ -9,7 +9,6 @@ class GCW_GC_Orcamento extends GCW_GC_Api {
     
     private $id = null;
     private $data = array();
-    private $products = array();
 
     /**
      * @param WC_Package $package
@@ -20,29 +19,25 @@ class GCW_GC_Orcamento extends GCW_GC_Api {
         $this->api_endpoint = parent::get_endpoint_orcamentos();
 
         if($context == 'form') {
-            $this->products = $this->get_form_items($data);
+            $products[] = $this->get_form_items($data);
             $this->data = array(
                 "tipo"              => "produto",
                 "cliente_id"        => $cliente_id,
                 "situacao_id"       => get_option("gcw-settings-export-situacao"),
                 "nome_canal_venda"  => "Internet",
-                "products"          => $this->products,
+                "produtos"          => $products,
             );
         } elseif($context == 'quote')
         {
-            // Obter lista de produtos no formato necessário
+            $products = $this->get_quote_items($data);
             $this->data = array(
                 'tipo'              => 'produto',
                 'cliente_id'        => $cliente_id,
                 'situacao_id'       => get_option('gcw-settings-export-situacao'),
                 'nome_canal_vendas' => 'Internet',
-                'products'          => $this->products,
+                'produtos'          => $products,
             );
         }
-    }
-
-    public function set_props($props) {
-        $this->data = $props;
     }
 
     public function export(){
@@ -60,6 +55,42 @@ class GCW_GC_Orcamento extends GCW_GC_Api {
         } else {
             return false;
         }
+    }
+
+    private function get_quote_items($quote_items)
+    {
+        $products = array();
+
+        foreach ($quote_items as $product) {
+            $wc_product = wc_get_product($product['product_id']);
+            $quantity   = $product['quantity'];
+
+            // $gc_variation_id = $product_data['variation_id'];
+            if ($wc_product->get_parent_id()) {
+                $gc_product_id   = wc_get_product($wc_product->get_parent_id())->get_meta('gestaoclick_gc_product_id');
+                $gc_variation_id = $wc_product->get_meta('gestaoclick_gc_variation_id');
+
+                $products[] = array(
+                    'produto' => array(
+                        'produto_id'    => $gc_product_id,
+                        'variacao_id'   => $gc_variation_id,
+                        'quantidade'    => $quantity,
+                        'valor_venda'   => $wc_product->get_price(),
+                    )
+                );
+            } else {
+                $gc_product_id   = $wc_product->get_meta('gestaoclick_gc_product_id');
+                $products[] = array(
+                    'produto' => array(
+                        'produto_id'    => $gc_product_id,
+                        'quantidade'    => $quantity,
+                        'valor_venda'   => $wc_product->get_price(),
+                    )
+                );
+            }
+        }
+
+        return $products;
     }
 
     private function get_form_items($orcamento){

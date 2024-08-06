@@ -84,7 +84,6 @@
 }
 
 #gcw-quote-form button[type="submit"]
-,#gcw_registration_form input[type="submit"]
 {
     font-family: unset;
     font-size: 0.9em;
@@ -137,11 +136,9 @@
     /* text-align: center; */
 }
 
-#gcw-quote-totals p
+#gcw_quote_totals_shipping p
 {
-    padding: 20px 40px;
     font-size: 1em;
-    margin: 0;
 }
 
 .gcw_quote_totals_section
@@ -150,8 +147,7 @@
     border-bottom: 1px solid #ccc;
 }
 
-#gcw_quote_totals_subtotal
-,#gcw_quote_totals_total
+.gcw_quote_space_between
 {
     display: flex;
     justify-content: space-between;
@@ -229,7 +225,9 @@
 }
 
 #gcw_save_quote_button
+,#gcw_finish_quote_button
 {
+    font-family: unset;
     cursor: pointer;
     margin: 20px;
     padding: 15px;
@@ -239,57 +237,5 @@
     text-decoration: none;
     border-radius: 7px;
     color: #fff;
-}
-
-/* Registration form */
-
-#gcw_quote_forms_container
-{
-    max-width: 100%;
-}
-
-#gcw_quote_forms_container h2
-{
-    font-size: 1.4em;
-    margin-top: 0;
-    color: #8a959b;
-}
-
-#gcw_registration_form
-{
-    margin-bottom: 50px;
-}
-
-.gcw-quote-section
-{
-    display: flex;
-    gap: 25px;
-    flex-wrap: wrap;
-    max-width: 100%;
-    margin-bottom: 30px;
-}
-
-.gcw-field-wrap
-{
-    flex: 1;
-    flex-wrap: wrap;
-    min-width: 300px;
-}
-
-.gcw-field-wrap label
-{
-    display: block;
-    margin-bottom: 10px;
-}
-
-.gcw-field-wrap input
-{
-    border-radius: 10px;
-    border: 2px solid #ddd;
-    font-family: unset;
-}
-
-#gcw_field_name
-{
-    min-width: 100%;
+    width: auto;
 }

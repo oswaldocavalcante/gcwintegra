@@ -7,11 +7,8 @@ class GCW_Shortcode_Quote_Checkout
 {
     public function __construct()
     {
-        add_action('wp_ajax_gcw_register_user',         array($this, 'ajax_register_user'));
-        add_action('wp_ajax_nopriv_gcw_register_user',  array($this, 'ajax_register_user'));
-
-        add_action('wp_ajax_gcw_save_quote',        array($this, 'ajax_finish_quote'));
-        add_action('wp_ajax_nopriv_gcw_save_quote', array($this, 'ajax_finish_quote'));
+        add_action('wp_ajax_gcw_finish_quote',         array($this, 'ajax_finish_quote'));
+        add_action('wp_ajax_nopriv_gcw_finish_quote',  array($this, 'ajax_finish_quote'));
     }
 
     public function render()
@@ -19,17 +16,18 @@ class GCW_Shortcode_Quote_Checkout
         ob_start();
         wc_print_notices();
 
+        $subtotal_price = isset($_SESSION['quote_subtotal_price']) ? $_SESSION['quote_subtotal_price'] : '';
+        $shipping_cost  = isset($_SESSION['quote_shipping_cost']) ? $_SESSION['quote_shipping_cost'] : '';
+        $total_price    = isset($_SESSION['quote_total_price']) ? $_SESSION['quote_total_price'] : '';
+        $address_html   = isset($_SESSION['shipping_address_html']) ? $_SESSION['shipping_address_html'] : '';
+        $postcode       = isset($_SESSION['shipping_postcode']) ? $_SESSION['shipping_postcode'] : '';
+        $quote_items    = isset($_SESSION['quote_items']) ? $_SESSION['quote_items'] : '';
+
         $first_name     = '';
         $last_name      = '';
         $company        = '';
         $cnpj           = '';
-        $postcode       = '';
         $number         = '';
-        $address_1      = '';
-        $address_2      = '';
-        $neighborhood   = '';
-        $city           = '';
-        $state          = '';
         $phone          = '';
         $email          = '';
 
@@ -39,71 +37,99 @@ class GCW_Shortcode_Quote_Checkout
             $last_name      = $customer->get_last_name();
             $company        = $customer->get_meta('billing_company');
             $cnpj           = $customer->get_meta('billing_cnpj');
-            $postcode       = $customer->get_billing_postcode();
             $number         = $customer->get_meta('billing_number');
-            $address_1      = $customer->get_billing_address_1();
-            $address_2      = $customer->get_billing_address_1();
-            $neighborhood   = $customer->get_meta('billing_neighborhood');
-            $city           = $customer->get_billing_city();
-            $state          = $customer->get_billing_state();
+            $address_2      = $customer->get_billing_address_2();
             $phone          = $customer->get_billing_phone();
             $email          = wp_get_current_user()->user_email;
         }
-        ?>
-            <form id="gcw-quote-container">
+?>
+        <form id="gcw-quote-container">
 
-                <div id="gcw_quote_forms_container">
-                    <h2><?php echo esc_html(__("Empresa", "gestaoclick")); ?></h2>
-                    <section id="gcw-section-institution" class="gcw-quote-section">
-                        <div class="gcw-field-wrap">
-                            <label><?php echo esc_html_e("Nome da empresa", "gestaoclick"); ?></label>
-                            <input type="text" class="gcw-quote-input" name="gcw_company" required value="<?php esc_attr_e($company); ?>" />
-                        </div>
-                        <div class="gcw-field-wrap">
-                            <label><?php echo esc_html_e("CNPJ", "gestaoclick"); ?></label>
-                            <input type="text" name="gcw_cnpj" class="gcw-quote-input" id="gcw-cliente-cpf-cnpj" required value="<?php esc_attr_e($cnpj); ?>" />
-                        </div>
-                        <div class="gcw-field-wrap">
-                            <label><?php echo esc_html_e("CEP", "gestaoclick"); ?></label>
-                            <input type="text" name="gcw_postcode" class="gcw-quote-input" required disabled value="<?php esc_attr_e($postcode); ?>" />
-                        </div>
-                        <div class="gcw-field-wrap">
-                            <label><?php echo esc_html_e("Nº do endereço", "gestaoclick"); ?></label>
-                            <input type="text" name="gcw_number" class="gcw-quote-input" requiredvalue="<?php esc_attr_e($number); ?>" />
-                        </div>
-                        <div class="gcw-field-wrap">
-                            <label><?php echo esc_html_e("Endereço", "gestaoclick"); ?></label>
-                            <input type="text" name="gcw_postcode" class="gcw-quote-input" required disabled value="<?php esc_attr_e($postcode); ?>" />
-                        </div>
-                    </section>
+            <div id="gcw_quote_forms_container">
+                
+                <h2><?php echo esc_html(__("Empresa", "gestaoclick")); ?></h2>
+                <section id="gcw-section-institution" class="gcw-quote-section">
+                    <div class="gcw-field-wrap">
+                        <label><?php echo esc_html_e("Nome da empresa", "gestaoclick"); ?></label>
+                        <input type="text" class="gcw-quote-input" name="gcw_company" required value="<?php esc_attr_e($company); ?>" />
+                    </div>
+                    <div class="gcw-field-wrap">
+                        <label><?php echo esc_html_e("CNPJ", "gestaoclick"); ?></label>
+                        <input type="text" name="gcw_cnpj" class="gcw-quote-input" id="gcw-cliente-cpf-cnpj" required value="<?php esc_attr_e($cnpj); ?>" />
+                    </div>
+                    <div class="gcw-field-wrap">
+                        <label><?php echo esc_html_e("CEP", "gestaoclick"); ?></label>
+                        <input type="text" name="gcw_postcode" class="gcw-quote-input" required disabled value="<?php esc_attr_e($postcode); ?>" />
+                    </div>
+                    <div class="gcw-field-wrap">
+                        <label><?php echo esc_html_e("Nº do endereço", "gestaoclick"); ?></label>
+                        <input type="text" name="gcw_number" class="gcw-quote-input" requiredvalue="<?php esc_attr_e($number); ?>" />
+                    </div>
+                    <div class="gcw-field-wrap">
+                        <label><?php echo esc_html_e("Endereço", "gestaoclick"); ?></label>
+                        <input type="text" name="gcw_address" class="gcw-quote-input" required disabled value="<?php esc_attr_e($address_html); ?>" />
+                    </div>
+                </section>
 
-                    <h2><?php echo esc_html(__("Responsável", "gestaoclick")); ?></h2>
-                    <section id="gcw-section-responsable" class="gcw-quote-section">
-                        <div class="gcw-field-wrap">
-                            <label><?php echo esc_html_e("Primeiro nome", "gestaoclick"); ?></label>
-                            <input type="text" name="gcw_first_name" class="gcw-quote-input" required value="<?php esc_attr_e($first_name); ?>" />
-                        </div>
-                        <div class="gcw-field-wrap">
-                            <label><?php echo esc_html_e("Sobrenome", "gestaoclick"); ?></label>
-                            <input type="text" name="gcw_last_name" class="gcw-quote-input" required value="<?php esc_attr_e($last_name); ?>" />
-                        </div>
-                        <div class="gcw-field-wrap">
-                            <label><?php echo esc_html_e("Email", "gestaoclick"); ?></label>
-                            <input type="email" name="gcw_email" class="gcw-quote-input" required value="<?php esc_attr_e($email); ?>" />
-                        </div>
-                        <div class="gcw-field-wrap">
-                            <label><?php echo esc_html_e("Telefone", "gestaoclick"); ?></label>
-                            <input type="text" name="gcw_phone" class="gcw-quote-input" required value="<?php esc_attr_e($phone); ?>" />
-                        </div>
-                    </section>
-                </div>
+                <h2><?php echo esc_html(__("Responsável", "gestaoclick")); ?></h2>
+                <section id="gcw-section-responsable" class="gcw-quote-section">
+                    <div class="gcw-field-wrap">
+                        <label><?php echo esc_html_e("Primeiro nome", "gestaoclick"); ?></label>
+                        <input type="text" name="gcw_first_name" class="gcw-quote-input" required value="<?php esc_attr_e($first_name); ?>" />
+                    </div>
+                    <div class="gcw-field-wrap">
+                        <label><?php echo esc_html_e("Sobrenome", "gestaoclick"); ?></label>
+                        <input type="text" name="gcw_last_name" class="gcw-quote-input" required value="<?php esc_attr_e($last_name); ?>" />
+                    </div>
+                    <div class="gcw-field-wrap">
+                        <label><?php echo esc_html_e("Email", "gestaoclick"); ?></label>
+                        <input type="email" name="gcw_email" class="gcw-quote-input" required value="<?php esc_attr_e($email); ?>" />
+                    </div>
+                    <div class="gcw-field-wrap">
+                        <label><?php echo esc_html_e("Telefone", "gestaoclick"); ?></label>
+                        <input type="text" name="gcw_phone" class="gcw-quote-input" required value="<?php esc_attr_e($phone); ?>" />
+                    </div>
+                </section>
 
-                <div id="gcw-quote-totals">
-                    <button type="submit" class="button" id="gcw_finish_quote_button"><?php esc_html_e('Finalizar orçamento', 'gestaoclick'); ?></button>
-                </div>
+            </div>
 
-            </form>
-        <?php
+            <div id="gcw-quote-totals">
+
+                <h2>Total do orçamento</h2>
+                <section id="gcw-quote-checkout-package" class="gcw_quote_totals_section">
+                    <span>Produtos</span>
+                    <div id="gcw-quote-checkout-items-list">
+                        <?php
+                        foreach ($quote_items as $product) {
+                            $product_name = wc_get_product($product['product_id'])->get_name();
+                            $quantity = $product['quantity'];
+
+                            echo '<p>' . esc_html($product_name . ' &times; ' . $quantity) . '</p>';
+                        }
+                        ?>
+                    </div>
+                </section>
+                <section id="gcw_quote_totals_subtotal" class="gcw_quote_totals_section gcw_quote_space_between">
+                    <span>Subtotal</span>
+                    <?php echo wc_price($subtotal_price); ?>
+                </section>
+                <section id="gcw_quote_shipping_address" class="gcw_quote_totals_section">
+                    <div class="gcw_quote_space_between">
+                        <span>Entrega</span>
+                        <?php echo wc_price($shipping_cost); ?>
+                    </div>
+                    <p><?php echo $address_html; ?></p>
+                </section>
+                <section id="gcw_quote_totals_total" class="gcw_quote_totals_section gcw_quote_space_between">
+                    <span>Total</span>
+                    <?php echo wc_price($total_price); ?>
+                </section>
+                <button type="submit" class="button" id="gcw_finish_quote_button" name="gcw_finish_quote"><?php esc_html_e('Finalizar orçamento', 'gestaoclick'); ?></button>
+
+            </div>
+
+        </form>
+<?php
 
         return ob_get_clean();
     }
@@ -115,22 +141,21 @@ class GCW_Shortcode_Quote_Checkout
         $last_name      = sanitize_text_field($_POST['gcw_last_name']);
         $company        = sanitize_text_field($_POST['gcw_company']);
         $cnpj           = sanitize_text_field($_POST['gcw_cnpj']);
-        $postcode       = sanitize_text_field($_POST['gcw_postcode']);
-        $number         = sanitize_text_field($_POST['gcw_number']);
-        $address_1      = sanitize_text_field($_POST['gcw_address_1']);
-        $address_2      = sanitize_text_field($_POST['gcw_address_2']);
-        $neighborhood   = sanitize_text_field($_POST['gcw_neighborhood']);
-        $city           = sanitize_text_field($_POST['gcw_city']);
-        $state          = sanitize_option('gcw_state', $_POST['gcw_state']);
         $phone          = sanitize_text_field($_POST['gcw_phone']);
+        $number         = sanitize_text_field($_POST['gcw_number']);
         $email          = sanitize_email($_POST['gcw_email']);
+        $postcode       = isset($_SESSION['shipping_postcode']) ? $_SESSION['shipping_postcode'] : '';
+        $address_1      = isset($_SESSION['shipping_address_1']) ? $_SESSION['shipping_address_1'] : '';
+        $neighborhood   = isset($_SESSION['shipping_neigborhood']) ? $_SESSION['shipping_neigborhood'] : '';
+        $city           = isset($_SESSION['shipping_city']) ? $_SESSION['shipping_city'] : '';
+        $state          = isset($_SESSION['shipping_state']) ? $_SESSION['shipping_state'] : '';
 
+        // Cria ou resgata o usuário logado
         if (is_user_logged_in()) {
             $user_id = get_current_user_id();
-        }
-        else {
+        } else {
             if (email_exists($email)) {
-                wp_send_json_error(array('message' => 'Este e-mail já está registrado.'));
+                wp_send_json_error(array('message' => 'Este e-mail já está registrado. Faça login para concluir.'));
                 return;
             }
 
@@ -156,7 +181,6 @@ class GCW_Shortcode_Quote_Checkout
         $customer->set_billing_last_name($last_name);
         $customer->set_billing_postcode($postcode);
         $customer->set_billing_address_1($address_1);
-        $customer->set_billing_address_2($address_2);
         $customer->set_billing_city($city);
         $customer->set_billing_state($state);
 
@@ -167,13 +191,13 @@ class GCW_Shortcode_Quote_Checkout
         update_user_meta($user_id, 'billing_cnpj',          $cnpj);
         $customer->save();
 
-        $gc_cliente = new GCW_GC_Cliente($customer, 'quote');
-        $gc_cliente->export();
-
         // Conecta o usuário
         wp_set_auth_cookie($user_id);
 
         $quote_items = isset($_SESSION['quote_items']) ? $_SESSION['quote_items'] : array();
+        
+        $gc_cliente = new GCW_GC_Cliente($customer, 'quote');
+        $gc_cliente->export();
 
         $gc_orcamento = new GCW_GC_Orcamento($quote_items, $gc_cliente->get_id(), 'quote');
         $gc_orcamento->export();

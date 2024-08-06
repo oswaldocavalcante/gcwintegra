@@ -31,20 +31,30 @@ jQuery(document).ready(function($) {
                 type: 'GET',
                 success: function (response) {
                     if (!response.erro) {
+                        var shipping_address_1 = response.logradouro;
+                        var shipping_neigborhood = response.bairro;
+                        var shipping_city = response.localidade;
+                        var shipping_state = response.uf;
+
                         $('#gcw_quote_shipping_address').html(
-                            '<p>' + response.logradouro + ', ' + response.bairro + ', ' + response.localidade + '/' + response.uf + '.</p>'
+                            '<p>' + response.logradouro + ', ' + response.bairro + ', ' + response.localidade + '/' + response.uf + '</p>'
                         );
 
-                        var shipping_address = $('#gcw_quote_shipping_address').html();
+                        var shipping_address_html = $('#gcw_quote_shipping_address').html();
 
                         $.ajax({
                             url: gcw_quote_ajax_object.url,
                             type: 'POST',
                             data: {
                                 action: 'gcw_update_shipping',
-                                nonce: gcw_quote_ajax_object.nonce,
-                                shipping_postcode: shipping_postcode,
-                                shipping_address: shipping_address
+                                nonce:  gcw_quote_ajax_object.nonce,
+                                
+                                shipping_postcode:      shipping_postcode,
+                                shipping_address_1:     shipping_address_1,
+                                shipping_neigborhood:   shipping_neigborhood,
+                                shipping_city:          shipping_city,
+                                shipping_state:         shipping_state,
+                                shipping_address_html:  shipping_address_html
                             },
                             success: function (response) {
                                 $('#gcw_quote_shipping_options').html(response.data.html);

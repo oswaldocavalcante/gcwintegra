@@ -37,11 +37,6 @@ class GCW_WC_Integration extends WC_Integration {
             $gc_situacoes = new GCW_GC_Situacoes();
             $this->gc_situacoes_options = $gc_situacoes->get_options_for_settings();
 
-            // $gc_categorias = get_option('gestaoclick-categories'); //TODO: Obter a partir da API
-            // foreach ($gc_categorias as $gc_categoria) {
-            //     $this->gc_categorias_options[] = $gc_categoria['nome'];
-            // }
-
             $gc_categorias = new GCW_WC_Categories();
             $this->gc_categorias_options = $gc_categorias->get_options_for_settings();
         }
