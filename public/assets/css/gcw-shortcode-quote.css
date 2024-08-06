@@ -27,6 +27,11 @@
     background-color: #F8F8F8;
 }
 
+#gcw-quote-form .product-remove
+{
+    padding-right: 0 !important;
+}
+
 #gcw-quote-form .product-remove a
 {
     text-decoration: none;
@@ -224,12 +229,16 @@
     background-color: #ebeeef;
 }
 
+#gcw_quote_totals_save
+{
+    padding: 20px;
+}
+
 #gcw_save_quote_button
 ,#gcw_finish_quote_button
 {
     font-family: unset;
     cursor: pointer;
-    margin: 20px;
     padding: 15px;
     background-color: #5d707a;
     display: block;
@@ -237,5 +246,6 @@
     text-decoration: none;
     border-radius: 7px;
     color: #fff;
-    width: auto;
+    width: 100%;
+    line-height: 1.5em;
 }

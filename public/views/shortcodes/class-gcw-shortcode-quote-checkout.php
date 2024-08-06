@@ -33,12 +33,12 @@ class GCW_Shortcode_Quote_Checkout
 
         if (is_user_logged_in()) {
             $customer = new WC_Customer(wp_get_current_user()->ID);
+
             $first_name     = $customer->get_first_name();
             $last_name      = $customer->get_last_name();
-            $company        = $customer->get_meta('billing_company');
+            $company        = $customer->get_billing_company();
             $cnpj           = $customer->get_meta('billing_cnpj');
             $number         = $customer->get_meta('billing_number');
-            $address_2      = $customer->get_billing_address_2();
             $phone          = $customer->get_billing_phone();
             $email          = wp_get_current_user()->user_email;
         }
@@ -46,7 +46,7 @@ class GCW_Shortcode_Quote_Checkout
         <form id="gcw-quote-container">
 
             <div id="gcw_quote_forms_container">
-                
+
                 <h2><?php echo esc_html(__("Empresa", "gestaoclick")); ?></h2>
                 <section id="gcw-section-institution" class="gcw-quote-section">
                     <div class="gcw-field-wrap">
@@ -63,7 +63,7 @@ class GCW_Shortcode_Quote_Checkout
                     </div>
                     <div class="gcw-field-wrap">
                         <label><?php echo esc_html_e("Nº do endereço", "gestaoclick"); ?></label>
-                        <input type="text" name="gcw_number" class="gcw-quote-input" requiredvalue="<?php esc_attr_e($number); ?>" />
+                        <input type="text" name="gcw_number" class="gcw-quote-input" required value="<?php esc_attr_e($number); ?>" />
                     </div>
                     <div class="gcw-field-wrap">
                         <label><?php echo esc_html_e("Endereço", "gestaoclick"); ?></label>
@@ -100,12 +100,17 @@ class GCW_Shortcode_Quote_Checkout
                     <span>Produtos</span>
                     <div id="gcw-quote-checkout-items-list">
                         <?php
-                        foreach ($quote_items as $product) {
-                            $product_name = wc_get_product($product['product_id'])->get_name();
-                            $quantity = $product['quantity'];
+                        if($quote_items) {
+                            foreach ($quote_items as $product) {
+                                $product_name = wc_get_product($product['product_id'])->get_name();
+                                $quantity = $product['quantity'];
 
-                            echo '<p>' . esc_html($product_name . ' &times; ' . $quantity) . '</p>';
+                                echo '<p>' . esc_html($product_name . ' &times; ' . $quantity) . '</p>';
+                            }
+                        } else {
+                            echo '<p>' . esc_html__('Sua lista de produtos está vazia.', 'gestaoclick') . '</p>';
                         }
+
                         ?>
                     </div>
                 </section>
@@ -124,7 +129,9 @@ class GCW_Shortcode_Quote_Checkout
                     <span>Total</span>
                     <?php echo wc_price($total_price); ?>
                 </section>
-                <button type="submit" class="button" id="gcw_finish_quote_button" name="gcw_finish_quote"><?php esc_html_e('Finalizar orçamento', 'gestaoclick'); ?></button>
+                <section id="gcw_quote_totals_finish">
+                    <button type="submit" class="button" id="gcw_finish_quote_button" name="gcw_finish_quote"><?php esc_html_e('Finalizar orçamento', 'gestaoclick'); ?></button>
+                </section>
 
             </div>
 
@@ -140,15 +147,18 @@ class GCW_Shortcode_Quote_Checkout
         $first_name     = sanitize_text_field($_POST['gcw_first_name']);
         $last_name      = sanitize_text_field($_POST['gcw_last_name']);
         $company        = sanitize_text_field($_POST['gcw_company']);
-        $cnpj           = sanitize_text_field($_POST['gcw_cnpj']);
+        $cnpj           = sanitize_text_field($_POST['gcw_cnpj']); // TODO: Checar CNPJ
         $phone          = sanitize_text_field($_POST['gcw_phone']);
         $number         = sanitize_text_field($_POST['gcw_number']);
         $email          = sanitize_email($_POST['gcw_email']);
+
         $postcode       = isset($_SESSION['shipping_postcode']) ? $_SESSION['shipping_postcode'] : '';
         $address_1      = isset($_SESSION['shipping_address_1']) ? $_SESSION['shipping_address_1'] : '';
         $neighborhood   = isset($_SESSION['shipping_neigborhood']) ? $_SESSION['shipping_neigborhood'] : '';
         $city           = isset($_SESSION['shipping_city']) ? $_SESSION['shipping_city'] : '';
         $state          = isset($_SESSION['shipping_state']) ? $_SESSION['shipping_state'] : '';
+
+        $quote_items    = isset($_SESSION['quote_items']) ? $_SESSION['quote_items'] : array();
 
         // Cria ou resgata o usuário logado
         if (is_user_logged_in()) {
@@ -187,15 +197,12 @@ class GCW_Shortcode_Quote_Checkout
         // Para o plugin: "Extra Checkout Fields for Brazil"
         update_user_meta($user_id, 'billing_number',        $number);
         update_user_meta($user_id, 'billing_neighborhood',  $neighborhood);
-        update_user_meta($user_id, 'billing_company',       $company);
         update_user_meta($user_id, 'billing_cnpj',          $cnpj);
         $customer->save();
 
         // Conecta o usuário
         wp_set_auth_cookie($user_id);
 
-        $quote_items = isset($_SESSION['quote_items']) ? $_SESSION['quote_items'] : array();
-        
         $gc_cliente = new GCW_GC_Cliente($customer, 'quote');
         $gc_cliente->export();
 
@@ -210,17 +217,18 @@ class GCW_Shortcode_Quote_Checkout
             'post_author' => $user_id
         ));
 
+        // Atualizar título do orçamento com seu id
         wp_update_post(array(
             'ID' => $quote_id,
             'post_title'  => 'Orçamento ' . $quote_id,
         ));
 
-        // Marcar a cotação como aberta
+        // Marcar a cotação como aberta e armazena os itens do orçamento
         update_post_meta($quote_id, 'status', 'open');
         update_post_meta($quote_id, 'items', $quote_items);
 
-        // Limpar os itens do orçamento da sessão
-        unset($_SESSION);
+        // Limpar os dados do orçamento armazenados na seção.
+        session_unset();
 
         wp_send_json_success(array(
             'message' => 'Orçamento salvo e enviado com sucesso.',
@@ -228,5 +236,3 @@ class GCW_Shortcode_Quote_Checkout
         ));
     }
 }
-            // Adiciona o parâmetro de redirecionamento
-            // $redirect_url = wc_get_page_permalink('myaccount') . '?redirect_to=' . (home_url('orcamento'));
