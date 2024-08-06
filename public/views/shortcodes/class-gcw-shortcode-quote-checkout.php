@@ -207,25 +207,20 @@ class GCW_Shortcode_Quote_Checkout
         $gc_cliente->export();
 
         $gc_orcamento = new GCW_GC_Orcamento($quote_items, $gc_cliente->get_id(), 'quote');
-        $gc_orcamento->export();
+        $gc_orcamento_codigo = $gc_orcamento->export();
 
         // Criar um novo post do tipo 'quote'
         $quote_id = wp_insert_post(array(
-            'post_title'  => 'Orçamento ',
-            'post_status' => 'draft',
-            'post_type'   => 'quote',
+            'post_title'  => 'Orçamento ' . $gc_orcamento_codigo,
+            'post_status' => 'publish',
+            'post_type'   => 'orcamento',
             'post_author' => $user_id
         ));
 
-        // Atualizar título do orçamento com seu id
-        wp_update_post(array(
-            'ID' => $quote_id,
-            'post_title'  => 'Orçamento ' . $quote_id,
-        ));
-
         // Marcar a cotação como aberta e armazena os itens do orçamento
-        update_post_meta($quote_id, 'status', 'open');
-        update_post_meta($quote_id, 'items', $quote_items);
+        update_post_meta($quote_id, 'status',       'open');
+        update_post_meta($quote_id, 'gc_codigo',    $gc_orcamento_codigo);
+        update_post_meta($quote_id, 'items',        $quote_items);
 
         // Limpar os dados do orçamento armazenados na seção.
         session_unset();

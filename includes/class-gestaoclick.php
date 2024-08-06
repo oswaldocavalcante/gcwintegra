@@ -153,16 +153,16 @@ class Gestaoclick
 	{
 		$plugin_admin = new GCW_Admin($this->get_plugin_name(), $this->get_version());
 
-		$this->loader->add_action('init', $plugin_admin, 'register_quote_endpoint');
-		$this->loader->add_action('init', $plugin_admin, 'create_quote_post_type');
-		$this->loader->add_action('admin_init', $plugin_admin, 'register_settings');
-		$this->loader->add_action('admin_menu', $plugin_admin, 'add_admin_menu');
-		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
-		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
-		$this->loader->add_action('template_include', $plugin_admin, 'include_template_quote');
-		$this->loader->add_action('display_post_states', $plugin_admin, 'add_display_post_states', 10, 2);
-		$this->loader->add_filter('woocommerce_integrations', 	$plugin_admin, 'add_woocommerce_integration');
-		$this->loader->add_action('gestaoclick_update', $plugin_admin, 'import_gestaoclick');
+		add_action('admin_init', 				array($plugin_admin, 'register_settings'));
+		add_action('admin_menu', 				array($plugin_admin, 'add_admin_menu'));
+		add_action('admin_enqueue_scripts', 	array($plugin_admin, 'enqueue_styles'));
+		add_action('admin_enqueue_scripts', 	array($plugin_admin, 'enqueue_scripts'));
+		add_filter('woocommerce_integrations', 	array($plugin_admin, 'add_woocommerce_integration'));
+		add_action('gestaoclick_update', 		array($plugin_admin, 'import_gestaoclick'));
+		
+		add_action('init', 						array($plugin_admin, 'register_quote_endpoint'));
+		add_action('init', 						array($plugin_admin, 'create_quote_post_type'));
+		add_action('display_post_states', 		array($plugin_admin, 'add_display_post_states'), 10, 2);
 
 		if (get_option('gcw-settings-export-orders') == 'yes') {
 			add_action('woocommerce_order_status_processing', array( $plugin_admin, 'export_order'));
@@ -170,18 +170,23 @@ class Gestaoclick
 			remove_action('woocommerce_order_status_processing', 'export_order');
 		}
 
-		$this->loader->add_action('rest_api_init', $plugin_admin, 'add_stone_webhook');
+		add_action('rest_api_init', array($plugin_admin, 'add_stone_webhook'));
 	}
 
 	private function define_public_hooks()
 	{
 		$plugin_public = new GCW_Public($this->get_plugin_name(), $this->get_version());
 		
-		add_action('init', 									array($plugin_public, 'session_start'));
-		add_action('woocommerce_after_add_to_cart_button', 	array($plugin_public, 'add_to_quote_button'));
-		add_shortcode('gestaoclick_orcamento_formulario', 	array($plugin_public, 'shortcode_quote_form'));
-		add_shortcode('gestaoclick_orcamento', 				array($plugin_public, 'shortcode_quote'));
-		add_shortcode('gestaoclick_finalizar_orcamento', 	array($plugin_public, 'shortcode_quote_checkout'));
+		add_action('init', 										array($plugin_public, 'session_start'), 1);
+		add_action('woocommerce_after_add_to_cart_button', 		array($plugin_public, 'add_to_quote_button'));
+		add_filter('query_vars', 								array($plugin_public, 'add_quote_query_vars'));
+		add_filter('woocommerce_account_menu_items', 			array($plugin_public, 'add_orcamentos_to_account_menu'));
+		add_action('woocommerce_account_orcamentos_endpoint', 	array($plugin_public, 'orcamentos_endpoint_content'));
+		add_action('template_include', 							array($plugin_public, 'include_template_quote'));
+
+		add_shortcode('gestaoclick_orcamento_formulario', 		array($plugin_public, 'shortcode_quote_form'));
+		add_shortcode('gestaoclick_orcamento', 					array($plugin_public, 'shortcode_quote'));
+		add_shortcode('gestaoclick_finalizar_orcamento', 		array($plugin_public, 'shortcode_quote_checkout'));
 	}
 
 	/**

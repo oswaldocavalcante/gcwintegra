@@ -26,6 +26,10 @@ class Gestaoclick_Activator {
 	public static function activate() {
 		self::create_quote_page();
 		self::create_quote_checkout_page();
+
+		register_activation_hook(__FILE__, function () {
+			flush_rewrite_rules();
+		});
 	}
 
 	private static function create_quote_page()

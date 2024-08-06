@@ -50,7 +50,7 @@ class GCW_GC_Orcamento extends GCW_GC_Api {
         $response = json_decode(wp_remote_retrieve_body($response), true);
 
         if (is_array($response) && $response["code"] == 200) {
-            $this->id = $response["data"]["id"];
+            $this->id = $response["data"]["codigo"];
             return $this->id;
         } else {
             return false;

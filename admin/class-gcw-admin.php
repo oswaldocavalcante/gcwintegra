@@ -193,9 +193,9 @@ class GCW_Admin {
 		);
 	}
 
-	public function register_quote_endpoint()
+	function register_quote_endpoint()
 	{
-		add_rewrite_endpoint('quote', EP_ROOT | EP_PAGES);
+		add_rewrite_endpoint('orcamentos', EP_PAGES);
 	}
 
 	public function create_quote_post_type()
@@ -220,26 +220,15 @@ class GCW_Admin {
 			'public' 		=> true,
 			'has_archive' 	=> true,
 			'show_in_menu' 	=> 'gestaoclick',
-			'rewrite' 		=> array('slug' => 'quote'),
+			'rewrite' 		=> array('slug' => 'orcamentos'),
 			'supports' 		=> array('title', 'editor', 'custom-fields'),
 			'menu_position' => 4,
 		);
 
-		register_post_type('quote', $args);
+		register_post_type('orcamento', $args);
 	}
 
-	public function include_template_quote($template)
-	{
-		if (is_singular('quote')) {
-			// Caminho para o template no diretório do plugin
-			$template = GCW_ABSPATH . 'public/views/templates/single-quote.php';
-			if (file_exists($template)) {
-				return $template;
-			}
-		}
 
-		return $template;
-	}
 
 	/**
 	 * Add a post display state for special WC pages in the page list table.

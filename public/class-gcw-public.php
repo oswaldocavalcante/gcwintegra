@@ -48,9 +48,65 @@ class GCW_Public
 
 	public function session_start()
 	{
-		if (!session_id()) {
+		if (!headers_sent() && '' == session_id()) {
 			session_start();
 		}
+	}
+
+	// Adicionar a query var para o endpoint
+	function add_quote_query_vars($vars)
+	{
+		$vars[] = 'orcamento';
+		return $vars;
+	}
+
+	public function include_template_quote($template)
+	{
+		if (is_singular('orcamento')) {
+			// Caminho para o template no diretório do plugin
+			$template = GCW_ABSPATH . 'public/views/templates/single-quote.php';
+			if (file_exists($template)) {
+				return $template;
+			}
+		}
+
+		return $template;
+	}
+
+	// Função para adicionar 'Orçamentos' ao menu de conta
+	function add_orcamentos_to_account_menu($items)
+	{
+		$items = array_slice($items, 0, 2, true) + // Mantém o primeiro item
+			array('orcamentos' => 'Orçamentos') + // Adiciona 'Orçamentos'
+			array_slice($items, 2, NULL, true); // Mantém o resto
+
+		return $items;
+	}
+
+	// Função para exibir o conteúdo do endpoint 'orcamentos'
+	function orcamentos_endpoint_content()
+	{
+		// Se você quiser listar os orçamentos do usuário logado, pode fazer isso:
+		$current_user_id = get_current_user_id();
+		$args = array(
+			'post_type' => 'orcamento',
+			'author'    => $current_user_id,
+			'post_status' => 'publish',
+		);
+		$orcamentos_query = new WP_Query($args);
+
+		if ($orcamentos_query->have_posts()) {
+			echo '<ul>';
+			while ($orcamentos_query->have_posts()) {
+				$orcamentos_query->the_post();
+				echo '<li><a href="' . get_the_permalink() . '">' . get_the_title() . '</a></li>';
+			}
+			echo '</ul>';
+		} else {
+			echo '<p>Você ainda não possui orçamentos.</p>';
+		}
+
+		wp_reset_postdata();
 	}
 
 	/**
