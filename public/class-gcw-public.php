@@ -86,14 +86,11 @@ class GCW_Public
 	// Função para exibir o conteúdo do endpoint 'orcamentos'
 	function orcamentos_endpoint_content()
 	{
-		// Se você quiser listar os orçamentos do usuário logado, pode fazer isso:
-		$current_user_id = get_current_user_id();
-		$args = array(
-			'post_type' => 'orcamento',
-			'author'    => $current_user_id,
-			'post_status' => 'publish',
-		);
-		$orcamentos_query = new WP_Query($args);
+		$orcamentos_query = new WP_Query(array(
+			'post_type' 	=> 'orcamento',
+			'post_status' 	=> 'publish',
+			'author'    	=> get_current_user_id(),
+		));
 
 		if ($orcamentos_query->have_posts()) {
 			echo '<ul>';
