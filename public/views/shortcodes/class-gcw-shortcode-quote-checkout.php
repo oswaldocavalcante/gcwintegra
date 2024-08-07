@@ -14,14 +14,19 @@ class GCW_Shortcode_Quote_Checkout
     public function render()
     {
         ob_start();
-        wc_print_notices();
-
+        
         $subtotal_price = isset($_SESSION['quote_subtotal_price']) ? $_SESSION['quote_subtotal_price'] : '';
         $shipping_cost  = isset($_SESSION['quote_shipping_cost']) ? $_SESSION['quote_shipping_cost'] : '';
         $total_price    = isset($_SESSION['quote_total_price']) ? $_SESSION['quote_total_price'] : '';
         $address_html   = isset($_SESSION['shipping_address_html']) ? $_SESSION['shipping_address_html'] : '';
         $postcode       = isset($_SESSION['shipping_postcode']) ? $_SESSION['shipping_postcode'] : '';
         $quote_items    = isset($_SESSION['quote_items']) ? $_SESSION['quote_items'] : '';
+        
+        if(!$quote_items) {
+            $message = 'Sua lista de produtos está vazia. <a href="' . esc_url(home_url('orcamento')) . '" class="button">Ver orçamento</a>';
+            wc_add_notice($message, 'error');
+        }
+        wc_print_notices();
 
         $first_name     = '';
         $last_name      = '';
@@ -42,6 +47,7 @@ class GCW_Shortcode_Quote_Checkout
             $phone          = $customer->get_billing_phone();
             $email          = wp_get_current_user()->user_email;
         }
+
 ?>
         <form id="gcw-quote-container">
 
@@ -100,7 +106,7 @@ class GCW_Shortcode_Quote_Checkout
                     <span>Produtos</span>
                     <div id="gcw-quote-checkout-items-list">
                         <?php
-                        if($quote_items) {
+                        if ($quote_items) {
                             foreach ($quote_items as $product) {
                                 $product_name = wc_get_product($product['product_id'])->get_name();
                                 $quantity = $product['quantity'];
@@ -159,6 +165,10 @@ class GCW_Shortcode_Quote_Checkout
         $state          = isset($_SESSION['shipping_state']) ? $_SESSION['shipping_state'] : '';
 
         $quote_items    = isset($_SESSION['quote_items']) ? $_SESSION['quote_items'] : array();
+
+        if(!$quote_items) {
+            wp_send_json_error(array('message' => 'Sua lista de produtos está vazia.'));
+        }
 
         // Cria ou resgata o usuário logado
         if (is_user_logged_in()) {

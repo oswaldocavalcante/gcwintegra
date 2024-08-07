@@ -2,7 +2,7 @@
 
 require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-orcamento.php';
 require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-cliente.php';
-require_once GCW_ABSPATH . 'public/views/shortcodes/class-gcw-shortcode-quote-form.php';
+
 require_once GCW_ABSPATH . 'public/views/shortcodes/class-gcw-shortcode-quote.php';
 require_once GCW_ABSPATH . 'public/views/shortcodes/class-gcw-shortcode-quote-checkout.php';
 
@@ -50,6 +50,7 @@ class GCW_Public
 	{
 		if (!headers_sent() && '' == session_id()) {
 			session_start();
+			WC()->session->init();
 		}
 	}
 
@@ -83,55 +84,17 @@ class GCW_Public
 		return $items;
 	}
 
-	// Função para exibir o conteúdo do endpoint 'orcamentos'
+	// Exibe o conteúdo do endpoint 'orcamentos' em WC myaccount
 	function orcamentos_endpoint_content()
 	{
-		$orcamentos_query = new WP_Query(array(
-			'post_type' 	=> 'orcamento',
-			'post_status' 	=> 'publish',
-			'author'    	=> get_current_user_id(),
-		));
-
-		if ($orcamentos_query->have_posts()) {
-			echo '<ul>';
-			while ($orcamentos_query->have_posts()) {
-				$orcamentos_query->the_post();
-				echo '<li><a href="' . get_the_permalink() . '">' . get_the_title() . '</a></li>';
-			}
-			echo '</ul>';
-		} else {
-			echo '<p>Você ainda não possui orçamentos.</p>';
-		}
-
-		wp_reset_postdata();
-	}
-
-	/**
-	 * Insert the Orçamento form in its shortcode place.
-	 *
-	 * @since    1.0.0
-	 */
-	public function shortcode_quote_form()
-	{
-		if (isset($_POST['gcw_nonce_orcamento']) && wp_verify_nonce($_POST['gcw_nonce_orcamento'], 'gcw_form_orcamento')) {
-			$gc_cliente = new GCW_GC_Cliente($_POST, 'form');
-			$gc_cliente->export();
-
-			$gc_orcamento = new GCW_GC_Orcamento($_POST, $gc_cliente->get_id(), 'form');
-			$gc_orcamento->export();
-		}
-
-		wp_enqueue_script($this->plugin_name . '-shortcode-quote-form', plugin_dir_url(__FILE__) . 'assets/js/gcw-shortcode-quote-form.js', array('jquery'), $this->version, false);
-		wp_enqueue_style($this->plugin_name . '-shortcode-quote-form', plugin_dir_url(__FILE__) . 'assets/css/gcw-shortcode-quote-form.css', array(), $this->version, 'all');
-		$quote_form = new GCW_Shortcode_Quote_Form();
-
-		return $quote_form->render();
+		wp_enqueue_style('gcw-wc-myaccount-quotes', GCW_URL . 'public/assets/css/gcw-wc-myaccount-quotes.css', array(), GCW_VERSION, 'all');
+		wc_get_template('wc-myaccount-quotes.php', array(), 'quotes', GCW_ABSPATH . 'public/views/templates/');
 	}
 
 	public function shortcode_quote()
 	{
-		wp_enqueue_script('gcw-shortcode-quote', GCW_URL . 'public/assets/js/gcw-shortcode-quote.js',     array('jquery'), GCW_VERSION, false);
 		wp_enqueue_style('gcw-shortcode-quote', GCW_URL . 'public/assets/css/gcw-shortcode-quote.css',     array(), GCW_VERSION, 'all');
+		wp_enqueue_script('gcw-shortcode-quote', GCW_URL . 'public/assets/js/gcw-shortcode-quote.js',     array('jquery'), GCW_VERSION, false);
 		wp_localize_script('gcw-shortcode-quote', 'gcw_quote_ajax_object', array(
 			'url'   => admin_url('admin-ajax.php'),
 			'nonce' => wp_create_nonce('gcw_quote_nonce'),
@@ -166,13 +129,13 @@ class GCW_Public
 
 				// Differs the script for variable and simple products
 				if ($product->has_child()) {
-					wp_enqueue_script(	$this->plugin_name 	. '-add-to-quote-variation', plugin_dir_url(__FILE__) . 'assets/js/gcw-add-to-quote-variation.js', 	array('jquery'), $this->version, true);
+					wp_enqueue_script(	$this->plugin_name 	. '-add-to-quote-variation', plugin_dir_url(__FILE__) . 'assets/js/gcw-add-to-quote-variation.js', array('jquery'), $this->version, true);
 					wp_localize_script(	$this->plugin_name 	. '-add-to-quote-variation', 'gcw_add_to_quote_variation', array(
 						'url' 	=> admin_url('admin-ajax.php'),
 						'nonce' => wp_create_nonce('gcw_add_to_quote_variation')
 					));
 				} else {
-					wp_enqueue_script(	$this->plugin_name . '-add-to-quote-simple', plugin_dir_url(__FILE__) . 'assets/js/gcw-add-to-quote-simple.js', 	array('jquery'), $this->version, true);
+					wp_enqueue_script(	$this->plugin_name . '-add-to-quote-simple', plugin_dir_url(__FILE__) . 'assets/js/gcw-add-to-quote-simple.js', array('jquery'), $this->version, true);
 					wp_localize_script(	$this->plugin_name . '-add-to-quote-simple', 'gcw_add_to_quote_simple', array(
 						'url' 	=> admin_url('admin-ajax.php'),
 						'nonce' => wp_create_nonce('gcw_add_to_quote_simple_nonce')

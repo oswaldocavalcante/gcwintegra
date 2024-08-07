@@ -13,7 +13,7 @@ jQuery(document).ready(function($) {
                 if (response.success) {
                     window.location.href = response.data.redirect_url; // Redireciona para a URL fornecida
                 } else {
-                    $('#gcw_register_errors').html(response.data.message); // Exibe mensagem de erro
+                    $('#gcw_quote_errors').html(response.data.message); // Exibe mensagem de erro
                 }
             },
             error: function (xhr, status, error) {

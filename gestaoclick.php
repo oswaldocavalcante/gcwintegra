@@ -83,7 +83,5 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-gestaoclick.php';
 function run_gestaoclick() {
 
 	$plugin = new Gestaoclick();
-	$plugin->run();
-
 }
 run_gestaoclick();

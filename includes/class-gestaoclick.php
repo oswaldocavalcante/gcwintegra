@@ -29,17 +29,6 @@
  */
 class Gestaoclick
 {
-
-	/**
-	 * The loader that's responsible for maintaining and registering all hooks that power
-	 * the plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   protected
-	 * @var      Gestaoclick_Loader    $loader    Maintains and registers all hooks for the plugin.
-	 */
-	protected $loader;
-
 	/**
 	 * The unique identifier of this plugin.
 	 *
@@ -78,7 +67,6 @@ class Gestaoclick
 		$this->plugin_name = 'gestaoclick';
 
 		$this->load_dependencies();
-		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
 	}
@@ -102,18 +90,6 @@ class Gestaoclick
 	private function load_dependencies()
 	{
 		/**
-		 * The class responsible for orchestrating the actions and filters of the
-		 * core plugin.
-		 */
-		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-gestaoclick-loader.php';
-
-		/**
-		 * The class responsible for defining internationalization functionality
-		 * of the plugin.
-		 */
-		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-gestaoclick-i18n.php';
-
-		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
 		require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-gcw-admin.php';
@@ -122,24 +98,6 @@ class Gestaoclick
 		 * The class responsible for defining all actions that occur in the public area.
 		 */
 		require_once plugin_dir_path(dirname(__FILE__)) . 'public/class-gcw-public.php';
-
-		$this->loader = new Gestaoclick_Loader();
-	}
-
-	/**
-	 * Define the locale for this plugin for internationalization.
-	 *
-	 * Uses the Gestaoclick_i18n class in order to set the domain and to register the hook
-	 * with WordPress.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 */
-	private function set_locale()
-	{
-		$plugin_i18n = new Gestaoclick_i18n();
-
-		$this->loader->add_action('plugins_loaded', $plugin_i18n, 'load_plugin_textdomain');
 	}
 
 	/**
@@ -184,19 +142,8 @@ class Gestaoclick
 		add_action('woocommerce_account_orcamentos_endpoint', 	array($plugin_public, 'orcamentos_endpoint_content'));
 		add_action('template_include', 							array($plugin_public, 'include_template_quote'));
 
-		add_shortcode('gestaoclick_orcamento_formulario', 		array($plugin_public, 'shortcode_quote_form'));
 		add_shortcode('gestaoclick_orcamento', 					array($plugin_public, 'shortcode_quote'));
 		add_shortcode('gestaoclick_finalizar_orcamento', 		array($plugin_public, 'shortcode_quote_checkout'));
-	}
-
-	/**
-	 * Run the loader to execute all of the hooks with WordPress.
-	 *
-	 * @since    1.0.0
-	 */
-	public function run()
-	{
-		$this->loader->run();
 	}
 
 	/**
@@ -209,17 +156,6 @@ class Gestaoclick
 	public function get_plugin_name()
 	{
 		return $this->plugin_name;
-	}
-
-	/**
-	 * The reference to the class that orchestrates the hooks with the plugin.
-	 *
-	 * @since     1.0.0
-	 * @return    Gestaoclick_Loader    Orchestrates the hooks of the plugin.
-	 */
-	public function get_loader()
-	{
-		return $this->loader;
 	}
 
 	/**

@@ -241,7 +241,7 @@ class GCW_Shortcode_Quote
 
     public function update_quote_quantities()
     {
-        if (isset($_POST['update_quote'])) {
+        if (isset($_POST['update_quote']) && isset($_POST['gcw_quote_item_id']) && isset($_POST['gcw_quote_item_quantity'])) {
             $item_ids = $_POST['gcw_quote_item_id'];
             $quantities = $_POST['gcw_quote_item_quantity'];
 
@@ -258,7 +258,6 @@ class GCW_Shortcode_Quote
 
             $_SESSION['quote_items'] = $quote_items;
 
-            wc_clear_notices();
             wc_add_notice(__('Orçamento atualizado com sucesso.', 'gestaoclick'), 'success');
         }
     }
@@ -325,9 +324,8 @@ class GCW_Shortcode_Quote
         $_SESSION['quote_items'] = $quote_items;
 
         $message = 'Produto adicionado ao orçamento com sucesso! <a href="' . esc_url(home_url('orcamento')) . '" class="button">Ver orçamento</a>';
-
-        wc_add_notice($message);
-
+        wc_add_notice($message, 'success');
+        
         // Redireciona para a página do produto com uma mensagem de sucesso
         $redirect_url = get_permalink($parent_id ? $parent_id : $product_id);
         wp_send_json_success(array('redirect_url' => $redirect_url));

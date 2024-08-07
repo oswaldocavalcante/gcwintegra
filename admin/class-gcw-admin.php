@@ -228,8 +228,6 @@ class GCW_Admin {
 		register_post_type('orcamento', $args);
 	}
 
-
-
 	/**
 	 * Add a post display state for special WC pages in the page list table.
 	 *
