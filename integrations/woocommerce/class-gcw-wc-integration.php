@@ -96,19 +96,19 @@ class GCW_WC_Integration extends WC_Integration {
                 'default'       => 'no',
                 'description'   => __( 'Sempre exportar novas vendas pagas e seus respectivos clientes ao GestãoClick.', 'gestaoclick' ),
             ),
+            'gcw-settings-export-situacao' => array(
+                'title'         => __('Situação padrão ao exportar vendas ao GestãoClick', 'gestaoclick'),
+                'type'          => 'select',
+                'label'         => __('Selecione a situação padrão para novas vendas exportadas', 'gestaoclick'),
+                'description'   => __('A situação padrão para ser usada em novas vendas pagas exportadas para o GestaoClick.', 'gestaoclick'),
+                'options'       => $this->gc_situacoes_options,
+            ),
             'gcw-settings-export-trasportadora' => array(
                 'title'         => __( 'Transportadora padrão ao exportar vendas ao GestãoClick', 'gestaoclick' ),
                 'type'          => 'select',
                 'label'         => __( 'Selecione a transportadora padrão para novas vendas exportadas', 'gestaoclick' ),
                 'description'   => __( 'A transportadora padrão para ser usada em novas vendas pagas exportadas ao GestaoClick.', 'gestaoclick' ),
                 'options'       => $this->gc_transportadoras_options,
-            ),
-            'gcw-settings-export-situacao' => array(
-                'title'         => __( 'Situação padrão ao exportar vendas ao GestãoClick', 'gestaoclick' ),
-                'type'          => 'select',
-                'label'         => __( 'Selecione a situação padrão para novas vendas exportadas', 'gestaoclick' ),
-                'description'   => __( 'A situação padrão para ser usada em novas vendas pagas exportadas para o GestaoClick.', 'gestaoclick' ),
-                'options'       => $this->gc_situacoes_options,
             ),
         );
     }

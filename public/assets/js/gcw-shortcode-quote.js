@@ -31,10 +31,10 @@ jQuery(document).ready(function($) {
                 type: 'GET',
                 success: function (response) {
                     if (!response.erro) {
-                        var shipping_address_1 = response.logradouro;
-                        var shipping_neigborhood = response.bairro;
-                        var shipping_city = response.localidade;
-                        var shipping_state = response.uf;
+                        var shipping_address_1      = response.logradouro;
+                        var shipping_neighborhood   = response.bairro;
+                        var shipping_city           = response.localidade;
+                        var shipping_state          = response.uf;
 
                         $('#gcw_quote_shipping_address').html(
                             '<p>' + response.logradouro + ', ' + response.bairro + ', ' + response.localidade + '/' + response.uf + '</p>'
@@ -51,7 +51,7 @@ jQuery(document).ready(function($) {
                                 
                                 shipping_postcode:      shipping_postcode,
                                 shipping_address_1:     shipping_address_1,
-                                shipping_neigborhood:   shipping_neigborhood,
+                                shipping_neighborhood:  shipping_neighborhood,
                                 shipping_city:          shipping_city,
                                 shipping_state:         shipping_state,
                                 shipping_address_html:  shipping_address_html

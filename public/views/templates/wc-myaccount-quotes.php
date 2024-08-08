@@ -25,9 +25,9 @@ $orcamentos_query = new WP_Query(array(
                 <tr class="woocommerce-orders-table__row">
                     <td class="woocommerce-orders-table__cell"><a href="<?php echo get_the_permalink(); ?>"><?php echo get_the_title(); ?></a></td>
                     <td><?php echo get_the_date(); ?></td>
-                    <td><?php echo get_the_title(); ?></td>
-                    <td><?php echo get_the_title(); ?></td>
-                    <td><?php echo get_the_title(); ?></td>
+                    <td><?php echo get_post_meta(get_the_ID(), 'status', true); ?></td>
+                    <td><?php echo get_post_meta(get_the_ID(), 'tracking', true); ?></td>
+                    <td><?php echo wc_price(get_post_meta(get_the_ID(), 'total', true)); ?></td>
                     <td class="gwc-wc-myaccount-quotes-actions"><a href="<?php echo get_the_permalink(); ?>" class="woocommerce-button button view">Visualizar</a></td>
                 </tr>
             <?php endwhile; ?>

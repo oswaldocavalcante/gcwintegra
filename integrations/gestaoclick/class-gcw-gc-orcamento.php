@@ -7,65 +7,42 @@ class GCW_GC_Orcamento extends GCW_GC_Api {
     private $api_headers;
     private $api_endpoint;
     
-    private $id = null;
+    private $codigo = null;
     private $data = array();
+    private $observacoes = 'As formas de pagamento são boleto ou PIX:'.PHP_EOL.'• 50% para início da produção.'.PHP_EOL.'• 50% para entrega do pedido.'.PHP_EOL.PHP_EOL.'O sistema confirma o pagamento em até 1 dia útil.';
 
     /**
-     * @param WC_Package $package
+     * @param int $gc_cliente_id
+     * @param array $wc_items
+     * @param WC_Shipping_Rate $wc_shipping_rate
      */
-    public function __construct($data, $cliente_id, $context = 'form' | 'quote') {
+    public function __construct($gc_cliente_id, $wc_items, $wc_shipping_rate) {
         parent::__construct();
         $this->api_headers  = parent::get_headers();
         $this->api_endpoint = parent::get_endpoint_orcamentos();
+        
+        $rate_data = $wc_shipping_rate->get_meta_data();
 
-        if($context == 'form') {
-            $products[] = $this->get_form_items($data);
-            $this->data = array(
-                "tipo"              => "produto",
-                "cliente_id"        => $cliente_id,
-                "situacao_id"       => get_option("gcw-settings-export-situacao"),
-                "nome_canal_venda"  => "Internet",
-                "produtos"          => $products,
-            );
-        } elseif($context == 'quote')
-        {
-            $products = $this->get_quote_items($data);
-            $this->data = array(
-                'tipo'              => 'produto',
-                'cliente_id'        => $cliente_id,
-                'situacao_id'       => get_option('gcw-settings-export-situacao'),
-                'nome_canal_vendas' => 'Internet',
-                'produtos'          => $products,
-            );
-        }
-    }
-
-    public function export(){
-
-        $response = wp_remote_post(
-            $this->api_endpoint,
-            array_merge($this->api_headers, ["body" => wp_json_encode($this->data)])
+        $this->data = array(
+            'tipo'                  => 'produto',
+            'cliente_id'            => $gc_cliente_id,
+            'situacao_id'           => get_option('gcw-settings-export-situacao'),
+            'nome_canal_vendas'     => 'Website',
+            'valor_frete'           => $wc_shipping_rate->get_cost(),
+            'nome_transportadora'   => $wc_shipping_rate->get_meta_data()['company'],
+            'produtos'              => $this->get_gc_produtos($wc_items),
+            'observacoes'           => $this->observacoes . PHP_EOL . PHP_EOL . 'Método de Envio: ' . $wc_shipping_rate->get_label(),
         );
-
-        $response = json_decode(wp_remote_retrieve_body($response), true);
-
-        if (is_array($response) && $response["code"] == 200) {
-            $this->id = $response["data"]["codigo"];
-            return $this->id;
-        } else {
-            return false;
-        }
     }
 
-    private function get_quote_items($quote_items)
+    private function get_gc_produtos($wc_items)
     {
         $products = array();
 
-        foreach ($quote_items as $product) {
-            $wc_product = wc_get_product($product['product_id']);
-            $quantity   = $product['quantity'];
+        foreach ($wc_items as $wc_item) {
+            $wc_product = wc_get_product($wc_item['product_id']);
+            $quantity   = $wc_item['quantity'];
 
-            // $gc_variation_id = $product_data['variation_id'];
             if ($wc_product->get_parent_id()) {
                 $gc_product_id   = wc_get_product($wc_product->get_parent_id())->get_meta('gestaoclick_gc_product_id');
                 $gc_variation_id = $wc_product->get_meta('gestaoclick_gc_variation_id');
@@ -93,24 +70,20 @@ class GCW_GC_Orcamento extends GCW_GC_Api {
         return $products;
     }
 
-    private function get_form_items($orcamento){
-        $items = [];
-        $item_id = 1;
-        for ($i = 6; $i < count($orcamento); $i = $i+4) {
-            if(array_keys($orcamento)[$i] == "gcw_item_nome-{$item_id}") {
-                array_push($items, array(
-                    "produto" => [
-                        "nome_produto"  =>  sanitize_text_field($orcamento["gcw_item_nome-{$item_id}"]) . " - " .
-                                            sanitize_text_field($orcamento["gcw_item_descricao-{$item_id}"]),
-                        "detalhes"      =>  sanitize_text_field($orcamento["gcw_item_tamanho-{$item_id}"]),
-                        "quantidade"    =>  sanitize_text_field($orcamento["gcw_item_quantidade-{$item_id}"]),
-                    ],
-                ));
+    public function export()
+    {
+        $response = wp_remote_post(
+            $this->api_endpoint,
+            array_merge($this->api_headers, ["body" => wp_json_encode($this->data)])
+        );
 
-                ++$item_id;
-            }
+        $response = json_decode(wp_remote_retrieve_body($response), true);
+
+        if (is_array($response) && $response["code"] == 200) {
+            $this->codigo = $response["data"]["codigo"];
+            return $this->codigo;
+        } else {
+            return false;
         }
-
-        return $items;
     }
 }

@@ -213,32 +213,6 @@ class GCW_Shortcode_Quote
         return ob_get_clean();
     }
 
-    /**
-     * @Deprecated
-     */
-    public function get_quote_by_user_id($user_id)
-    {
-        $args = array(
-            'post_type' => 'quote',
-            'post_status' => 'draft',
-            'author' => $user_id,
-            'meta_query' => array(
-                array(
-                    'key' => 'status',
-                    'value' => 'open',
-                    'compare' => '='
-                )
-            )
-        );
-        $quotes = get_posts($args);
-
-        if (!empty($quotes)) {
-            return $quotes[0]; // Retorna a primeira (e provavelmente única) cotação aberta
-        }
-
-        return null; // Nenhuma cotação encontrada
-    }
-
     public function update_quote_quantities()
     {
         if (isset($_POST['update_quote']) && isset($_POST['gcw_quote_item_id']) && isset($_POST['gcw_quote_item_quantity'])) {
@@ -360,7 +334,7 @@ class GCW_Shortcode_Quote
 
             $_SESSION['shipping_postcode']      = $shipping_postcode;
             $_SESSION['shipping_address_1']     = sanitize_text_field($_POST['shipping_address_1']);
-            $_SESSION['shipping_neigborhood']   = sanitize_text_field($_POST['shipping_neigborhood']);
+            $_SESSION['shipping_neighborhood']  = sanitize_text_field($_POST['shipping_neighborhood']);
             $_SESSION['shipping_city']          = sanitize_text_field($_POST['shipping_city']);
             $_SESSION['shipping_state']         = sanitize_text_field($_POST['shipping_state']);
             $_SESSION['shipping_address_html']  = sanitize_text_field($_POST['shipping_address_html']);
@@ -437,6 +411,7 @@ class GCW_Shortcode_Quote
             foreach ($shipping_rates as $rate) {
                 if ($shipping_method_id == $rate->id) {
                     $shipping_cost = $rate->cost;
+                    $shipping_rate = $rate;
                     break;
                 }
             }
@@ -454,9 +429,10 @@ class GCW_Shortcode_Quote
             }
 
             $total_price = $subtotal_price + $shipping_cost;
-            $_SESSION['quote_total_price'] = $total_price;
-            $_SESSION['quote_subtotal_price'] = $subtotal_price;
-            $_SESSION['quote_shipping_cost'] = $shipping_cost;
+            $_SESSION['quote_total_price']     = $total_price;
+            $_SESSION['quote_subtotal_price']  = $subtotal_price;
+            $_SESSION['quote_shipping_cost']   = $shipping_cost;
+            $_SESSION['quote_shipping_rate']   = $shipping_rate;
 
             wp_send_json_success(array('total_price_html'  => wc_price($total_price)));
         } else {

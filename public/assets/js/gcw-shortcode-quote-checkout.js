@@ -14,6 +14,7 @@ jQuery(document).ready(function($) {
                     window.location.href = response.data.redirect_url; // Redireciona para a URL fornecida
                 } else {
                     $('#gcw_quote_errors').html(response.data.message); // Exibe mensagem de erro
+                    alert(response.data.message);
                 }
             },
             error: function (xhr, status, error) {

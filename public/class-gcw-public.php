@@ -50,7 +50,6 @@ class GCW_Public
 	{
 		if (!headers_sent() && '' == session_id()) {
 			session_start();
-			WC()->session->init();
 		}
 	}
 

@@ -42,10 +42,10 @@ class GCW_GC_Cliente extends GCW_GC_Api {
     );
 
     /** 
-     * @param WC_Customer | array  $data Data core to create a new client and export to GestãoClick
+     * @param WC_Customer | array  $wc_customer Data core to create a new client and export to GestãoClick
      * @param string $context Context to select which way the client should be created
     */
-    public function __construct( $data, $context = 'order' | 'form' | 'quote') {
+    public function __construct($wc_customer, $context = 'order' | 'form' | 'quote') {
         parent::__construct();
         $this->api_headers =    parent::get_headers();
         $this->api_endpoint =   parent::get_endpoint_clients();
@@ -53,73 +53,51 @@ class GCW_GC_Cliente extends GCW_GC_Api {
         if($context == 'order') {
             $this->data = array(
                 'tipo_pessoa'   => 'PF',
-                'nome'          => $data->get_first_name() . ' ' . $data->get_last_name(),
-                'cpf'           => $data->get_meta('billing_cpf'),
-                'email'         => $data->get_email(),
-                'telefone'      => $data->get_billing_phone(),
+                'nome'          => $wc_customer->get_first_name() . ' ' . $wc_customer->get_last_name(),
+                'cpf'           => $wc_customer->get_meta('billing_cpf'),
+                'email'         => $wc_customer->get_email(),
+                'telefone'      => $wc_customer->get_billing_phone(),
                 'enderecos'     => array(
                     'endereco'  => array(
-                        'cep'           => $data->get_billing_postcode(),
-                        'logradouro'    => $data->get_billing_address_1(),
-                        'numero'        => $data->get_meta('billing_number'),
-                        'complemento'   => $data->get_billing_address_2(),
-                        'bairro'        => $data->get_meta('billing_neighborhood'),
-                        'pais'          => $data->get_billing_country(),
-                        'nome_cidade'   => $data->get_billing_city(),
-                        'estado'        => $data->get_billing_state(),
+                        'cep'           => $wc_customer->get_billing_postcode(),
+                        'logradouro'    => $wc_customer->get_billing_address_1(),
+                        'numero'        => $wc_customer->get_meta('billing_number'),
+                        'complemento'   => $wc_customer->get_billing_address_2(),
+                        'bairro'        => $wc_customer->get_meta('billing_neighborhood'),
+                        'pais'          => $wc_customer->get_billing_country(),
+                        'nome_cidade'   => $wc_customer->get_billing_city(),
+                        'estado'        => $wc_customer->get_billing_state(),
                     )
                 ),
             );
         } elseif ($context == 'quote') {
             $this->data = array(
                 'tipo_pessoa'   => 'PJ',
-                'nome'          => $data->get_billing_company(),
-                'cnpj'          => $data->get_meta('billing_cnpj'),
-                'email'         => $data->get_billing_email(),
-                'telefone'      => $data->get_billing_phone(),
+                'nome'          => $wc_customer->get_billing_company(),
+                'cnpj'          => $wc_customer->get_meta('billing_cnpj'),
+                'email'         => $wc_customer->get_billing_email(),
+                'telefone'      => $wc_customer->get_billing_phone(),
                 'contatos'      => array(
                     'contato'   => array(
-                        'nome'          => $data->get_billing_first_name() . $data->get_billing_last_name(),
-                        'contato'       => $data->get_billing_phone(),
-                        'observacao'    => $data->get_billing_email(),
+                        'nome'          => $wc_customer->get_billing_first_name() . $wc_customer->get_billing_last_name(),
+                        'contato'       => $wc_customer->get_billing_phone(),
+                        'observacao'    => $wc_customer->get_billing_email(),
                     )
                 ),
                 'enderecos'     => array(
                     'endereco'  => array(
-                        'cep'           => $data->get_billing_postcode(),
-                        'logradouro'    => $data->get_billing_address_1(),
-                        'complemento'   => $data->get_billing_address_2(),
-                        'numero'        => $data->get_meta('billing_number'),
-                        'bairro'        => $data->get_meta('billing_neighborhood'),
-                        'pais'          => $data->get_billing_country(),
-                        'nome_cidade'   => $data->get_billing_city(),
-                        'estado'        => $data->get_billing_state(),
+                        'cep'           => $wc_customer->get_billing_postcode(),
+                        'logradouro'    => $wc_customer->get_billing_address_1(),
+                        'complemento'   => $wc_customer->get_billing_address_2(),
+                        'numero'        => $wc_customer->get_meta('billing_number'),
+                        'bairro'        => $wc_customer->get_meta('billing_neighborhood'),
+                        'pais'          => $wc_customer->get_billing_country(),
+                        'nome_cidade'   => $wc_customer->get_billing_city(),
+                        'estado'        => $wc_customer->get_billing_state(),
                     )
                 ),
             );
-        } 
-        elseif ($context == 'form') {
-            $cliente_cpf_cnpj = sanitize_text_field($data["gcw_cliente_cpf_cnpj"]);
-
-            $this->data = array(
-                "tipo_pessoa"   => strlen($cliente_cpf_cnpj) == 18 ? "PJ" : "PF",
-                "cnpj"          => strlen($cliente_cpf_cnpj) == 18 ? $cliente_cpf_cnpj : "",
-                "cpf"           => strlen($cliente_cpf_cnpj) == 14 ? $cliente_cpf_cnpj : "",
-                "nome"          => sanitize_text_field($data["gcw_cliente_nome"]),
-                "contatos"      => [
-                    "contato"   => [
-                        "nome"          =>  sanitize_text_field($data["gcw_contato_nome"]),
-                        "cargo"         =>  sanitize_text_field($data["gcw_contato_cargo"]),
-                        "observacao"    =>  sanitize_email($data["gcw_contato_email"]) . " / " . 
-                                            sanitize_text_field($data["gcw_contato_telefone"]),
-                    ],
-                ],
-            );
         }
-    }
-
-    public function get_id() {
-        return $this->id;
     }
 
     public function export() {
@@ -162,9 +140,5 @@ class GCW_GC_Cliente extends GCW_GC_Api {
         } else {
             return false;
         }
-    }
-
-    public function set_props($data){
-        $this->data = $data;
     }
 }
