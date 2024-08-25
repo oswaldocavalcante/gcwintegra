@@ -1,19 +1,6 @@
 <?php
 
 /**
- * The file that defines the core plugin class
- *
- * A class definition that includes attributes and functions used across both the
- * public-facing side of the site and the admin area.
- *
- * @link       https://oswaldocavalcante.com
- * @since      1.0.0
- *
- * @package    Gestaoclick
- * @subpackage Gestaoclick/includes
- */
-
-/**
  * The core plugin class.
  *
  * This is used to define internationalization, admin-specific hooks, and
@@ -22,6 +9,7 @@
  * Also maintains the unique identifier of this plugin as well as the current
  * version of the plugin.
  *
+ * @link       https://github.com/oswaldocavalcante/gestaoclick
  * @since      1.0.0
  * @package    Gestaoclick
  * @subpackage Gestaoclick/includes
@@ -29,23 +17,6 @@
  */
 class Gestaoclick
 {
-	/**
-	 * The unique identifier of this plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   protected
-	 * @var      string    $plugin_name    The string used to uniquely identify this plugin.
-	 */
-	protected $plugin_name;
-
-	/**
-	 * The current version of the plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   protected
-	 * @var      string    $version    The current version of the plugin.
-	 */
-	protected $version;
 
 	/**
 	 * Define the core functionality of the plugin.
@@ -58,14 +29,6 @@ class Gestaoclick
 	 */
 	public function __construct()
 	{
-		if (defined('GCW_VERSION')) {
-			$this->version = GCW_VERSION;
-		} else {
-			$this->version = '1.0.0';
-		}
-
-		$this->plugin_name = 'gestaoclick';
-
 		$this->load_dependencies();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
@@ -109,7 +72,7 @@ class Gestaoclick
 	 */
 	private function define_admin_hooks()
 	{
-		$plugin_admin = new GCW_Admin($this->get_plugin_name(), $this->get_version());
+		$plugin_admin = new GCW_Admin();
 
 		add_action('admin_init', 				array($plugin_admin, 'register_settings'));
 		add_action('admin_menu', 				array($plugin_admin, 'add_admin_menu'));
@@ -127,15 +90,13 @@ class Gestaoclick
 		} else {
 			remove_action('woocommerce_order_status_processing', 'export_order');
 		}
-
-		add_action('rest_api_init', array($plugin_admin, 'add_stone_webhook'));
 	}
 
 	private function define_public_hooks()
 	{
-		$plugin_public = new GCW_Public($this->get_plugin_name(), $this->get_version());
+		$plugin_public = new GCW_Public();
 		
-		add_action('init', 										array($plugin_public, 'session_start'), 1);
+		add_action('woocommerce_init', 							array($plugin_public, 'session_start'), 1);
 		add_action('woocommerce_after_add_to_cart_button', 		array($plugin_public, 'add_to_quote_button'));
 		add_filter('query_vars', 								array($plugin_public, 'add_quote_query_vars'));
 		add_filter('woocommerce_account_menu_items', 			array($plugin_public, 'add_orcamentos_to_account_menu'));
@@ -144,28 +105,5 @@ class Gestaoclick
 
 		add_shortcode('gestaoclick_orcamento', 					array($plugin_public, 'shortcode_quote'));
 		add_shortcode('gestaoclick_finalizar_orcamento', 		array($plugin_public, 'shortcode_quote_checkout'));
-	}
-
-	/**
-	 * The name of the plugin used to uniquely identify it within the context of
-	 * WordPress and to define internationalization functionality.
-	 *
-	 * @since     1.0.0
-	 * @return    string    The name of the plugin.
-	 */
-	public function get_plugin_name()
-	{
-		return $this->plugin_name;
-	}
-
-	/**
-	 * Retrieve the version number of the plugin.
-	 *
-	 * @since     1.0.0
-	 * @return    string    The version number of the plugin.
-	 */
-	public function get_version()
-	{
-		return $this->version;
 	}
 }

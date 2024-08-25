@@ -29,7 +29,7 @@ class GCW_Shortcode_Quote
         wc_print_notices();
 
         ob_start();
-        $quote_items = isset($_SESSION['quote_items']) ? $_SESSION['quote_items'] : array();
+        $quote_items = WC()->session->get('quote_items');
 
         if (is_array($quote_items) && !empty($quote_items)) :
             $quote_subtotal = $this->get_quote_subtotal($quote_items);
@@ -81,13 +81,23 @@ class GCW_Shortcode_Quote
 
                                         <td class="product-thumbnail">
                                             <?php
-                                            $thumbnail = apply_filters('quote_item_thumbnail', $_product->get_image(), $quote_item, $quote_item_key);
+                                            
+                                            $customizations = WC()->session->get("pcw_customizations_{$product_id}");
+                                            if (is_array($customizations) && isset($customizations['images']))
+                                            {
+                                                $front_image = $customizations['images']['front'] ?? null;
+                                                $back_image = $customizations['images']['back'] ?? null;
 
-                                            if (!$product_permalink) {
-                                                echo $thumbnail; // PHPCS: XSS ok.
-                                            } else {
-                                                printf('<a href="%s">%s</a>', esc_url($product_permalink), $thumbnail); // PHPCS: XSS ok.
+                                                echo '<img src="' . $front_image . '" alt="Front Image">';
+                                                echo '<img src="' . $back_image . '" alt="Back Image">';
                                             }
+
+                                            // $thumbnail = apply_filters('quote_item_thumbnail', $_product->get_image(), $quote_item, $quote_item_key);
+                                            // if (!$product_permalink) {
+                                            //     echo $thumbnail; // PHPCS: XSS ok.
+                                            // } else {
+                                            //     printf('<a href="%s">%s</a>', esc_url($product_permalink), $thumbnail); // PHPCS: XSS ok.
+                                            // }
                                             ?>
                                         </td>
 
@@ -175,20 +185,20 @@ class GCW_Shortcode_Quote
                     <div id="gcw_quote_totals_shipping" class="gcw_quote_totals_section">
                         <p><?php echo esc_html_e('Shipping', 'woocommerce'); ?></p>
                         <div id="gcw_quote_shipping_options">
-                            <?php echo isset($_SESSION['shipping_options']) ? $_SESSION['shipping_options'] : ''; ?>
+                            <?php echo WC()->session->get('shipping_options'); ?>
                         </div>
                         <div id="gcw_quote_shipping_address">
                             <?php
-                            if (isset($_SESSION['shipping_address_html'])) {
-                                echo '<p>' . esc_html($_SESSION['shipping_address_html']) . '</p>';
+                            if (WC()->session->get('shipping_address_html')) {
+                                echo '<p>' . esc_html(WC()->session->get('shipping_address_html')) . '</p>';
                             }
                             ?>
                         </div>
                         <form method="POST" id="gcw_quote_shipping_form">
                             <input type="text" id="shipping_postcode" name="shipping_postcode" placeholder="Digite seu CEP"
                                 <?php
-                                if (isset($_SESSION['shipping_postcode'])) {
-                                    esc_attr_e(sprintf("value=%s", $_SESSION['shipping_postcode']));
+                                if (WC()->session->get('shipping_postcode')) {
+                                    esc_attr_e(sprintf("value=%s", WC()->session->get('shipping_postcode')));
                                 }
                                 ?>
                             />
@@ -230,7 +240,7 @@ class GCW_Shortcode_Quote
                 }
             }
 
-            $_SESSION['quote_items'] = $quote_items;
+            WC()->session->set('quote_items', $quote_items);
 
             wc_add_notice(__('Orçamento atualizado com sucesso.', 'gestaoclick'), 'success');
         }
@@ -250,9 +260,9 @@ class GCW_Shortcode_Quote
     public function ajax_add_to_quote_variation()
     {
         if (isset($_POST['variation_id'])) {
-            $parent_id        = sanitize_text_field($_POST['parent_id']);
-            $variation_id     = sanitize_text_field($_POST['variation_id']);
-            $quantity         = sanitize_text_field($_POST['quantity']);
+            $parent_id      = sanitize_text_field($_POST['parent_id']);
+            $variation_id   = sanitize_text_field($_POST['variation_id']);
+            $quantity       = sanitize_text_field($_POST['quantity']);
 
             $this->add_item_to_quote($variation_id, $quantity, $parent_id);
         } else {
@@ -264,7 +274,7 @@ class GCW_Shortcode_Quote
     {
         if (isset($_POST['product_id'])) {
             $product_id = sanitize_text_field($_POST['product_id']);
-            $quantity     = sanitize_text_field($_POST['quantity']);
+            $quantity   = sanitize_text_field($_POST['quantity']);
 
             $this->add_item_to_quote($product_id, $quantity);
         } else {
@@ -275,7 +285,7 @@ class GCW_Shortcode_Quote
     function add_item_to_quote($product_id, $quantity, $parent_id = null)
     {
         // Obter os itens do orçamento da sessão
-        $quote_items = isset($_SESSION['quote_items']) ? $_SESSION['quote_items'] : array();
+        $quote_items = WC()->session->get('quote_items') ? WC()->session->get('quote_items') : array();
 
         // Verificar se o item já está no orçamento
         $item_found = false;
@@ -295,7 +305,7 @@ class GCW_Shortcode_Quote
         }
 
         // Salvar os itens do orçamento na sessão
-        $_SESSION['quote_items'] = $quote_items;
+        WC()->session->set('quote_items', $quote_items);
 
         $message = 'Produto adicionado ao orçamento com sucesso! <a href="' . esc_url(home_url('orcamento')) . '" class="button">Ver orçamento</a>';
         wc_add_notice($message, 'success');
@@ -309,7 +319,7 @@ class GCW_Shortcode_Quote
     {
         if (isset($_POST['item_id'])) {
             $item_id = sanitize_text_field($_POST['item_id']);
-            $items = $_SESSION['quote_items'];
+            $items = WC()->session->get('quote_items');
 
             if (is_array($items)) {
                 foreach ($items as $key => $item) {
@@ -319,7 +329,7 @@ class GCW_Shortcode_Quote
                 }
             }
 
-            $_SESSION['quote_items'] = $items;
+            WC()->session->set('quote_items', $items);
         }
     }
 
@@ -327,17 +337,17 @@ class GCW_Shortcode_Quote
     {
         if (isset($_POST['shipping_postcode'])) {
             // Desfaz a seleção do método de envio
-            unset($_SESSION['has_selected_shipping_method']);
+            WC()->session->set('has_selected_shipping_method', null);
 
             $shipping_postcode = sanitize_text_field($_POST['shipping_postcode']);
-            $quote_items = isset($_SESSION['quote_items']) ? $_SESSION['quote_items'] : array();
+            $quote_items = WC()->session->get('quote_items') ? WC()->session->get('quote_items') : array();
 
-            $_SESSION['shipping_postcode']      = $shipping_postcode;
-            $_SESSION['shipping_address_1']     = sanitize_text_field($_POST['shipping_address_1']);
-            $_SESSION['shipping_neighborhood']  = sanitize_text_field($_POST['shipping_neighborhood']);
-            $_SESSION['shipping_city']          = sanitize_text_field($_POST['shipping_city']);
-            $_SESSION['shipping_state']         = sanitize_text_field($_POST['shipping_state']);
-            $_SESSION['shipping_address_html']  = sanitize_text_field($_POST['shipping_address_html']);
+            WC()->session->set('shipping_postcode', $shipping_postcode);
+            WC()->session->set('shipping_address_1', sanitize_text_field($_POST['shipping_address_1']));
+            WC()->session->set('shipping_neighborhood', sanitize_text_field($_POST['shipping_neighborhood']));
+            WC()->session->set('shipping_city', sanitize_text_field($_POST['shipping_city']));
+            WC()->session->set('shipping_state', sanitize_text_field($_POST['shipping_state']));
+            WC()->session->set('shipping_address_html', sanitize_text_field($_POST['shipping_address_html']));
 
             // Criar um pacote para o cálculo do frete
             if (is_array($quote_items) && !empty($quote_items)) {
@@ -365,17 +375,17 @@ class GCW_Shortcode_Quote
                 }
 
                 // Calcular frete para o pacote
-                $_SESSION['shipping_rates'] = $this->calculate_shipping_for_package($package);
+                WC()->session->set('shipping_rates', $this->calculate_shipping_for_package($package));
 
-                if (!empty($_SESSION['shipping_rates'])) {
+                if (WC()->session->get('shipping_rates')) {
                     $html = '<form><ul>';
-                    foreach ($_SESSION['shipping_rates'] as $rate) {
+                    foreach (WC()->session->get('shipping_rates') as $rate) {
                         $html .= '<li><input class="gcw_shipping_method_radio" name="shipping_method" type="radio" data-method-id="' . esc_attr($rate->id) . '" ><label>'
                             . esc_html($rate->label) . ': ' . wc_price($rate->cost) .
                             '</label></li>';
                     }
                     $html .= '</ul></form>';
-                    $_SESSION['shipping_options'] = $html;
+                    WC()->session->set('shipping_options', $html);
                     wp_send_json_success(array('html' => $html));
                 } else {
                     wp_send_json_error('Nenhuma opção de frete disponível.');
@@ -403,10 +413,10 @@ class GCW_Shortcode_Quote
     public function ajax_selected_shipping_method()
     {
         if (isset($_POST['shipping_method_id'])) {
-            $_SESSION['has_selected_shipping_method'] = true;
+            WC()->session->set('has_selected_shipping_method', true);
 
             $shipping_method_id = sanitize_text_field($_POST['shipping_method_id']);
-            $shipping_rates = $_SESSION['shipping_rates'];
+            $shipping_rates = WC()->session->get('shipping_rates');
 
             foreach ($shipping_rates as $rate) {
                 if ($shipping_method_id == $rate->id) {
@@ -417,7 +427,7 @@ class GCW_Shortcode_Quote
             }
 
             // Calcula o custo total do orçamento (frete + subtotal)
-            $quote_items = $_SESSION['quote_items'];
+            $quote_items = WC()->session->get('quote_items');
             $subtotal_price = 0;
 
             if (is_array($quote_items) && !empty($quote_items)) {
@@ -429,10 +439,10 @@ class GCW_Shortcode_Quote
             }
 
             $total_price = $subtotal_price + $shipping_cost;
-            $_SESSION['quote_total_price']     = $total_price;
-            $_SESSION['quote_subtotal_price']  = $subtotal_price;
-            $_SESSION['quote_shipping_cost']   = $shipping_cost;
-            $_SESSION['quote_shipping_rate']   = $shipping_rate;
+            WC()->session->set('quote_total_price', $total_price);
+            WC()->session->set('quote_subtotal_price', $subtotal_price);
+            WC()->session->set('quote_shipping_cost', $shipping_cost);
+            WC()->session->set('quote_shipping_rate', $shipping_rate);
 
             wp_send_json_success(array('total_price_html'  => wc_price($total_price)));
         } else {
@@ -442,7 +452,7 @@ class GCW_Shortcode_Quote
 
     public function ajax_proceed_to_checkout()
     {
-        if (!isset($_SESSION['has_selected_shipping_method'])) {
+        if (!WC()->session->get('has_selected_shipping_method')) {
             wp_send_json_error(array('message' => 'Você precisa selecionar um método de envio.'));
 
             return;

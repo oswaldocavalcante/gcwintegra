@@ -8,25 +8,6 @@ require_once GCW_ABSPATH . 'public/views/shortcodes/class-gcw-shortcode-quote-ch
 
 class GCW_Public
 {
-
-	/**
-	 * The ID of this plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $plugin_name    The ID of this plugin.
-	 */
-	private $plugin_name;
-
-	/**
-	 * The version of this plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $version    The current version of this plugin.
-	 */
-	private $version;
-
 	private $quote;
 	private $quote_checkout;
 
@@ -37,19 +18,24 @@ class GCW_Public
 	 * @param      string    $plugin_name       The name of this plugin.
 	 * @param      string    $version    The version of this plugin.
 	 */
-	public function __construct($plugin_name, $version)
+	public function __construct()
 	{
-		$this->plugin_name 	= $plugin_name;
-		$this->version 		= $version;
-
 		$this->quote = new GCW_Shortcode_Quote();
 		$this->quote_checkout = new GCW_Shortcode_Quote_Checkout();
 	}
 
 	public function session_start()
 	{
-		if (!headers_sent() && '' == session_id()) {
-			session_start();
+		if (is_user_logged_in() || is_admin())
+		{
+			return;
+		}
+		if (isset(WC()->session))
+		{
+			if (!WC()->session->has_session())
+			{
+				WC()->session->set_customer_session_cookie(true);
+			}
 		}
 	}
 
@@ -122,20 +108,20 @@ class GCW_Public
 		if ($product) {
 			if ($product->get_stock_status() == 'onbackorder') 
 			{
-				wp_enqueue_script(	$this->plugin_name . '-add-to-quote-button', plugin_dir_url(__FILE__) . 'assets/js/gcw-add-to-quote-button.js', array('jquery'), $this->version, false);
-				wp_enqueue_style(	$this->plugin_name . '-add-to-quote-button', plugin_dir_url(__FILE__) . 'assets/css/gcw-add-to-quote-button.css', array(), $this->version, 'all');
+				wp_enqueue_script(	'gcw-add-to-quote-button', plugin_dir_url(__FILE__) . 'assets/js/gcw-add-to-quote-button.js', array('jquery'), GCW_VERSION, false);
+				wp_enqueue_style(	'gcw-add-to-quote-button', plugin_dir_url(__FILE__) . 'assets/css/gcw-add-to-quote-button.css', array(), GCW_VERSION, 'all');
 				echo '<div id="gcw_add_to_quote_button" class="disabled" product_id="' . get_the_ID() . '">Adicionar ao orçamento</div>';
 
 				// Differs the script for variable and simple products
 				if ($product->has_child()) {
-					wp_enqueue_script(	$this->plugin_name 	. '-add-to-quote-variation', plugin_dir_url(__FILE__) . 'assets/js/gcw-add-to-quote-variation.js', array('jquery'), $this->version, true);
-					wp_localize_script(	$this->plugin_name 	. '-add-to-quote-variation', 'gcw_add_to_quote_variation', array(
+					wp_enqueue_script(	'gcw-add-to-quote-variation', plugin_dir_url(__FILE__) . 'assets/js/gcw-add-to-quote-variation.js', array('jquery'), GCW_VERSION, true);
+					wp_localize_script(	'gcw-add-to-quote-variation', 'gcw_add_to_quote_variation', array(
 						'url' 	=> admin_url('admin-ajax.php'),
 						'nonce' => wp_create_nonce('gcw_add_to_quote_variation')
 					));
 				} else {
-					wp_enqueue_script(	$this->plugin_name . '-add-to-quote-simple', plugin_dir_url(__FILE__) . 'assets/js/gcw-add-to-quote-simple.js', array('jquery'), $this->version, true);
-					wp_localize_script(	$this->plugin_name . '-add-to-quote-simple', 'gcw_add_to_quote_simple', array(
+					wp_enqueue_script(	'gcw-add-to-quote-simple', plugin_dir_url(__FILE__) . 'assets/js/gcw-add-to-quote-simple.js', array('jquery'), GCW_VERSION, true);
+					wp_localize_script(	'gcw-add-to-quote-simple', 'gcw_add_to_quote_simple', array(
 						'url' 	=> admin_url('admin-ajax.php'),
 						'nonce' => wp_create_nonce('gcw_add_to_quote_simple_nonce')
 					));

@@ -40,17 +40,17 @@ class GCW_Shortcode_Quote_Checkout
 
         }
 
-        $this->session_shipping_cost    = isset($_SESSION['quote_shipping_cost'])   ? $_SESSION['quote_shipping_cost']      : '';
-        $this->session_subtotal         = isset($_SESSION['quote_subtotal_price'])  ? $_SESSION['quote_subtotal_price']     : '';
-        $this->session_total            = isset($_SESSION['quote_total_price'])     ? $_SESSION['quote_total_price']        : '';
-        $this->session_postcode         = isset($_SESSION['shipping_postcode'])     ? $_SESSION['shipping_postcode']        : '';
-        $this->session_address_html     = isset($_SESSION['shipping_address_html']) ? $_SESSION['shipping_address_html']    : '';
-        $this->session_address_1        = isset($_SESSION['shipping_address_1'])    ? $_SESSION['shipping_address_1']       : '';
-        $this->session_address_2        = isset($_SESSION['shipping_address_2'])    ? $_SESSION['shipping_address_2']       : '';
-        $this->session_neighborhood     = isset($_SESSION['shipping_neighborhood']) ? $_SESSION['shipping_neighborhood']    : '';
-        $this->session_city             = isset($_SESSION['shipping_city'])         ? $_SESSION['shipping_city']            : '';
-        $this->session_state            = isset($_SESSION['shipping_state'])        ? $_SESSION['shipping_state']           : '';
-        $this->session_quote_items      = isset($_SESSION['quote_items'])           ? $_SESSION['quote_items']              : array();
+        $this->session_shipping_cost    = WC()->session->get('quote_shipping_cost');
+        $this->session_subtotal         = WC()->session->get('quote_subtotal_price');
+        $this->session_total            = WC()->session->get('quote_total_price');
+        $this->session_postcode         = WC()->session->get('shipping_postcode');
+        $this->session_address_html     = WC()->session->get('shipping_address_html');
+        $this->session_address_1        = WC()->session->get('shipping_address_1');
+        $this->session_address_2        = WC()->session->get('shipping_address_2');
+        $this->session_neighborhood     = WC()->session->get('shipping_neighborhood');
+        $this->session_city             = WC()->session->get('shipping_city');
+        $this->session_state            = WC()->session->get('shipping_state');
+        $this->session_quote_items      = WC()->session->get('quote_items');
 
         ob_start();
         
@@ -182,19 +182,19 @@ class GCW_Shortcode_Quote_Checkout
         $this->input_number     = sanitize_text_field($_POST['gcw_number']);
         $this->input_email      = sanitize_email($_POST['gcw_email']);
 
-        $this->session_shipping_rate   = isset($_SESSION['quote_shipping_rate'])    ? $_SESSION['quote_shipping_rate']  : '';
-        $this->session_shipping_cost   = isset($_SESSION['quote_shipping_cost'])    ? $_SESSION['quote_shipping_cost']  : '';
-        $this->session_subtotal        = isset($_SESSION['quote_subtotal_price'])   ? $_SESSION['quote_subtotal_price'] : '';
-        $this->session_total           = isset($_SESSION['quote_total_price'])      ? $_SESSION['quote_total_price']    : '';
-        $this->session_quote_items     = isset($_SESSION['quote_items'])            ? $_SESSION['quote_items']          : array();
+        $this->session_shipping_rate   = WC()->session->get('quote_shipping_rate');
+        $this->session_shipping_cost   = WC()->session->get('quote_shipping_cost');
+        $this->session_subtotal        = WC()->session->get('quote_subtotal_price');
+        $this->session_total           = WC()->session->get('quote_total_price');
+        $this->session_quote_items     = WC()->session->get('quote_items');
 
-        $this->session_postcode         = isset($_SESSION['shipping_postcode'])     ? $_SESSION['shipping_postcode']        : '';
-        $this->session_address_html     = isset($_SESSION['shipping_address_html']) ? $_SESSION['shipping_address_html']    : '';
-        $this->session_address_1        = isset($_SESSION['shipping_address_1'])    ? $_SESSION['shipping_address_1']       : '';
-        $this->session_address_2        = isset($_SESSION['shipping_address_2'])    ? $_SESSION['shipping_address_2']       : '';
-        $this->session_neighborhood     = isset($_SESSION['shipping_neighborhood']) ? $_SESSION['shipping_neighborhood']    : '';
-        $this->session_city             = isset($_SESSION['shipping_city'])         ? $_SESSION['shipping_city']            : '';
-        $this->session_state            = isset($_SESSION['shipping_state'])        ? $_SESSION['shipping_state']           : '';
+        $this->session_postcode         = WC()->session->get('shipping_postcode');
+        $this->session_address_html     = WC()->session->get('shipping_address_html');
+        $this->session_address_1        = WC()->session->get('shipping_address_1');
+        $this->session_address_2        = WC()->session->get('shipping_address_2');
+        $this->session_neighborhood     = WC()->session->get('shipping_neighborhood');
+        $this->session_city             = WC()->session->get('shipping_city');
+        $this->session_state            = WC()->session->get('shipping_state');
 
         if(empty($this->session_quote_items) || !$this->session_total || !$this->session_subtotal || !$this->session_shipping_cost) {
             wp_send_json_error(array('message' => 'É preciso preencher todos os campos do orçamento.'));

@@ -8,14 +8,6 @@
  *
  * @package    Gestaoclick
  * @subpackage Gestaoclick/admin
- */
-
-/**
- * The admin-specific functionality of the plugin.
- *
- *
- * @package    Gestaoclick
- * @subpackage Gestaoclick/admin
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  */
 
@@ -25,45 +17,20 @@ require_once GCW_ABSPATH . 'integrations/woocommerce/class-gcw-wc-attributes.php
 require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-venda.php';
 require_once GCW_ABSPATH . 'integrations/stone/class-gcw-cs-webhook.php';
 
-class GCW_Admin {
-
-	/**
-	 * The ID of this plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $plugin_name    The ID of this plugin.
-	 */
-	private $plugin_name;
-
-	/**
-	 * The version of this plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $version    The current version of this plugin.
-	 */
-	private $version;
-
+class GCW_Admin 
+{
 	private $products;
 	private $categories;
 	private $attributes;
-
-	private $cs_webhook;
 
 	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
-	 * @param      string    $plugin_name       The name of this plugin.
-	 * @param      string    $version    The version of this plugin.
 	 */
-	public function __construct( $plugin_name, $version ) {
+	public function __construct() {		
 
-		$this->plugin_name = $plugin_name;
-		$this->version = $version;
-
-		if (!$this->is_woocommerce_active()) {
+		if (!$this->is_woocommerce_active()) {	
 			wp_admin_notice(
 				wp_kses(
 					sprintf( 
@@ -103,7 +70,7 @@ class GCW_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles() {
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/css/gestaoclick-admin.css', array(), $this->version, 'all' );
+		wp_enqueue_style( 'gcw-admin', plugin_dir_url( __FILE__ ) . 'assets/css/gestaoclick-admin.css', array(), GCW_VERSION, 'all' );
 	}
 
 	/**
@@ -112,7 +79,7 @@ class GCW_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/js/gestaoclick-admin.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( 'gcw-admin', plugin_dir_url( __FILE__ ) . 'assets/js/gestaoclick-admin.js', array( 'jquery' ), GCW_VERSION, false );
 	}
 	
 	/**
@@ -244,10 +211,6 @@ class GCW_Admin {
 		}
 
 		return $post_states;
-	}
-
-	public function add_stone_webhook() {
-		$this->cs_webhook = new GCW_CS_Webhook();
 	}
 
 	/**
