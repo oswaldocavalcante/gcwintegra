@@ -3,7 +3,7 @@
 require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-orcamento.php';
 require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-cliente.php';
 
-class GCW_Shortcode_Quote_Checkout
+class GCW_Shortcode_Checkout
 {
     private $session_shipping_rate  = '';
     private $session_shipping_cost  = '';
@@ -32,17 +32,14 @@ class GCW_Shortcode_Quote_Checkout
         add_action('wp_ajax_nopriv_gcw_finish_quote',  array($this, 'ajax_finish_quote'));
     }
 
-    public function render()
+    public function set_session_attributes()
     {
-
-        $shipping_methods = WC_Shipping::instance()->get_shipping_methods();
-        foreach ($shipping_methods as $shipping_method) {
-
-        }
-
+        $this->session_quote_items      = WC()->session->get('quote_items');
+        $this->session_shipping_rate    = WC()->session->get('quote_shipping_rate'); // AKA: Shipping method
         $this->session_shipping_cost    = WC()->session->get('quote_shipping_cost');
         $this->session_subtotal         = WC()->session->get('quote_subtotal_price');
         $this->session_total            = WC()->session->get('quote_total_price');
+
         $this->session_postcode         = WC()->session->get('shipping_postcode');
         $this->session_address_html     = WC()->session->get('shipping_address_html');
         $this->session_address_1        = WC()->session->get('shipping_address_1');
@@ -50,7 +47,11 @@ class GCW_Shortcode_Quote_Checkout
         $this->session_neighborhood     = WC()->session->get('shipping_neighborhood');
         $this->session_city             = WC()->session->get('shipping_city');
         $this->session_state            = WC()->session->get('shipping_state');
-        $this->session_quote_items      = WC()->session->get('quote_items');
+    }
+
+    public function render()
+    {
+        $this->set_session_attributes();
 
         ob_start();
         
@@ -72,7 +73,7 @@ class GCW_Shortcode_Quote_Checkout
             $this->input_email      = wp_get_current_user()->user_email;
         }
 
-?>
+        ?>
         <form id="gcw-quote-container">
 
             <div id="gcw_quote_forms_container">
@@ -134,7 +135,6 @@ class GCW_Shortcode_Quote_Checkout
                             foreach ($this->session_quote_items as $product) {
                                 $product_name = wc_get_product($product['product_id'])->get_name();
                                 $quantity = $product['quantity'];
-
                                 echo '<p>' . esc_html($product_name . ' &times; ' . $quantity) . '</p>';
                             }
                         } else {
@@ -166,13 +166,20 @@ class GCW_Shortcode_Quote_Checkout
             </div>
 
         </form>
-<?php
+        <?php
 
         return ob_get_clean();
     }
 
-    public function ajax_finish_quote() //TODO: Enviar ao GestãoClick
+    public function ajax_finish_quote()
     {
+        $this->set_session_attributes();
+
+        if(empty($this->session_quote_items) || !$this->session_total || !$this->session_subtotal || !$this->session_shipping_cost) {
+            wp_send_json_error(array('message' => 'É preciso preencher todos os campos do orçamento.'));
+            return;
+        }
+
         // Valida e sanitiza os dados do formulário
         $this->input_first_name = sanitize_text_field($_POST['gcw_first_name']);
         $this->input_last_name  = sanitize_text_field($_POST['gcw_last_name']);
@@ -182,23 +189,10 @@ class GCW_Shortcode_Quote_Checkout
         $this->input_number     = sanitize_text_field($_POST['gcw_number']);
         $this->input_email      = sanitize_email($_POST['gcw_email']);
 
-        $this->session_shipping_rate   = WC()->session->get('quote_shipping_rate');
-        $this->session_shipping_cost   = WC()->session->get('quote_shipping_cost');
-        $this->session_subtotal        = WC()->session->get('quote_subtotal_price');
-        $this->session_total           = WC()->session->get('quote_total_price');
-        $this->session_quote_items     = WC()->session->get('quote_items');
-
-        $this->session_postcode         = WC()->session->get('shipping_postcode');
-        $this->session_address_html     = WC()->session->get('shipping_address_html');
-        $this->session_address_1        = WC()->session->get('shipping_address_1');
-        $this->session_address_2        = WC()->session->get('shipping_address_2');
-        $this->session_neighborhood     = WC()->session->get('shipping_neighborhood');
-        $this->session_city             = WC()->session->get('shipping_city');
-        $this->session_state            = WC()->session->get('shipping_state');
-
-        if(empty($this->session_quote_items) || !$this->session_total || !$this->session_subtotal || !$this->session_shipping_cost) {
-            wp_send_json_error(array('message' => 'É preciso preencher todos os campos do orçamento.'));
-            return;
+        // Atualiza a lista de items com as respectivas customizações
+        foreach ($this->session_quote_items as &$item)
+        {
+            $item['customizations'] = WC()->session->get("pcw_customizations_{$item['product_id']}");
         }
 
         // Cria ou resgata o usuário logado
@@ -268,7 +262,7 @@ class GCW_Shortcode_Quote_Checkout
         update_post_meta($quote_id, 'items',    $this->session_quote_items);
 
         // Limpar os dados do orçamento armazenados na seção.
-        session_unset();
+        WC()->session->cleanup_sessions();
 
         wp_send_json_success(array(
             'message' => 'Orçamento salvo e enviado com sucesso.',

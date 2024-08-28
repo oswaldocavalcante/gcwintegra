@@ -59,6 +59,8 @@ class GCW_Shortcode_Quote
                                     $_product           = wc_get_product($product_id);
                                     $product_name       = get_the_title($product_id);
                                     $product_permalink  = $_product->get_permalink($quote_item);
+                                    $customizations     = WC()->session->get("pcw_customizations_{$product_id}");
+
                                 ?>
                                     <tr <?php echo esc_html(sprintf('id=gcw-quote-row-item-%s', $product_id)); ?>>
 
@@ -82,7 +84,7 @@ class GCW_Shortcode_Quote
                                         <td class="product-thumbnail">
                                             <?php
                                             
-                                            $customizations = WC()->session->get("pcw_customizations_{$product_id}");
+
                                             if (is_array($customizations) && isset($customizations['images']))
                                             {
                                                 $front_image = $customizations['images']['front'] ?? null;
@@ -90,19 +92,23 @@ class GCW_Shortcode_Quote
 
                                                 echo '<img src="' . $front_image . '" alt="Front Image">';
                                                 echo '<img src="' . $back_image . '" alt="Back Image">';
+                                            } 
+                                            else
+                                            {
+                                                $thumbnail = apply_filters('quote_item_thumbnail', $_product->get_image(), $quote_item, $quote_item_key);
+                                                if (!$product_permalink) {
+                                                    echo $thumbnail; // PHPCS: XSS ok.
+                                                } else {
+                                                    printf('<a href="%s">%s</a>', esc_url($product_permalink), $thumbnail); // PHPCS: XSS ok.
+                                                }
                                             }
 
-                                            // $thumbnail = apply_filters('quote_item_thumbnail', $_product->get_image(), $quote_item, $quote_item_key);
-                                            // if (!$product_permalink) {
-                                            //     echo $thumbnail; // PHPCS: XSS ok.
-                                            // } else {
-                                            //     printf('<a href="%s">%s</a>', esc_url($product_permalink), $thumbnail); // PHPCS: XSS ok.
-                                            // }
                                             ?>
                                         </td>
 
                                         <td class="product-name" data-title="<?php esc_attr_e('Product', 'woocommerce'); ?>">
                                             <?php
+
                                             if (!$product_permalink) {
                                                 echo wp_kses_post($product_name . '&nbsp;');
                                             } else {
@@ -111,19 +117,14 @@ class GCW_Shortcode_Quote
 
                                             do_action('quote_item_name', $quote_item, $quote_item_key);
 
-                                            // // Meta data.
-                                            // echo quote_item_data($quote_item); // PHPCS: XSS ok.
-
-                                            // Backorder notification.
-                                            if ($_product->backorders_require_notification() && $_product->is_on_backorder($quote_item['quantity'])) {
-                                                echo wp_kses_post(apply_filters('quote_item_backorder_notification', '<p class="backorder_notification">' . esc_html__('Available on backorder', 'woocommerce') . '</p>', $product_id));
-                                            }
                                             ?>
                                         </td>
 
                                         <td class="product-price" data-title="<?php esc_attr_e('Price', 'woocommerce'); ?>">
                                             <?php
-                                            echo $_product->get_price(); // PHPCS: XSS ok.
+
+                                            echo wc_price($_product->get_price() + $customizations['cost']); // PHPCS: XSS ok.
+
                                             ?>
                                         </td>
 
@@ -156,7 +157,8 @@ class GCW_Shortcode_Quote
 
                                         <td class="product-subtotal" data-title="<?php esc_attr_e('Subtotal', 'woocommerce'); ?>">
                                             <?php
-                                            echo apply_filters('cart_item_subtotal', WC()->cart->get_product_subtotal($_product, $quote_item['quantity']), $quote_item, $quote_item_key); // PHPCS: XSS ok.
+                                            $subtotal = ($_product->get_price() + $customizations['cost']) * $quote_item['quantity']; // PHPCS: XSS ok.
+                                            echo wc_price($subtotal);
                                             ?>
                                         </td>
 
@@ -210,7 +212,7 @@ class GCW_Shortcode_Quote
                         <div id="gcw_quote_total_display"></div>
                     </div>
                     <div id="gcw_quote_totals_save">
-                        <a id="gcw_save_quote_button">Finalizar orçamento</a>
+                        <a id="gcw_save_quote_button">Ir à finalização</a>
                     </div>
 
                 </div>
@@ -251,7 +253,8 @@ class GCW_Shortcode_Quote
         $subtotal = 0;
         foreach ($quote_items as $item) {
             $price = (int) wc_get_product($item['product_id'])->get_price();
-            $subtotal += $price * $item['quantity'];
+            $customizations = WC()->session->get("pcw_customizations_{$item['product_id']}");
+            $subtotal += ($price + $customizations['cost']) * $item['quantity'];
         }
 
         return $subtotal;
@@ -434,7 +437,8 @@ class GCW_Shortcode_Quote
                 foreach ($quote_items as $quote_item) {
                     $product_id = $quote_item['product_id'];
                     $_product = wc_get_product($product_id);
-                    $subtotal_price += $_product->get_price() * $quote_item['quantity'];
+                    $customizations = WC()->session->get("pcw_customizations_{$product_id}");
+                    $subtotal_price += ($_product->get_price() + $customizations['cost']) * $quote_item['quantity'];
                 }
             }
 

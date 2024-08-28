@@ -21,7 +21,7 @@ class GCW_GC_Orcamento extends GCW_GC_Api {
         $this->api_headers  = parent::get_headers();
         $this->api_endpoint = parent::get_endpoint_orcamentos();
         
-        $rate_data = $wc_shipping_rate->get_meta_data();
+        // $rate_data = $wc_shipping_rate->get_meta_data(); // TODO: Obter a transportadora do GC a partir do CNPJ
 
         $this->data = array(
             'tipo'                  => 'produto',
@@ -40,8 +40,9 @@ class GCW_GC_Orcamento extends GCW_GC_Api {
         $products = array();
 
         foreach ($wc_items as $wc_item) {
-            $wc_product = wc_get_product($wc_item['product_id']);
-            $quantity   = $wc_item['quantity'];
+            $wc_product     = wc_get_product($wc_item['product_id']);
+            $customizations = $wc_item['customizations'];
+            $quantity       = $wc_item['quantity'];
 
             if ($wc_product->get_parent_id()) {
                 $gc_product_id   = wc_get_product($wc_product->get_parent_id())->get_meta('gestaoclick_gc_product_id');
@@ -52,7 +53,7 @@ class GCW_GC_Orcamento extends GCW_GC_Api {
                         'produto_id'    => $gc_product_id,
                         'variacao_id'   => $gc_variation_id,
                         'quantidade'    => $quantity,
-                        'valor_venda'   => $wc_product->get_price(),
+                        'valor_venda'   => $wc_product->get_price() + $customizations['cost'],
                     )
                 );
             } else {
@@ -61,7 +62,7 @@ class GCW_GC_Orcamento extends GCW_GC_Api {
                     'produto' => array(
                         'produto_id'    => $gc_product_id,
                         'quantidade'    => $quantity,
-                        'valor_venda'   => $wc_product->get_price(),
+                        'valor_venda'   => $wc_product->get_price() + $customizations['cost'],
                     )
                 );
             }

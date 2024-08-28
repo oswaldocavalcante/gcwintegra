@@ -4,12 +4,12 @@ require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-orcamento.php'
 require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-cliente.php';
 
 require_once GCW_ABSPATH . 'public/views/shortcodes/class-gcw-shortcode-quote.php';
-require_once GCW_ABSPATH . 'public/views/shortcodes/class-gcw-shortcode-quote-checkout.php';
+require_once GCW_ABSPATH . 'public/views/shortcodes/class-gcw-shortcode-checkout.php';
 
 class GCW_Public
 {
 	private $quote;
-	private $quote_checkout;
+	private $checkout;
 
 	/**
 	 * Initialize the class and set its properties.
@@ -20,20 +20,17 @@ class GCW_Public
 	 */
 	public function __construct()
 	{
-		$this->quote = new GCW_Shortcode_Quote();
-		$this->quote_checkout = new GCW_Shortcode_Quote_Checkout();
+		$this->quote 	= new GCW_Shortcode_Quote();
+		$this->checkout = new GCW_Shortcode_Checkout();
 	}
 
 	public function session_start()
 	{
-		if (is_user_logged_in() || is_admin())
-		{
+		if (is_user_logged_in() || is_admin()){
 			return;
 		}
-		if (isset(WC()->session))
-		{
-			if (!WC()->session->has_session())
-			{
+		if (isset(WC()->session)){
+			if (!WC()->session->has_session()){
 				WC()->session->set_customer_session_cookie(true);
 			}
 		}
@@ -78,8 +75,8 @@ class GCW_Public
 
 	public function shortcode_quote()
 	{
-		wp_enqueue_style('gcw-shortcode-quote', GCW_URL . 'public/assets/css/gcw-shortcode-quote.css',     array(), GCW_VERSION, 'all');
-		wp_enqueue_script('gcw-shortcode-quote', GCW_URL . 'public/assets/js/gcw-shortcode-quote.js',     array('jquery'), GCW_VERSION, false);
+		wp_enqueue_style('gcw-shortcode-quote', GCW_URL . 'public/assets/css/gcw-shortcode-quote.css', array(), GCW_VERSION, 'all');
+		wp_enqueue_script('gcw-shortcode-quote', GCW_URL . 'public/assets/js/gcw-shortcode-quote.js', array('jquery'), GCW_VERSION, false);
 		wp_localize_script('gcw-shortcode-quote', 'gcw_quote_ajax_object', array(
 			'url'   => admin_url('admin-ajax.php'),
 			'nonce' => wp_create_nonce('gcw_quote_nonce'),
@@ -88,40 +85,40 @@ class GCW_Public
 		return $this->quote->render();
 	}
 
-	public function shortcode_quote_checkout()
+	public function shortcode_checkout()
 	{
-		wp_enqueue_script('gcw-shortcode-quote-checkout', GCW_URL . 'public/assets/js/gcw-shortcode-quote-checkout.js', array('jquery'), GCW_VERSION, false);
-		wp_enqueue_style('gcw-shortcode-quote-checkout', GCW_URL . 'public/assets/css/gcw-shortcode-quote-checkout.css', array(), GCW_VERSION, 'all');
-		wp_enqueue_style('gcw-shortcode-quote', GCW_URL . 'public/assets/css/gcw-shortcode-quote.css', 	array(), GCW_VERSION, 'all');
-		wp_localize_script('gcw-shortcode-quote-checkout', 'gcw_quote_ajax_object', array(
+		wp_enqueue_script('gcw-shortcode-checkout', GCW_URL . 'public/assets/js/gcw-shortcode-checkout.js', array('jquery'), GCW_VERSION, false);
+		wp_enqueue_style('gcw-shortcode-checkout', GCW_URL . 'public/assets/css/gcw-shortcode-checkout.css', array(), GCW_VERSION, 'all');
+		wp_enqueue_style('gcw-shortcode-quote', GCW_URL . 'public/assets/css/gcw-shortcode-quote.css', array(), GCW_VERSION, 'all');
+		wp_localize_script('gcw-shortcode-checkout', 'gcw_quote_ajax_object', array(
 			'url'   => admin_url('admin-ajax.php'),
 			'nonce' => wp_create_nonce('gcw_quote_nonce'),
 		));
 
-		return $this->quote_checkout->render();
+		return $this->checkout->render();
 	}
 
 	public function add_to_quote_button()
 	{
 		$product = wc_get_product(get_the_ID());
 
-		if ($product) {
+		if ($product){
 			if ($product->get_stock_status() == 'onbackorder') 
 			{
-				wp_enqueue_script(	'gcw-add-to-quote-button', plugin_dir_url(__FILE__) . 'assets/js/gcw-add-to-quote-button.js', array('jquery'), GCW_VERSION, false);
-				wp_enqueue_style(	'gcw-add-to-quote-button', plugin_dir_url(__FILE__) . 'assets/css/gcw-add-to-quote-button.css', array(), GCW_VERSION, 'all');
+				wp_enqueue_script('gcw-add-to-quote-button', plugin_dir_url(__FILE__) . 'assets/js/gcw-add-to-quote-button.js', array('jquery'), GCW_VERSION, false);
+				wp_enqueue_style('gcw-add-to-quote-button', plugin_dir_url(__FILE__) . 'assets/css/gcw-add-to-quote-button.css', array(), GCW_VERSION, 'all');
 				echo '<div id="gcw_add_to_quote_button" class="disabled" product_id="' . get_the_ID() . '">Adicionar ao orçamento</div>';
 
-				// Differs the script for variable and simple products
+				// Diferencia o script para produtos variáveis e simples
 				if ($product->has_child()) {
-					wp_enqueue_script(	'gcw-add-to-quote-variation', plugin_dir_url(__FILE__) . 'assets/js/gcw-add-to-quote-variation.js', array('jquery'), GCW_VERSION, true);
-					wp_localize_script(	'gcw-add-to-quote-variation', 'gcw_add_to_quote_variation', array(
+					wp_enqueue_script('gcw-add-to-quote-variation', plugin_dir_url(__FILE__) . 'assets/js/gcw-add-to-quote-variation.js', array('jquery'), GCW_VERSION, true);
+					wp_localize_script('gcw-add-to-quote-variation', 'gcw_add_to_quote_variation', array(
 						'url' 	=> admin_url('admin-ajax.php'),
 						'nonce' => wp_create_nonce('gcw_add_to_quote_variation')
 					));
 				} else {
-					wp_enqueue_script(	'gcw-add-to-quote-simple', plugin_dir_url(__FILE__) . 'assets/js/gcw-add-to-quote-simple.js', array('jquery'), GCW_VERSION, true);
-					wp_localize_script(	'gcw-add-to-quote-simple', 'gcw_add_to_quote_simple', array(
+					wp_enqueue_script('gcw-add-to-quote-simple', plugin_dir_url(__FILE__) . 'assets/js/gcw-add-to-quote-simple.js', array('jquery'), GCW_VERSION, true);
+					wp_localize_script('gcw-add-to-quote-simple', 'gcw_add_to_quote_simple', array(
 						'url' 	=> admin_url('admin-ajax.php'),
 						'nonce' => wp_create_nonce('gcw_add_to_quote_simple_nonce')
 					));

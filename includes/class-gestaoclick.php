@@ -104,6 +104,6 @@ class Gestaoclick
 		add_action('template_include', 							array($plugin_public, 'include_template_quote'));
 
 		add_shortcode('gestaoclick_orcamento', 					array($plugin_public, 'shortcode_quote'));
-		add_shortcode('gestaoclick_finalizar_orcamento', 		array($plugin_public, 'shortcode_quote_checkout'));
+		add_shortcode('gestaoclick_finalizar_orcamento', 		array($plugin_public, 'shortcode_checkout'));
 	}
 }

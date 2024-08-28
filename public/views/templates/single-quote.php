@@ -1,49 +1,165 @@
 <?php
 /*
 Template Name: Full-width page layout
-Template Post Type: post, page, product
+Template Post Type: post, page
 */
 
-// Impede que o orçamento seja visto por outro usuário que não seu autor
-if (get_post_field('post_author', get_the_ID()) != get_current_user_id()) {
-    // Redireciona ou exibe uma mensagem de erro
+function enqueue_single_quote_styles()
+{
+    wp_enqueue_style('gcw-shortcode-checkout', GCW_URL . 'public/assets/css/gcw-shortcode-checkout.css', array(), GCW_VERSION, 'all');
+    wp_enqueue_style('gcw-shortcode-quote', GCW_URL . 'public/assets/css/gcw-shortcode-quote.css', array(), GCW_VERSION, 'all');
+    wp_enqueue_style('gcw-single-quote', GCW_URL . 'public/assets/css/gcw-single-quote.css', array(), GCW_VERSION, 'all');
+}
+add_action('wp_enqueue_scripts', 'enqueue_single_quote_styles');
+
+// Impede o acesso se não for o autor ou não possua permissão
+if (get_post_field('post_author', get_the_ID()) != get_current_user_id() && !current_user_can('manage_options'))
+{
     wp_redirect(home_url()); // Página de erro ou redirecionamento
     exit;
 }
 
 get_header();
 
-// Inicia o loop do WordPress
 if (have_posts()) :
     while (have_posts()) : the_post();
-        // Obtém o ID do post atual
+
         $quote_id = get_the_ID();
+        $quote_items = get_post_meta($quote_id, 'items', true);
 
-        if (get_post_field('post_author', $quote_id) != get_current_user_id()) {
-            // Redireciona ou exibe uma mensagem de erro
-            wp_redirect(home_url()); // Página de erro ou redirecionamento
-            exit;
-        }
+        if (is_array($quote_items) && !empty($quote_items)) :
 
-        // Recupera os metadados do orçamento
-        $items = get_post_meta($quote_id, 'items', true);
+            $total          = get_post_meta($quote_id, 'total', true);
+            $quote_subtotal = get_post_meta($quote_id, 'subtotal', true);
+            $shipping       = get_post_meta($quote_id, 'shipping', true);
+            $status         = esc_attr(get_post_meta($quote_id, 'status', true));
+            $tracking       = esc_attr(get_post_meta($quote_id, 'tracking', true));
+        ?>
 
-        // Verifica se há itens e os exibe
-        if (is_array($items) && !empty($items)) :
-            echo '<h1>Itens do Orçamento</h1>';
-            echo '<ul>';
-            foreach ($items as $item) {
-                // Recupera o ID do produto e a quantidade
-                $product_id = $item['product_id'];
-                $quantity = $item['quantity'];
+            <div id="gcw_quote_forms_container">
 
-                // Recupera o título do produto
-                $product_title = get_the_title($product_id);
+                <table id="gcw-quote-woocommerce-table" class="shop_table shop_table_responsive cart woocommerce-cart-form__contents" cellspacing="0">
 
-                // Exibe os detalhes do item
-                echo '<li>' . esc_html($product_title) . ' - Quantidade: ' . esc_html($quantity) . '</li>';
-            }
-            echo '</ul>';
+                    <thead>
+                        <tr>
+                            <th class="product-thumbnail"> <span class="screen-reader-text"><?php esc_html_e('Thumbnail image', 'woocommerce'); ?></span></th>
+                            <th class="product-name"> <?php esc_html_e('Product', 'woocommerce'); ?></th>
+                            <th class="product-price"> <?php esc_html_e('Price', 'woocommerce'); ?></th>
+                            <th class="product-quantity"> <?php esc_html_e('Quantity', 'woocommerce'); ?></th>
+                            <th class="product-subtotal"> <?php esc_html_e('Subtotal', 'woocommerce'); ?></th>
+                        </tr>
+                    </thead>
+
+                    <tbody <?php echo esc_html('id=gcw-quote-tbody'); ?>>
+                        <?php
+                        foreach ($quote_items as $quote_item_key => $quote_item) :
+
+                            $product_id         = $quote_item['product_id'];
+                            $_product           = wc_get_product($product_id);
+                            $product_name       = get_the_title($product_id);
+                            $product_permalink  = $_product->get_permalink($quote_item);
+                            $customizations     = $quote_item['customizations'];
+
+                        ?>
+                            <tr <?php echo esc_html(sprintf('id=gcw-quote-row-item-%s', $product_id)); ?>>
+
+                                <td class="product-thumbnail">
+                                    <?php
+
+                                    if (is_array($customizations) && isset($customizations['images']))
+                                    {
+                                        $front_image = $customizations['images']['front'] ?? null;
+                                        $back_image = $customizations['images']['back'] ?? null;
+
+                                        echo '<img src="' . $front_image . '" alt="Front Image">';
+                                        echo '<img src="' . $back_image . '" alt="Back Image">';
+                                    }
+                                    else
+                                    {
+                                        $thumbnail = apply_filters('quote_item_thumbnail', $_product->get_image(), $quote_item, $quote_item_key);
+                                        if (!$product_permalink)
+                                        {
+                                            echo $thumbnail; // PHPCS: XSS ok.
+                                        }
+                                        else
+                                        {
+                                            printf('<a href="%s">%s</a>', esc_url($product_permalink), $thumbnail); // PHPCS: XSS ok.
+                                        }
+                                    }
+
+                                    ?>
+                                </td>
+
+                                <td class="product-name" data-title="<?php esc_attr_e('Product', 'woocommerce'); ?>">
+                                    <?php
+
+                                    if (!$product_permalink)
+                                    {
+                                        echo wp_kses_post($product_name . '&nbsp;');
+                                    }
+                                    else
+                                    {
+                                        echo wp_kses_post(apply_filters('quote_item_name', sprintf('<a href="%s">%s</a>', esc_url($product_permalink), $_product->get_name()), $quote_item, $quote_item_key));
+                                    }
+
+                                    do_action('quote_item_name', $quote_item, $quote_item_key);
+
+                                    ?>
+                                </td>
+
+                                <td class="product-price" data-title="<?php esc_attr_e('Price', 'woocommerce'); ?>">
+                                    <?php echo wc_price($_product->get_price() + $customizations['cost']); ?>
+                                </td>
+
+                                <td class="product-quantity" data-title="<?php esc_attr_e('Quantity', 'woocommerce'); ?>">
+                                    <?php echo $quote_item['quantity'] ?>
+                                </td>
+
+                                <td class="product-subtotal" data-title="<?php esc_attr_e('Subtotal', 'woocommerce'); ?>">
+                                    <?php echo wc_price($quote_subtotal); ?>
+                                </td>
+
+                            </tr>
+                        <?php
+
+                        endforeach;
+                        ?>
+
+                    </tbody>
+                </table>
+
+            </div>
+
+            <div id="gcw-quote-totals" style="width: fit-content;">
+
+                <h2>Orçamento <?php echo esc_attr(printf('%s', get_post_meta($quote_id, 'gc_codigo', true))); ?></h2>
+
+                <section id="gcw_quote_totals_subtotal" class="gcw_quote_totals_section gcw_quote_space_between">
+                    <span><?php echo esc_html_e('Subtotal', 'woocommerce'); ?></span>
+                    <span><?php echo wc_price($quote_subtotal); ?></span>
+                </section>
+
+                <section id="gcw_quote_shipping_address" class="gcw_quote_totals_section">
+                    <div class="gcw_quote_space_between">
+                        <span><?php echo esc_html_e('Shipping', 'woocommerce'); ?></span>
+                        <?php echo wc_price($shipping->get_cost()); ?>
+                    </div>
+                    <p><?php echo 'Endereço de envio'; ?></p>
+                </section>
+
+                <section id="gcw_quote_totals_total" class="gcw_quote_totals_section gcw_quote_space_between">
+                    <span>Total</span>
+                    <?php echo wc_price($total); ?>
+                </section>
+
+                <section id="gcw_quote_totals_finish">
+                    <a id="gcw_save_quote_button">Ver envio</a>
+                </section>
+
+            </div>
+
+        <?php
+
         else :
             echo '<p>Nenhum item encontrado neste orçamento.</p>';
         endif;

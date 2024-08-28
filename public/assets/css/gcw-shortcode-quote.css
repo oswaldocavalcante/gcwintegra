@@ -22,17 +22,17 @@
     margin-bottom: 0;
 }
 
-#gcw-quote-form table tbody tr:nth-child(odd)
+table tbody tr:nth-child(odd)
 {
     background-color: #F8F8F8;
 }
 
-#gcw-quote-form .product-remove
+.product-remove
 {
     padding-right: 0 !important;
 }
 
-#gcw-quote-form .product-remove a
+.product-remove a
 {
     text-decoration: none;
     color: #bfcad0;
@@ -40,19 +40,19 @@
 }
 
 
-#gcw-quote-form .product-remove a:before
+.product-remove a:before
 {
     font-family: WooCommerce;
     content: '\e013';
     /* margin-left: 10px; */
 }
 
-#gcw-quote-form .product-remove a:hover
+.product-remove a:hover
 {
     color: red;
 }
 
-#gcw-quote-form .product-thumbnail img
+.product-thumbnail img
 {
     max-width: 75px;
     margin: 10px 0;
