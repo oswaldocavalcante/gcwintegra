@@ -82,6 +82,7 @@ class GCW_GC_Orcamento extends GCW_GC_Api {
 
         if (is_array($response) && $response["code"] == 200) {
             $this->codigo = $response["data"]["codigo"];
+            
             return $this->codigo;
         } else {
             return false;

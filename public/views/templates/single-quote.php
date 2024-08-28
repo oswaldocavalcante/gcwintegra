@@ -34,7 +34,9 @@ if (have_posts()) :
             $shipping       = get_post_meta($quote_id, 'shipping', true);
             $status         = esc_attr(get_post_meta($quote_id, 'status', true));
             $tracking       = esc_attr(get_post_meta($quote_id, 'tracking', true));
-        ?>
+            $gc_codigo      = get_post_meta($quote_id, 'gc_codigo', true);
+
+?>
 
             <div id="gcw_quote_forms_container">
 
@@ -44,9 +46,7 @@ if (have_posts()) :
                         <tr>
                             <th class="product-thumbnail"> <span class="screen-reader-text"><?php esc_html_e('Thumbnail image', 'woocommerce'); ?></span></th>
                             <th class="product-name"> <?php esc_html_e('Product', 'woocommerce'); ?></th>
-                            <th class="product-price"> <?php esc_html_e('Price', 'woocommerce'); ?></th>
                             <th class="product-quantity"> <?php esc_html_e('Quantity', 'woocommerce'); ?></th>
-                            <th class="product-subtotal"> <?php esc_html_e('Subtotal', 'woocommerce'); ?></th>
                         </tr>
                     </thead>
 
@@ -99,24 +99,14 @@ if (have_posts()) :
                                     }
                                     else
                                     {
-                                        echo wp_kses_post(apply_filters('quote_item_name', sprintf('<a href="%s">%s</a>', esc_url($product_permalink), $_product->get_name()), $quote_item, $quote_item_key));
+                                        echo wp_kses_post(sprintf('<a href="%s">%s</a>', esc_url($product_permalink), $_product->get_name()));
                                     }
-
-                                    do_action('quote_item_name', $quote_item, $quote_item_key);
 
                                     ?>
                                 </td>
 
-                                <td class="product-price" data-title="<?php esc_attr_e('Price', 'woocommerce'); ?>">
-                                    <?php echo wc_price($_product->get_price() + $customizations['cost']); ?>
-                                </td>
-
                                 <td class="product-quantity" data-title="<?php esc_attr_e('Quantity', 'woocommerce'); ?>">
                                     <?php echo $quote_item['quantity'] ?>
-                                </td>
-
-                                <td class="product-subtotal" data-title="<?php esc_attr_e('Subtotal', 'woocommerce'); ?>">
-                                    <?php echo wc_price($quote_subtotal); ?>
                                 </td>
 
                             </tr>
@@ -132,24 +122,24 @@ if (have_posts()) :
 
             <div id="gcw-quote-totals" style="width: fit-content;">
 
-                <h2>Orçamento <?php echo esc_attr(printf('%s', get_post_meta($quote_id, 'gc_codigo', true))); ?></h2>
+                <h2>Orçamento <?php echo esc_attr($gc_codigo); ?></h2>
 
                 <section id="gcw_quote_totals_subtotal" class="gcw_quote_totals_section gcw_quote_space_between">
-                    <span><?php echo esc_html_e('Subtotal', 'woocommerce'); ?></span>
-                    <span><?php echo wc_price($quote_subtotal); ?></span>
+                    <span><?php echo esc_html('Data', 'gestaoclick'); ?></span>
+                    <?php echo get_the_date(); ?>
                 </section>
 
                 <section id="gcw_quote_shipping_address" class="gcw_quote_totals_section">
                     <div class="gcw_quote_space_between">
-                        <span><?php echo esc_html_e('Shipping', 'woocommerce'); ?></span>
-                        <?php echo wc_price($shipping->get_cost()); ?>
+                        <span><?php echo esc_html('Envio', 'gestaoclick'); ?></span>
+                        <?php echo get_post_meta(get_the_ID(), 'tracking', true); ?>
                     </div>
                     <p><?php echo 'Endereço de envio'; ?></p>
                 </section>
 
                 <section id="gcw_quote_totals_total" class="gcw_quote_totals_section gcw_quote_space_between">
-                    <span>Total</span>
-                    <?php echo wc_price($total); ?>
+                    <span><?php echo esc_html('Situação', 'gestaoclick'); ?></span>
+                    <?php echo get_post_meta(get_the_ID(), 'status', true); ?>
                 </section>
 
                 <section id="gcw_quote_totals_finish">
@@ -158,7 +148,7 @@ if (have_posts()) :
 
             </div>
 
-        <?php
+<?php
 
         else :
             echo '<p>Nenhum item encontrado neste orçamento.</p>';

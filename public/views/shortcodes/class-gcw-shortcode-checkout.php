@@ -127,6 +127,7 @@ class GCW_Shortcode_Checkout
             <div id="gcw-quote-totals">
 
                 <h2>Total do orçamento</h2>
+
                 <section id="gcw-quote-checkout-package" class="gcw_quote_totals_section">
                     <span>Produtos</span>
                     <div id="gcw-quote-checkout-items-list">
@@ -144,10 +145,12 @@ class GCW_Shortcode_Checkout
                         ?>
                     </div>
                 </section>
+
                 <section id="gcw_quote_totals_subtotal" class="gcw_quote_totals_section gcw_quote_space_between">
                     <span>Subtotal</span>
                     <?php echo wc_price($this->session_subtotal); ?>
                 </section>
+
                 <section id="gcw_quote_shipping_address" class="gcw_quote_totals_section">
                     <div class="gcw_quote_space_between">
                         <span>Entrega</span>
@@ -155,10 +158,12 @@ class GCW_Shortcode_Checkout
                     </div>
                     <p><?php echo $this->session_address_html; ?></p>
                 </section>
+
                 <section id="gcw_quote_totals_total" class="gcw_quote_totals_section gcw_quote_space_between">
                     <span>Total</span>
                     <?php echo wc_price($this->session_total); ?>
                 </section>
+                
                 <section id="gcw_quote_totals_finish">
                     <button type="submit" class="button" id="gcw_finish_quote_button" name="gcw_finish_quote"><?php esc_html_e('Finalizar orçamento', 'gestaoclick'); ?></button>
                 </section>
