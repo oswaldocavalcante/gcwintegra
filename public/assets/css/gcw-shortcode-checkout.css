@@ -1,18 +1,15 @@
-#gcw_quote_forms_container 
-{
+#gcw_quote_forms_container {
     max-width: 100%;
 }
 
-#gcw_quote_forms_container h2 
-{
+#gcw_quote_forms_container h2 {
     font-size: 1.4em;
     margin-top: 0;
     margin-bottom: 25px;
     color: #8a959b;
 }
 
-#gcw_registration_form 
-{
+#gcw_registration_form {
     margin-bottom: 50px;
 }
 
@@ -20,8 +17,7 @@
     margin-bottom: 60px;
 }
 
-.gcw-quote-section 
-{
+.gcw-quote-section {
     display: flex;
     gap: 25px;
     flex-wrap: wrap;
@@ -29,41 +25,30 @@
     margin-bottom: 30px;
 }
 
-.gcw-field-wrap 
-{
+.gcw-field-wrap {
     flex: 1;
     flex-wrap: wrap;
     min-width: 300px;
 }
 
-.gcw-field-wrap label 
-{
+.gcw-field-wrap label {
     display: block;
     margin-bottom: 10px;
 }
 
-.gcw-field-wrap input 
-{
+.gcw-field-wrap input {
     border-radius: 10px;
     border: 2px solid #ddd;
     font-family: unset;
 }
 
-#gcw-quote-checkout-items-list
-{
+#gcw-quote-checkout-items-list {
     margin-top: 20px;
 }
 
-#gcw-quote-checkout-items-list p
-{
+#gcw-quote-checkout-items-list p {
     font-size: 0.86em;
     color: #777;
     letter-spacing: -0.04em;
     margin-bottom: 15px;
-}
-
-#gcw_quote_totals_finish
-{
-    padding: 20px;
-    width: 100%;
 }

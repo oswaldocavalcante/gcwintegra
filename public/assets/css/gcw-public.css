@@ -1,3 +1,36 @@
+.row {
+    gap: 40px;
+    margin: 50px 0;
+}
+
+button.gcw_button
+{
+    font-family: unset;
+    cursor: pointer;
+    padding: 15px;
+    background-color: #5d707a;
+    opacity: 1;
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 7px;
+    color: #fff;
+    width: 100%;
+    line-height: 1.5em;
+}
+
+.disabled 
+,.gcw_button.disabled
+{
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.gcw_button_wrapper
+{
+    padding: 20px;
+}
+
 #gcw-quote-container
 {
     margin-top: 50px;
@@ -108,14 +141,6 @@ table tbody tr:nth-child(odd)
     opacity: 100%;
 }
 
-/* #gcw-quote-form button[type="submit"]::before
-{
-    font-family: WooCommerce;
-    content: '\e014';
-    font-weight: normal;
-    margin-right: 10px;
-} */
-
 /* Total price of quote */
 
 #gcw-quote-totals
@@ -126,7 +151,6 @@ table tbody tr:nth-child(odd)
     border: 1px solid #ccc;
     border-radius: 10px;
     background-color: #f8f8f8;
-    /* padding: 30px 40px; */
     overflow: hidden;
 }
 
@@ -227,25 +251,4 @@ table tbody tr:nth-child(odd)
 {
     font-weight: bold;
     background-color: #ebeeef;
-}
-
-#gcw_quote_totals_save
-{
-    padding: 20px;
-}
-
-#gcw_save_quote_button
-,#gcw_finish_quote_button
-{
-    font-family: unset;
-    cursor: pointer;
-    padding: 15px;
-    background-color: #5d707a;
-    display: block;
-    text-align: center;
-    text-decoration: none;
-    border-radius: 7px;
-    color: #fff;
-    width: 100%;
-    line-height: 1.5em;
 }

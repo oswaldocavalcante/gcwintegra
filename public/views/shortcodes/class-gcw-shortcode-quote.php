@@ -211,8 +211,8 @@ class GCW_Shortcode_Quote
                         <span><?php esc_html_e('Total', 'woocommerce'); ?></span>
                         <div id="gcw_quote_total_display"></div>
                     </div>
-                    <div id="gcw_quote_totals_save">
-                        <a id="gcw_save_quote_button">Ir à finalização</a>
+                    <div class="gcw_button_wrapper">
+                        <button id="gcw_save_quote_button" class="gcw_button">Ir à finalização</button>
                     </div>
 
                 </div>

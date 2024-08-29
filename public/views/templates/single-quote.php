@@ -6,9 +6,7 @@ Template Post Type: post, page
 
 function enqueue_single_quote_styles()
 {
-    wp_enqueue_style('gcw-shortcode-checkout', GCW_URL . 'public/assets/css/gcw-shortcode-checkout.css', array(), GCW_VERSION, 'all');
-    wp_enqueue_style('gcw-shortcode-quote', GCW_URL . 'public/assets/css/gcw-shortcode-quote.css', array(), GCW_VERSION, 'all');
-    wp_enqueue_style('gcw-single-quote', GCW_URL . 'public/assets/css/gcw-single-quote.css', array(), GCW_VERSION, 'all');
+    wp_enqueue_style('gcw-single-quote', GCW_URL . 'public/assets/css/gcw-public.css', array(), GCW_VERSION, 'all');
 }
 add_action('wp_enqueue_scripts', 'enqueue_single_quote_styles');
 
@@ -124,9 +122,14 @@ if (have_posts()) :
 
                 <h2>Orçamento <?php echo esc_attr($gc_codigo); ?></h2>
 
-                <section id="gcw_quote_totals_subtotal" class="gcw_quote_totals_section gcw_quote_space_between">
+                <section class="gcw_quote_totals_section gcw_quote_space_between">
                     <span><?php echo esc_html('Data', 'gestaoclick'); ?></span>
                     <?php echo get_the_date(); ?>
+                </section>
+
+                <section id="gcw_quote_totals_total" class="gcw_quote_totals_section gcw_quote_space_between">
+                    <span><?php echo esc_html('Situação', 'gestaoclick'); ?></span>
+                    <?php echo get_post_meta(get_the_ID(), 'status', true); ?>
                 </section>
 
                 <section id="gcw_quote_shipping_address" class="gcw_quote_totals_section">
@@ -137,13 +140,8 @@ if (have_posts()) :
                     <p><?php echo 'Endereço de envio'; ?></p>
                 </section>
 
-                <section id="gcw_quote_totals_total" class="gcw_quote_totals_section gcw_quote_space_between">
-                    <span><?php echo esc_html('Situação', 'gestaoclick'); ?></span>
-                    <?php echo get_post_meta(get_the_ID(), 'status', true); ?>
-                </section>
-
-                <section id="gcw_quote_totals_finish">
-                    <a id="gcw_save_quote_button">Ver envio</a>
+                <section class="gcw_button_wrapper">
+                    <button id="gcw_save_quote_button" class="gcw_button disabled">Imprimir orçamento</button>
                 </section>
 
             </div>

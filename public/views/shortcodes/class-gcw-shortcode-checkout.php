@@ -164,8 +164,8 @@ class GCW_Shortcode_Checkout
                     <?php echo wc_price($this->session_total); ?>
                 </section>
                 
-                <section id="gcw_quote_totals_finish">
-                    <button type="submit" class="button" id="gcw_finish_quote_button" name="gcw_finish_quote"><?php esc_html_e('Finalizar orçamento', 'gestaoclick'); ?></button>
+                <section class="gcw_button_wrapper">
+                    <button type="submit" class="gcw_button" name="gcw_finish_quote"><?php esc_html_e('Finalizar orçamento', 'gestaoclick'); ?></button>
                 </section>
 
             </div>

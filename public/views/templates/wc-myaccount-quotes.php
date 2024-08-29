@@ -2,7 +2,7 @@
 
 $orcamentos_query = new WP_Query(array(
     'post_type'     => 'orcamento',
-    'post_status'     => 'publish',
+    'post_status'   => 'publish',
     'author'        => get_current_user_id(),
 )); ?>
 
@@ -15,13 +15,12 @@ $orcamentos_query = new WP_Query(array(
                 <th class="woocommerce-orders-table__header">Data</td>
                 <th class="woocommerce-orders-table__header">Situação</td>
                 <th class="woocommerce-orders-table__header">Envio</td>
-                <th class="gwc-wc-myaccount-quotes-actions">Detalhes</td>
+                <th class="gwc-wc-myaccount-quotes-actions">Ações</td>
 
             </tr>
         </thead>
 
         <tbody>
-
             <?php while ($orcamentos_query->have_posts()) :
                 $orcamentos_query->the_post();
                 ?>
@@ -30,7 +29,10 @@ $orcamentos_query = new WP_Query(array(
                     <td><?php echo get_the_date(); ?></td>
                     <td><?php echo get_post_meta(get_the_ID(), 'status', true); ?></td>
                     <td><?php echo get_post_meta(get_the_ID(), 'tracking', true); ?></td>
-                    <td class="gwc-wc-myaccount-quotes-actions"><a href="<?php echo get_the_permalink(); ?>" class="woocommerce-button button view">Visualizar</a></td>
+                    <td class="gwc-wc-myaccount-quotes-actions">
+                        <a href="<?php echo get_the_permalink(); ?>" class="woocommerce-button button view">Visualizar</a>
+                        <a href="<?php echo '#'; ?>" class="woocommerce-button button view">Imprimir</a>
+                    </td>
                 </tr>
             <?php endwhile; ?>
         </tbody>
