@@ -4,6 +4,7 @@
 }
 
 button.gcw_button
+, .gcw_button
 {
     font-family: unset;
     cursor: pointer;
@@ -29,6 +30,11 @@ button.gcw_button
 .gcw_button_wrapper
 {
     padding: 20px;
+}
+
+#gcw_add_to_quote_button
+{
+    cursor: pointer;
 }
 
 #gcw-quote-container

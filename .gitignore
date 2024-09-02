@@ -1,7 +1,4 @@
-admin/.DS_Store
-public/.DS_Store
-.vscode/launch.json
-.DS_Store
-gestaoclick.code-workspace
-vendor/
+*.DS_Store
 wp-content/
+.vscode/launch.json
+gestaoclick.code-workspace

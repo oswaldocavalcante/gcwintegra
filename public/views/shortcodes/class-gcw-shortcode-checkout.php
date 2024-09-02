@@ -257,9 +257,13 @@ class GCW_Shortcode_Checkout
             'post_author' => $user_id
         ));
 
-        // Marcar a cotação como aberta e armazena os itens do orçamento
+        $response = $gc_orcamento->update('introducao', home_url('orcamentos/' . $gc_orcamento_codigo));
+
+        // Marcar armazena os dados do orçamento
+        update_post_meta($quote_id, 'gc_cliente_id', $gc_cliente_id);
         update_post_meta($quote_id, 'gc_codigo', $gc_orcamento_codigo);
-        update_post_meta($quote_id, 'status',   'Aguardando');
+        update_post_meta($quote_id, 'gc_url',    $gc_orcamento->get_url());
+        update_post_meta($quote_id, 'status',   'Em aberto');
         update_post_meta($quote_id, 'tracking', 'Não enviado');
         update_post_meta($quote_id, 'total',    $this->session_total);
         update_post_meta($quote_id, 'subtotal', $this->session_subtotal);

@@ -1,6 +1,7 @@
 {
     "require": {
-        "woocommerce/woocommerce": "^3.5"
+        "woocommerce/woocommerce": "^3.5",
+        "dompdf/dompdf": "^3.0"
     },
     "config": {
         "allow-plugins": {

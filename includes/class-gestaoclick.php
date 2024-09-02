@@ -39,13 +39,9 @@ class Gestaoclick
 	 *
 	 * Include the following files that make up the plugin:
 	 *
-	 * - Gestaoclick_Loader. Orchestrates the hooks of the plugin.
-	 * - Gestaoclick_i18n. Defines internationalization functionality.
 	 * - Gestaoclick_Admin. Defines all hooks for the admin area.
 	 * - Gestaoclick_Public. Defines all hooks for the public side of the site.
 	 *
-	 * Create an instance of the loader which will be used to register the hooks
-	 * with WordPress.
 	 *
 	 * @since    1.0.0
 	 * @access   private
@@ -76,7 +72,6 @@ class Gestaoclick
 
 		add_action('admin_init', 				array($plugin_admin, 'register_settings'));
 		add_action('admin_menu', 				array($plugin_admin, 'add_admin_menu'));
-		add_action('admin_enqueue_scripts', 	array($plugin_admin, 'enqueue_styles'));
 		add_action('admin_enqueue_scripts', 	array($plugin_admin, 'enqueue_scripts'));
 		add_filter('woocommerce_integrations', 	array($plugin_admin, 'add_woocommerce_integration'));
 		add_action('gestaoclick_update', 		array($plugin_admin, 'import_gestaoclick'));
@@ -105,5 +100,6 @@ class Gestaoclick
 
 		add_shortcode('gestaoclick_orcamento', 					array($plugin_public, 'shortcode_quote'));
 		add_shortcode('gestaoclick_finalizar_orcamento', 		array($plugin_public, 'shortcode_checkout'));
+		add_action('wp_ajax_gcw_spec_sheet', 					array($plugin_public, 'ajax_create_spec_sheet'));
 	}
 }

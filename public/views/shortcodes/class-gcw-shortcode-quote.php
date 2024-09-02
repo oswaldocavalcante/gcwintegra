@@ -60,6 +60,7 @@ class GCW_Shortcode_Quote
                                     $product_name       = get_the_title($product_id);
                                     $product_permalink  = $_product->get_permalink($quote_item);
                                     $customizations     = WC()->session->get("pcw_customizations_{$product_id}");
+                                    $customizations_cost = $customizations['cost'] ?? 0;
 
                                 ?>
                                     <tr <?php echo esc_html(sprintf('id=gcw-quote-row-item-%s', $product_id)); ?>>
@@ -123,7 +124,7 @@ class GCW_Shortcode_Quote
                                         <td class="product-price" data-title="<?php esc_attr_e('Price', 'woocommerce'); ?>">
                                             <?php
 
-                                            echo wc_price($_product->get_price() + $customizations['cost']); // PHPCS: XSS ok.
+                                            echo wc_price($_product->get_price() + $customizations_cost); // PHPCS: XSS ok.
 
                                             ?>
                                         </td>
@@ -157,7 +158,7 @@ class GCW_Shortcode_Quote
 
                                         <td class="product-subtotal" data-title="<?php esc_attr_e('Subtotal', 'woocommerce'); ?>">
                                             <?php
-                                            $subtotal = ($_product->get_price() + $customizations['cost']) * $quote_item['quantity']; // PHPCS: XSS ok.
+                                            $subtotal = ($_product->get_price() + $customizations_cost) * $quote_item['quantity']; // PHPCS: XSS ok.
                                             echo wc_price($subtotal);
                                             ?>
                                         </td>
@@ -254,7 +255,8 @@ class GCW_Shortcode_Quote
         foreach ($quote_items as $item) {
             $price = (int) wc_get_product($item['product_id'])->get_price();
             $customizations = WC()->session->get("pcw_customizations_{$item['product_id']}");
-            $subtotal += ($price + $customizations['cost']) * $item['quantity'];
+            $customizations_cost = $customizations['cost'] ?? 0;
+            $subtotal += ($price + $customizations_cost) * $item['quantity'];
         }
 
         return $subtotal;

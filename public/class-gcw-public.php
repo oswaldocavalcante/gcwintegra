@@ -6,6 +6,9 @@ require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-cliente.php';
 require_once GCW_ABSPATH . 'public/views/shortcodes/class-gcw-shortcode-quote.php';
 require_once GCW_ABSPATH . 'public/views/shortcodes/class-gcw-shortcode-checkout.php';
 
+use Dompdf\Dompdf;
+use Dompdf\Options;
+
 class GCW_Public
 {
 	private $quote;
@@ -106,7 +109,7 @@ class GCW_Public
 			{
 				wp_enqueue_style('gcw-add-to-quote-button', plugin_dir_url(__FILE__) . 'assets/css/gcw-public.css', array(), GCW_VERSION, 'all');
 				wp_enqueue_script('gcw-add-to-quote-button', plugin_dir_url(__FILE__) . 'assets/js/gcw-add-to-quote-button.js', array('jquery'), GCW_VERSION, false);
-				echo '<button id="gcw_add_to_quote_button" class="disabled" product_id="' . get_the_ID() . '">Adicionar ao orçamento</button>';
+				echo '<a id="gcw_add_to_quote_button" class="disabled" product_id="' . get_the_ID() . '">Adicionar ao orçamento</a>';
 
 				// Diferencia o script para produtos variáveis e simples
 				if ($product->has_child()) {
@@ -119,10 +122,57 @@ class GCW_Public
 					wp_enqueue_script('gcw-add-to-quote-simple', plugin_dir_url(__FILE__) . 'assets/js/gcw-add-to-quote-simple.js', array('jquery'), GCW_VERSION, true);
 					wp_localize_script('gcw-add-to-quote-simple', 'gcw_add_to_quote_simple', array(
 						'url' 	=> admin_url('admin-ajax.php'),
-						'nonce' => wp_create_nonce('gcw_add_to_quote_simple_nonce')
+						'nonce' => wp_create_nonce('gcw_add_to_quote_simple')
 					));
 				}
 			}
 		}
+	}
+
+	public function ajax_create_spec_sheet()
+	{
+		// Verificar nonce
+		if (!check_ajax_referer('gcw_spec_sheet_nonce', 'nonce', false)) {
+			wp_die('Erro de segurança');
+		}
+
+		$product_id = isset($_GET['product_id']) ? intval($_GET['product_id']) : 0;
+		$quote_id = isset($_GET['quote_id']) ? intval($_GET['quote_id']) : 0;
+
+		if (!$product_id || !$quote_id) {
+			wp_die('Parâmetros inválidos');
+		}
+
+		$product = wc_get_product($product_id);
+		$quote_items = get_post_meta($quote_id, 'items', true);
+		$item = array_filter($quote_items, function ($item) use ($product_id) {
+			return $item['product_id'] == $product_id;
+		});
+		$item = reset($item);
+
+		// Configurar cabeçalhos para exibir o PDF no navegador
+		header('Content-Type: application/pdf');
+		header('Content-Disposition: inline; filename="ficha_tecnica.pdf"');
+		header('Cache-Control: private, max-age=0, must-revalidate');
+		header('Pragma: public');
+
+		require_once(GCW_ABSPATH . 'vendor/autoload.php');
+		$options = new Options();
+		$options->set('isHtml5ParserEnabled', true);
+		$options->set('isPhpEnabled', true);
+		$options->set('isRemoteEnabled', true);
+		$options->set('chroot', wp_upload_dir()); // Permissão para acessar imagens da pasta uploads
+
+		$dompdf = new Dompdf($options);
+
+		ob_start();
+		include(GCW_ABSPATH . 'public/views/templates/spec-sheet.php');
+		$html = ob_get_clean();
+
+		$dompdf->loadHtml($html);
+		$dompdf->render();
+		$dompdf->stream("ficha-tecnica.pdf", array("Attachment" => false));
+
+		exit;
 	}
 }
