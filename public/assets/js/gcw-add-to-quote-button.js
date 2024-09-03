@@ -25,7 +25,10 @@ jQuery(document).ready(function ($)
 
     add_to_cart_button.remove();
 
-    $(document).on('click', '#gcw_add_to_quote_button', function(e){
-        $(document).trigger('pcw_save_customizations');
+    $(document).on('click', '#gcw_add_to_quote_button', function(e)
+    {
+        if (!$(this).hasClass('disabled')) {
+            $(document).trigger('pcw_save_customizations');
+        }
     });
 });

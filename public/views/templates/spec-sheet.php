@@ -1,23 +1,77 @@
 <?php
 
-$icon_url = get_site_icon_url();
-$icon_path = '';
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\PngWriter;
 
-if ($icon_url)
-{
-    $upload_dir = wp_upload_dir();
-    $icon_path = str_replace($upload_dir['baseurl'], $upload_dir['basedir'], $icon_url);
-}
-
-$orcamento_codigo = get_post_meta($quote_id, 'gc_codigo', true);
-$orcamento_data = get_the_date('d/m/Y', $quote_id);
-$product_name = $product->get_name();
-$quantity = $item['quantity'];
-$customizations = isset($item['customizations']) ? $item['customizations'] : [];
-$user_id = get_post_field('post_author', $quote_id);
+$user_id  = get_post_field('post_author', $quote_id);
 $customer = new WC_Customer($user_id);
 
+$site_icon_path = '';
+if (get_site_icon_url())
+{
+    $site_icon_path = str_replace(wp_upload_dir()['baseurl'], wp_upload_dir()['basedir'], get_site_icon_url());
+}
+
+$pcw_layers         = get_post_meta($parent_id ? $parent_id : $product_id, 'pcw_layers', true);
+$orcamento_codigo   = get_post_meta($quote_id, 'gc_codigo', true);
+$orcamento_data     = get_the_date('d/m/Y', $quote_id);
+$quote_items        = get_post_meta($quote_id, 'items', true);
+
+$item = array_filter($quote_items, function ($item) use ($product_id)
+{
+    return $item['product_id'] == $product_id;
+});
+$item_number = array_keys($item)[0] + 1;
+$item = reset($item);
+$quantity         = $item['quantity'];
+$product_name     = $product->get_name();
+$customizations   = isset($item['customizations']) ? $item['customizations'] : [];
+
+$printing_methods = get_post_meta($parent_id ? $parent_id : $product_id, 'pcw_printing_methods', true);
+$printing_method_front = [];
+$printing_method_back  = [];
+
+if (is_array($printing_methods) && !empty($printing_methods))
+{
+    $printing_method_id_front = isset($customizations['printing_methods']['front']) ? $customizations['printing_methods']['front'] : '';
+    $printing_method_id_back  = isset($customizations['printing_methods']['back']) ? $customizations['printing_methods']['back'] : '';
+
+    $printing_method_front = array_filter($printing_methods, function ($printing_method) use ($printing_method_id_front)
+    {
+        return $printing_method['id'] == $printing_method_id_front;
+    });
+    $printing_method_front = reset($printing_method_front);
+
+    $printing_method_back = array_filter($printing_methods, function ($printing_method) use ($printing_method_id_back)
+    {
+        return $printing_method['id'] == $printing_method_id_back;
+    });
+    $printing_method_back = reset($printing_method_back);
+}
+
+$printing_logo_url_front = isset($customizations['printing_logos']['front']) ? $customizations['printing_logos']['front'] : '';
+$printing_logo_url_back  = isset($customizations['printing_logos']['back']) ? $customizations['printing_logos']['back'] : '';
+$printing_logo_qr_code_front = create_qr_code($printing_logo_url_front);
+$printing_logo_qr_code_back  = create_qr_code($printing_logo_url_back);
+
+function create_qr_code($url, $size = 70, $margin = 2)
+{
+    if (!$url)
+    {
+        return null;
+    }
+
+    $qr_code = QrCode::create($url)
+        ->setSize($size)
+        ->setMargin($margin);
+    $writer = new PngWriter();
+    $result = $writer->write($qr_code);
+
+    return 'data:image/png;base64,' . base64_encode($result->getString());
+}
+
 ?>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="pt" lang="pt">
 
@@ -33,7 +87,6 @@ $customer = new WC_Customer($user_id);
 
         body {
             margin: 1cm;
-            /* Define margens iguais em todos os lados */
         }
 
         h1 {
@@ -70,67 +123,6 @@ $customer = new WC_Customer($user_id);
             font-style: normal;
             font-weight: bold;
             text-decoration: none;
-            font-size: 8pt;
-        }
-
-        .s1 {
-            color: black;
-            font-family: Arial, sans-serif;
-            font-weight: bold;
-            font-size: 11pt;
-            vertical-align: middle;
-            text-align: center;
-        }
-
-        .s2 {
-            color: black;
-            font-family: Arial, sans-serif;
-            font-style: normal;
-            font-weight: bold;
-            text-decoration: none;
-            font-size: 8pt;
-        }
-
-        .s3 {
-            color: black;
-            font-family: Arial, sans-serif;
-            font-style: normal;
-            font-weight: normal;
-            text-decoration: none;
-            font-size: 8pt;
-        }
-
-        .s4 {
-            color: black;
-            font-family: "Times New Roman", serif;
-            font-style: normal;
-            font-weight: normal;
-            text-decoration: none;
-            font-size: 10pt;
-        }
-
-        .s5 {
-            color: black;
-            font-family: "Times New Roman", serif;
-            font-style: normal;
-            font-weight: normal;
-            text-decoration: none;
-            font-size: 8pt;
-        }
-
-        .s6 
-        {
-            font-weight: bold;
-            font-size: 9pt;
-        }
-
-        .s7 {
-            color: black;
-            font-family: Arial, sans-serif;
-            font-style: normal;
-            font-weight: normal;
-            text-decoration: none;
-            font-size: 8pt;
         }
 
         .textbox {
@@ -139,49 +131,95 @@ $customer = new WC_Customer($user_id);
             width: 100%;
         }
 
-
-        #images_container {
-            display: block;
+        #header {
+            border: 1px solid #ccc;
             width: 100%;
         }
 
-        .image_wrapp {
-            width: 50%;
-            float: left;
+        #title {
+            font-size: 11pt;
+            vertical-align: middle;
+            text-align: center;
+            font-weight: bold;
+            padding: 3px;
         }
 
-        .image_wrapp p {
+        #images {
+            width: 100%;
+        }
+
+        #images .image-title {
+            text-align: center;
+            font-weight: bold;
+            background: #E8E8E8;
+            padding: 4px;
+        }
+
+        .image_wrapper {
+            width: 50%;
+        }
+
+        .image_wrapper p {
             text-align: center;
         }
 
-        .image_wrapp img {
+        .image_wrapper .product-image {
             width: 100%;
             height: auto;
         }
 
-        table
-        ,tbody {
+        table {
             width: 100%;
             vertical-align: top;
             overflow: visible;
+            padding: 0;
+        }
+
+        .table-border td {
+            border: 1px solid #ccc;
+        }
+
+        .table-data td {
+            padding: 3px;
+        }
+
+        .zero-border td {
+            border: 0;
+        }
+
+        .table-header {
+            padding: 3px;
+            background: #E8E8E8;
+            border: 1px solid #ccc;
+        }
+
+        .line-title {
+            font-weight: bold;
+        }
+
+        .table-header p {
+            font-weight: bold;
         }
     </style>
 </head>
 
 <body>
 
-    <div style="border: 1px solid #ccc; width: 100%;">
+    <div id="header">
         <table style="width: 100%;">
             <tr>
-                <td><img width="100px" src="<?php echo esc_url($icon_path); ?>" /></td>
+                <td><img width="100px" src="<?php echo esc_url($site_icon_path); ?>" /></td>
                 <td style="width: 40%; vertical-align: middle;">
                     <h1><?php echo get_bloginfo('name'); ?></h1>
-                    <p style="padding-top: 1pt;text-indent: 0pt;text-align: left;">CNPJ: 08.596.720/0001-73</p>
+                    <p>CNPJ: 08.596.720/0001-73</p>
+                    <p><br></p>
+                    <p>(82) 3235-5224</p>
+                    <p style="font-weight: bold;">ryanne.com.br</p>
                 </td>
-                <td style="width: 60%; vertical-align: middle;">
-                    <h2 style="text-align: right;">(82)3235-5224</h2>
-                    <h2 style="text-align: right;">ryanne.com.br</h2>
-                    <p style="text-align: right;">Vendedor: <b>Raphaella Kelly</b></p>
+                <td style="width: 60%; text-align: right;">
+                    <a href="<?php echo get_the_permalink($quote_id); ?>"><img src="<?php echo create_qr_code(get_the_permalink($quote_id)); ?>" /></a>
+                    <p style="text-align: right;"><small><a href="<?php echo get_the_permalink($quote_id); ?>">ORÇAMENTO <?php echo $orcamento_codigo; ?></a></small></p>
+                    <p style="text-align: right;"><small><?php echo $orcamento_data; ?></small></p>
                 </td>
             </tr>
         </table>
@@ -189,116 +227,238 @@ $customer = new WC_Customer($user_id);
 
     <p><br /></p>
 
-    <div class="textbox" style="min-height:17.5pt;">
-        <p class="s1">FICHA TÉCNICA (ORÇAMENTO Nº <?php echo $orcamento_codigo; ?>)</p>
-        <p style="float: right;"><?php echo $orcamento_data; ?></p>
+    <div class="textbox">
+        <p id="title">FICHA TÉCNICA – ITEM <?php echo $orcamento_codigo . '.' . $item_number; ?></p>
     </div>
 
     <p><br /></p>
 
-    <table cellspacing="0">
+    <table cellspacing="0" class="table-border table-data">
         <tr>
-            <td colspan="4" class="textbox">
-                <p class="s6">DADOS DO CLIENTE</p>
+            <td colspan="4" class="table-header">
+                <p>DADOS DO CLIENTE</p>
             </td>
         </tr>
         <tr>
-            <td style="width:82pt;border-top-style:solid;border-top-width:2pt;border-top-color:#CCCCCC;border-left-style:solid;border-left-width:1pt;border-left-color:#CCCCCC;border-bottom-style:solid;border-bottom-width:1pt;border-bottom-color:#CCCCCC;border-right-style:solid;border-right-width:1pt;border-right-color:#CCCCCC">
-                <p class="s2" style="padding-top: 4pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">Razão social:</p>
+            <td>
+                <p class="line-title">Nome:</p>
             </td>
-            <td style="width:160pt;border-top-style:solid;border-top-width:2pt;border-top-color:#CCCCCC;border-left-style:solid;border-left-width:1pt;border-left-color:#CCCCCC;border-bottom-style:solid;border-bottom-width:1pt;border-bottom-color:#CCCCCC;border-right-style:solid;border-right-width:1pt;border-right-color:#CCCCCC">
-                <p class="s3" style="padding-top: 4pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">Global Radiocomunicação EIRELI</p>
-            </td>
-            <td style="width:82pt;border-top-style:solid;border-top-width:2pt;border-top-color:#CCCCCC;border-left-style:solid;border-left-width:1pt;border-left-color:#CCCCCC;border-bottom-style:solid;border-bottom-width:1pt;border-bottom-color:#CCCCCC;border-right-style:solid;border-right-width:1pt;border-right-color:#CCCCCC">
-                <p class="s2" style="padding-top: 4pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">Nome fantasia:</p>
-            </td>
-            <td style="width:223pt;border-top-style:solid;border-top-width:2pt;border-top-color:#CCCCCC;border-left-style:solid;border-left-width:1pt;border-left-color:#CCCCCC;border-bottom-style:solid;border-bottom-width:1pt;border-bottom-color:#CCCCCC;border-right-style:solid;border-right-width:1pt;border-right-color:#CCCCCC">
-                <p class="s3" style="padding-top: 4pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">Global Radiocomunicação</p>
+            <td colspan="3">
+                <p><?php echo $customer->get_billing_company() ? $customer->get_billing_company() : $customer->get_first_name() . ' ' . $customer->get_last_name(); ?></p>
             </td>
         </tr>
         <tr>
-            <td style="width:82pt;border-top-style:solid;border-top-width:1pt;border-top-color:#CCCCCC;border-left-style:solid;border-left-width:1pt;border-left-color:#CCCCCC;border-bottom-style:solid;border-bottom-width:1pt;border-bottom-color:#CCCCCC;border-right-style:solid;border-right-width:1pt;border-right-color:#CCCCCC">
-                <p class="s2" style="padding-top: 4pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">Telefone:</p>
+            <td>
+                <p class="line-title">Telefone:</p>
             </td>
-            <td style="width:160pt;border-top-style:solid;border-top-width:1pt;border-top-color:#CCCCCC;border-left-style:solid;border-left-width:1pt;border-left-color:#CCCCCC;border-bottom-style:solid;border-bottom-width:1pt;border-bottom-color:#CCCCCC;border-right-style:solid;border-right-width:1pt;border-right-color:#CCCCCC">
-                <p class="s3" style="padding-top: 4pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">(82) 3337-4980 - (82) 99993-0389</p>
+            <td>
+                <p><?php echo $customer->get_billing_phone(); ?></p>
             </td>
-            <td style="width:82pt;border-top-style:solid;border-top-width:1pt;border-top-color:#CCCCCC;border-left-style:solid;border-left-width:1pt;border-left-color:#CCCCCC;border-bottom-style:solid;border-bottom-width:1pt;border-bottom-color:#CCCCCC;border-right-style:solid;border-right-width:1pt;border-right-color:#CCCCCC">
-                <p class="s2" style="padding-top: 4pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">E-mail:</p>
+            <td>
+                <p class="line-title">E-mail:</p>
             </td>
-            <td style="width:223pt;border-top-style:solid;border-top-width:1pt;border-top-color:#CCCCCC;border-left-style:solid;border-left-width:1pt;border-left-color:#CCCCCC;border-bottom-style:solid;border-bottom-width:1pt;border-bottom-color:#CCCCCC;border-right-style:solid;border-right-width:1pt;border-right-color:#CCCCCC">
-                <p style="padding-top: 4pt;padding-left: 4pt;text-indent: 0pt;text-align: left;"><a href="mailto:michelle.santos@globalradio.com.br" class="s7">michelle.santos@globalradio.com.br</a></p>
+            <td>
+                <p><a href="mailto:<?php echo $customer->get_billing_email(); ?>"><?php echo $customer->get_billing_email(); ?></a></p>
             </td>
         </tr>
     </table>
 
     <p><br /></p>
 
-    <table cellspacing="0">
-        <tr style="height:14pt">
-            <td style="width:547pt;border-top-style:solid;border-top-width:1pt;border-top-color:#D3D3D3;border-left-style:solid;border-left-width:1pt;border-left-color:#D3D3D3;border-bottom-style:solid;border-bottom-width:2pt;border-bottom-color:#CCCCCC;border-right-style:solid;border-right-width:1pt;border-right-color:#D3D3D3" colspan="5" bgcolor="#E8E8E8">
-                <p class="s6" style="padding-top: 1pt;padding-left: 1pt;text-indent: 0pt;text-align: left;">PERSONALIZAÇÕES</p>
+    <table class="table-border table-data" cellspacing="0">
+        <tr>
+            <td colspan="3" class="table-header">
+                <p>DADOS DO PRODUTO</p>
             </td>
         </tr>
-        <tr style="height:18pt">
-            <td style="width:28pt;border-top-style:solid;border-top-width:2pt;border-top-color:#CCCCCC;border-left-style:solid;border-left-width:1pt;border-left-color:#CCCCCC;border-bottom-style:solid;border-bottom-width:1pt;border-bottom-color:#CCCCCC;border-right-style:solid;border-right-width:1pt;border-right-color:#CCCCCC">
-                <p class="s2" style="padding-top: 4pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">ITEM</p>
+        <tr>
+            <td>
+                <p class="line-title">ITEM Nº</p>
             </td>
-            <td style="width:324pt;border-top-style:solid;border-top-width:2pt;border-top-color:#CCCCCC;border-left-style:solid;border-left-width:1pt;border-left-color:#CCCCCC;border-bottom-style:solid;border-bottom-width:1pt;border-bottom-color:#CCCCCC;border-right-style:solid;border-right-width:1pt;border-right-color:#CCCCCC">
-                <p class="s2" style="padding-top: 4pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">NOME</p>
+            <td>
+                <p class="line-title">NOME</p>
             </td>
-            <td style="width:58pt;border-top-style:solid;border-top-width:2pt;border-top-color:#CCCCCC;border-left-style:solid;border-left-width:1pt;border-left-color:#CCCCCC;border-bottom-style:solid;border-bottom-width:1pt;border-bottom-color:#CCCCCC;border-right-style:solid;border-right-width:1pt;border-right-color:#CCCCCC">
-                <p class="s2" style="padding-top: 4pt;padding-right: 3pt;text-indent: 0pt;text-align: right;">QTD.</p>
-            </td>
-            <td style="width:68pt;border-top-style:solid;border-top-width:2pt;border-top-color:#CCCCCC;border-left-style:solid;border-left-width:1pt;border-left-color:#CCCCCC;border-bottom-style:solid;border-bottom-width:1pt;border-bottom-color:#CCCCCC;border-right-style:solid;border-right-width:1pt;border-right-color:#CCCCCC">
-                <p class="s2" style="padding-top: 4pt;padding-right: 3pt;text-indent: 0pt;text-align: right;">VR. UNIT.</p>
-            </td>
-            <td style="width:69pt;border-top-style:solid;border-top-width:2pt;border-top-color:#CCCCCC;border-left-style:solid;border-left-width:1pt;border-left-color:#CCCCCC;border-bottom-style:solid;border-bottom-width:1pt;border-bottom-color:#CCCCCC;border-right-style:solid;border-right-width:1pt;border-right-color:#CCCCCC">
-                <p class="s2" style="padding-top: 4pt;padding-right: 3pt;text-indent: 0pt;text-align: right;">SUBTOTAL</p>
+            <td>
+                <p class="line-title">QUANTIDADE</p>
             </td>
         </tr>
-        <tr style="height:18pt">
-            <td style="width:28pt;border-top-style:solid;border-top-width:1pt;border-top-color:#CCCCCC;border-left-style:solid;border-left-width:1pt;border-left-color:#CCCCCC;border-bottom-style:solid;border-bottom-width:1pt;border-bottom-color:#CCCCCC;border-right-style:solid;border-right-width:1pt;border-right-color:#CCCCCC">
-                <p class="s3" style="padding-top: 4pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">1</p>
+        <tr>
+            <td>
+                <p><?php echo $item_number; ?></p>
             </td>
-            <td style="width:324pt;border-top-style:solid;border-top-width:1pt;border-top-color:#CCCCCC;border-left-style:solid;border-left-width:1pt;border-left-color:#CCCCCC;border-bottom-style:solid;border-bottom-width:1pt;border-bottom-color:#CCCCCC;border-right-style:solid;border-right-width:1pt;border-right-color:#CCCCCC">
-                <p class="s3" style="padding-top: 4pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">Camisa Polo - Masculino/Feminino - PV <i>(M (adulto))</i></p>
+            <td>
+                <p><?php echo $product_name ?></p>
             </td>
-            <td style="width:58pt;border-top-style:solid;border-top-width:1pt;border-top-color:#CCCCCC;border-left-style:solid;border-left-width:1pt;border-left-color:#CCCCCC;border-bottom-style:solid;border-bottom-width:1pt;border-bottom-color:#CCCCCC;border-right-style:solid;border-right-width:1pt;border-right-color:#CCCCCC">
-                <p class="s3" style="padding-top: 4pt;padding-right: 3pt;text-indent: 0pt;text-align: right;">10,00</p>
-            </td>
-            <td style="width:68pt;border-top-style:solid;border-top-width:1pt;border-top-color:#CCCCCC;border-left-style:solid;border-left-width:1pt;border-left-color:#CCCCCC;border-bottom-style:solid;border-bottom-width:1pt;border-bottom-color:#CCCCCC;border-right-style:solid;border-right-width:1pt;border-right-color:#CCCCCC">
-                <p class="s3" style="padding-top: 4pt;padding-right: 3pt;text-indent: 0pt;text-align: right;">66,00</p>
-            </td>
-            <td style="width:69pt;border-top-style:solid;border-top-width:1pt;border-top-color:#CCCCCC;border-left-style:solid;border-left-width:1pt;border-left-color:#CCCCCC;border-bottom-style:solid;border-bottom-width:1pt;border-bottom-color:#CCCCCC;border-right-style:solid;border-right-width:1pt;border-right-color:#CCCCCC">
-                <p class="s3" style="padding-top: 4pt;padding-right: 3pt;text-indent: 0pt;text-align: right;">660,00</p>
-            </td>
-        </tr>
-        <tr style="height:18pt">
-            <td style="width:352pt;border-top-style:solid;border-top-width:1pt;border-top-color:#CCCCCC;border-left-style:solid;border-left-width:1pt;border-left-color:#CCCCCC;border-bottom-style:solid;border-bottom-width:1pt;border-bottom-color:#CCCCCC;border-right-style:solid;border-right-width:1pt;border-right-color:#CCCCCC" colspan="2" bgcolor="#E8E8E8">
-                <p class="s2" style="padding-top: 4pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">TOTAL</p>
-            </td>
-            <td style="width:58pt;border-top-style:solid;border-top-width:1pt;border-top-color:#CCCCCC;border-left-style:solid;border-left-width:1pt;border-left-color:#CCCCCC;border-bottom-style:solid;border-bottom-width:1pt;border-bottom-color:#CCCCCC;border-right-style:solid;border-right-width:1pt;border-right-color:#CCCCCC" bgcolor="#E8E8E8">
-                <p class="s2" style="padding-top: 4pt;padding-right: 3pt;text-indent: 0pt;text-align: right;">10,00</p>
-            </td>
-            <td style="width:137pt;border-top-style:solid;border-top-width:1pt;border-top-color:#CCCCCC;border-left-style:solid;border-left-width:1pt;border-left-color:#CCCCCC;border-bottom-style:solid;border-bottom-width:1pt;border-bottom-color:#CCCCCC;border-right-style:solid;border-right-width:1pt;border-right-color:#CCCCCC" colspan="2" bgcolor="#E8E8E8">
-                <p class="s2" style="padding-top: 4pt;padding-right: 3pt;text-indent: 0pt;text-align: right;">660,00</p>
+            <td>
+                <p><?php echo $quantity; ?></p>
             </td>
         </tr>
     </table>
 
     <p><br /></p>
 
-    <div id="images_container">
-        <div id="image_front" class="image_wrapp">
-            <p>Frente</p>
-            <img src="<?php echo $customizations['images']['front']; ?>" />
-        </div>
-        <div id="image_back" class="image_wrapp">
-            <p>Costas</p>
-            <img src="<?php echo $customizations['images']['back']; ?>" />
-        </div>
-    </div>
+    <table id="images" class="table-border" cellspacing="0">
+        <tr>
+            <td>
+                <p class="image-title">Frente</p>
+            </td>
+            <td>
+                <p class="image-title">Costas</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="image_wrapper">
+                <img class="product-image" src="<?php echo $customizations['images']['front']; ?>" />
+            </td>
+            <td class="image_wrapper">
+                <img class="product-image" src="<?php echo $customizations['images']['back']; ?>" />
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 4px;">
+                <table cellspacing="0" class="zero-border">
+                    <tr>
+                        <?php if ($printing_logo_qr_code_front): ?>
+                            <td>
+                                <img class="qr-code" src="<?php echo $printing_logo_qr_code_front; ?>" />
+                            </td>
+                        <?php endif; ?>
+                        <td>
+                            <p><strong>Tipo de impressão:</strong> <?php echo $printing_method_front ? $printing_method_front['name'] : 'não informado'; ?></p>
+                            <?php echo $printing_logo_qr_code_front ? '<p><a href="<?php echo $printing_logo_url_front; ?>">Leia o QR Code para obter a imagem.</a></p>' : ''; ?>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td style="padding: 4px;">
+                <table cellspacing="0" class="zero-border">
+                    <tr>
+                        <?php if ($printing_logo_qr_code_back): ?>
+                            <td>
+                                <img src="<?php echo $printing_logo_qr_code_back; ?>" />
+                            </td>
+                        <?php endif; ?>
+                        <td>
+                            <p><strong>Tipo de impressão:</strong> <?php echo $printing_method_back ? $printing_method_back['name'] : 'não informado'; ?></p>
+                            <?php echo $printing_logo_qr_code_back ? '<p><a href="<?php echo $printing_logo_url_back; ?>">Leia o QR Code para obter a imagem.</a></p>' : ''; ?>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <p><br /></p>
+
+
+    <?php
+    $customization_number = 1;
+    ?>
+    <table cellspacing="0" class="table-border table-data">
+        <tr>
+            <td class="table-header" colspan="4">
+                <p class="line-title">PERSONALIZAÇÕES</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p class="line-title">Nº</p>
+            </td>
+            <td>
+                <p class="line-title">PARTE</p>
+            </td>
+            <td>
+                <p class="line-title">OPÇÃO</p>
+            </td>
+            <td>
+                <p class="line-title">COR</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><?php echo $customization_number++; ?></p>
+            </td>
+            <td collspan="2">
+                <p>Peça base</p>
+            </td>
+            <td>
+                <p>Cor</p>
+            </td>
+            <td>
+                <p><?php echo $customizations['color']['name'] . ' ' . $customizations['color']['value']; ?></p>
+            </td>
+        </tr>
+        <?php
+
+        if (is_array($customizations['layers'])):
+
+            foreach ($customizations['layers'] as $key => $layer):
+
+                $customization_layer = array_filter($pcw_layers, function ($pcw_layer) use ($key)
+                {
+                    return $pcw_layer['id'] == $key;
+                });
+                $customization_layer = reset($customization_layer);
+
+                foreach ($layer['options'] as $option_key => $option) :
+
+                    $customization_option = array_filter($customization_layer['options'], function ($pcw_layer_option) use ($option_key)
+                    {
+                        return $pcw_layer_option['id'] == $option_key;
+                    });
+                    $customization_option = reset($customization_option);
+
+                    foreach ($customization_option['colors'] as $color)
+                    {
+                        $customization_color = array_filter($customization_option['colors'], function ($pcw_option_color) use ($color)
+                        {
+                            return $pcw_option_color['id'] == $color['id'];
+                        });
+                        $customization_color = reset($customization_color);
+
+                        $color_name = $customization_color['name'];
+                        $color_value = $customization_color['value'];
+                    }
+
+        ?>
+                    <tr>
+                        <td>
+                            <p><?php echo $customization_number++; ?></p>
+                        </td>
+                        <td>
+                            <p><?php echo $customization_layer['layer'] ? $customization_layer['layer'] : ''; ?></p>
+                        </td>
+                        <td>
+                            <p><?php echo $customization_option['name'] ? $customization_option['name'] : ''; ?></p>
+                        </td>
+                        <td>
+                            <p><?php echo ($color_name ? $color_name : '') . ' ' . ($color_value ? '(' . $color_value . ')' : ''); ?></p>
+                        </td>
+                    </tr>
+        <?php
+                endforeach;
+            endforeach;
+        endif;
+
+        ?>
+    </table>
+
+    <p><br /></p>
+
+    <?php if ($customizations['notes']): ?>
+        <table cellspacing="0" class="table-border table-data">
+            <tr>
+                <td class="table-header">
+                    <p class="line-title">OBSERVAÇÕES DO CLIENTE</p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p><?php echo $customizations['notes']; ?></p>
+                </td>
+            </tr>
+        </table>
+    <?php endif; ?>
 
 </body>
 

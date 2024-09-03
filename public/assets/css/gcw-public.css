@@ -37,6 +37,11 @@ button.gcw_button
     cursor: pointer;
 }
 
+#gcw_add_to_quote_button.disabled
+{
+    cursor: not-allowed;
+}
+
 #gcw-quote-container
 {
     margin-top: 50px;

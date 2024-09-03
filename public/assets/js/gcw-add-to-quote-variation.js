@@ -25,15 +25,17 @@
 
     $('#gcw_add_to_quote_button').on('click', function()
     {
-        var variation_id = $input_variation_id.getAttribute('value');
-        var product_id = document.querySelector('input[name="product_id"]').getAttribute('value');
-        var quantity = $('.input-text.qty').val();
-
-        if(!$variation_id) {
+        if ($(this).hasClass('disabled')) {
             alert('Selecione uma variação para adicionar à cotação.');
-        } else {
+        } 
+        else 
+        {
+            var variation_id = $input_variation_id.getAttribute('value');
+            var product_id = document.querySelector('input[name="product_id"]').getAttribute('value');
             var quantity = $('.input-text.qty').val();
-            $.ajax({
+            
+            $.ajax
+            ({
                 url: gcw_add_to_quote_variation.url,
                 type: 'POST',
                 data: {

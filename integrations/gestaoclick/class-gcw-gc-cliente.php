@@ -45,12 +45,14 @@ class GCW_GC_Cliente extends GCW_GC_Api {
      * @param WC_Customer | array  $wc_customer Data core to create a new client and export to GestãoClick
      * @param string $context Context to select which way the client should be created
     */
-    public function __construct($wc_customer, $context = 'order' | 'form' | 'quote') {
+    public function __construct($wc_customer, $context = 'order' | 'form' | 'quote') 
+    {
         parent::__construct();
         $this->api_headers =    parent::get_headers();
         $this->api_endpoint =   parent::get_endpoint_clients();
 
-        if($context == 'order') {
+        if($context == 'order') 
+        {
             $this->data = array(
                 'tipo_pessoa'   => 'PF',
                 'nome'          => $wc_customer->get_first_name() . ' ' . $wc_customer->get_last_name(),
@@ -100,7 +102,8 @@ class GCW_GC_Cliente extends GCW_GC_Api {
         }
     }
 
-    public function export() {
+    public function export() 
+    {
         if ($this->get_cliente_by_cpf_cnpj($this->data['cpf']) || $this->get_cliente_by_cpf_cnpj($this->data['cnpj'])) {
             return $this->id;
         }
@@ -123,7 +126,23 @@ class GCW_GC_Cliente extends GCW_GC_Api {
         }
     }
 
-    public function get_cliente_by_cpf_cnpj($cpf_cnpj) {
+    public function get_cliente_by_id($id) 
+    {
+        $body = wp_remote_retrieve_body(
+            wp_remote_get($this->api_endpoint . '?id=' . $id, $this->api_headers)
+        );
+
+        $body = json_decode($body, true);
+        
+        if($body['code'] == 200) {
+            return $body['data'];
+        } else {
+            return false;
+        }
+    }
+
+    public function get_cliente_by_cpf_cnpj($cpf_cnpj) 
+    {
 
         if ($cpf_cnpj == '')
             return false;

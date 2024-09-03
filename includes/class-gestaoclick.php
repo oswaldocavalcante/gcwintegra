@@ -74,16 +74,16 @@ class Gestaoclick
 		add_action('admin_menu', 				array($plugin_admin, 'add_admin_menu'));
 		add_action('admin_enqueue_scripts', 	array($plugin_admin, 'enqueue_scripts'));
 		add_filter('woocommerce_integrations', 	array($plugin_admin, 'add_woocommerce_integration'));
-		add_action('gestaoclick_update', 		array($plugin_admin, 'import_gestaoclick'));
+		add_action('gestaoclick_update', 		array($plugin_admin, 'import_all'));
 		
 		add_action('init', 						array($plugin_admin, 'register_quote_endpoint'));
 		add_action('init', 						array($plugin_admin, 'create_quote_post_type'));
 		add_action('display_post_states', 		array($plugin_admin, 'add_display_post_states'), 10, 2);
 
 		if (get_option('gcw-settings-export-orders') == 'yes') {
-			add_action('woocommerce_order_status_processing', array( $plugin_admin, 'export_order'));
+			add_action('woocommerce_order_status_processing', array($plugin_admin, 'export_order'));
 		} else {
-			remove_action('woocommerce_order_status_processing', 'export_order');
+			remove_action('woocommerce_order_status_processing', array($plugin_admin, 'export_order'));
 		}
 	}
 

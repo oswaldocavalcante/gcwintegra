@@ -1,7 +1,8 @@
 {
     "require": {
         "woocommerce/woocommerce": "^3.5",
-        "dompdf/dompdf": "^3.0"
+        "dompdf/dompdf": "^3.0",
+        "endroid/qr-code": "^5.0"
     },
     "config": {
         "allow-plugins": {

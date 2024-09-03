@@ -17,7 +17,8 @@ class GCW_WC_Integration extends WC_Integration {
     private $gc_situacoes_options = null;
     private $gc_categorias_options = null;
 
-    public function __construct() {
+    public function __construct() 
+    {
         $this->id = 'gestaoclick';
         $this->method_title = __('GestãoClick');
         $this->method_description = __('Integre o GestãoClick ao Woocommerce.', 'gestaoclick');
@@ -29,7 +30,8 @@ class GCW_WC_Integration extends WC_Integration {
         add_filter('cron_schedules', array($this, 'add_cron_interval'));
     }
 
-    public function init_form_fields() {
+    public function init_form_fields() 
+    {
         if( GCW_GC_Api::test_connection() ) {
             $gc_transportadoras = new GCW_GC_Transportadoras();
             $this->gc_transportadoras_options = $gc_transportadoras->get_options_for_settings();
@@ -113,7 +115,8 @@ class GCW_WC_Integration extends WC_Integration {
         );
     }
 
-    public function admin_options() {
+    public function admin_options() 
+    {
         update_option( 'gcw-api-access-token',              $this->settings['gcw-api-access-token'] );
         update_option( 'gcw-api-secret-access-token',       $this->settings['gcw-api-secret-access-token'] );
 
@@ -143,20 +146,26 @@ class GCW_WC_Integration extends WC_Integration {
         echo '</div>';
     }
 
-    public function add_cron_interval( $schedules ) { 
+    public function add_cron_interval( $schedules ) 
+    { 
         $schedules['fifteen_minutes'] = array(
             'interval' => 900,
             'display'  => __( 'Every Fifteen Minutes', 'gestaoclick' ), 
         );
+
         return $schedules;
     }
 
-	public function set_auto_imports( $auto_updates = 'no' ) {
-		if( $auto_updates == 'yes' ){
+	public function set_auto_imports( $auto_updates = 'no' ) 
+    {
+		if( $auto_updates == 'yes' )
+        {
 			if ( ! wp_next_scheduled( 'gestaoclick_update' ) ) {
 				wp_schedule_event( time(), 'fifteen_minutes', 'gestaoclick_update' );
 			}
-		} elseif ( wp_next_scheduled( 'gestaoclick_update' ) ) {
+		} 
+        elseif ( wp_next_scheduled( 'gestaoclick_update' ) ) 
+        {
 			$timestamp = wp_next_scheduled( 'gestaoclick_update' );
 			wp_unschedule_event( $timestamp, 'gestaoclick_update' );
 		}

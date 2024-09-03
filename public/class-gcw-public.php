@@ -43,6 +43,7 @@ class GCW_Public
 	function add_quote_query_vars($vars)
 	{
 		$vars[] = 'orcamento';
+
 		return $vars;
 	}
 
@@ -137,18 +138,14 @@ class GCW_Public
 		}
 
 		$product_id = isset($_GET['product_id']) ? intval($_GET['product_id']) : 0;
-		$quote_id = isset($_GET['quote_id']) ? intval($_GET['quote_id']) : 0;
+		$quote_id 	= isset($_GET['quote_id']) ? intval($_GET['quote_id']) : 0;
+		
+		$product 	= wc_get_product($product_id);
+		$parent_id 	= $product->is_type('variation') ? $product->get_parent_id() : null;
 
 		if (!$product_id || !$quote_id) {
 			wp_die('Parâmetros inválidos');
 		}
-
-		$product = wc_get_product($product_id);
-		$quote_items = get_post_meta($quote_id, 'items', true);
-		$item = array_filter($quote_items, function ($item) use ($product_id) {
-			return $item['product_id'] == $product_id;
-		});
-		$item = reset($item);
 
 		// Configurar cabeçalhos para exibir o PDF no navegador
 		header('Content-Type: application/pdf');
@@ -157,6 +154,7 @@ class GCW_Public
 		header('Pragma: public');
 
 		require_once(GCW_ABSPATH . 'vendor/autoload.php');
+		
 		$options = new Options();
 		$options->set('isHtml5ParserEnabled', true);
 		$options->set('isPhpEnabled', true);
@@ -170,6 +168,7 @@ class GCW_Public
 		$html = ob_get_clean();
 
 		$dompdf->loadHtml($html);
+		$dompdf->setPaper('A4', 'portrait');
 		$dompdf->render();
 		$dompdf->stream("ficha-tecnica.pdf", array("Attachment" => false));
 

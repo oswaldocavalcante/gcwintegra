@@ -46,7 +46,7 @@ class GCW_Admin
 		}
 	}
 
-	public function add_woocommerce_integration( $integrations ) 
+	public function add_woocommerce_integration( $integrations )
 	{
 		require_once plugin_dir_path(dirname(__FILE__)) . 'integrations/woocommerce/class-gcw-wc-integration.php';
 		$integrations[] = 'GCW_WC_Integration';
@@ -54,7 +54,7 @@ class GCW_Admin
 		return $integrations;
 	}	
 
-	public function is_woocommerce_active() 
+	public function is_woocommerce_active()
 	{
 		$active_plugins = (array) get_option( 'active_plugins', array() );
 
@@ -73,7 +73,7 @@ class GCW_Admin
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_scripts() 
+	public function enqueue_scripts()
 	{
 		wp_enqueue_style('gcw-admin', plugin_dir_url(__FILE__) . 'assets/css/gestaoclick-admin.css', array(), GCW_VERSION, 'all');
 		wp_enqueue_script( 'gcw-admin', plugin_dir_url( __FILE__ ) . 'assets/js/gestaoclick-admin.js', array( 'jquery' ), GCW_VERSION, false );
@@ -84,9 +84,11 @@ class GCW_Admin
 	 *
 	 * @since    1.0.0
 	 */
-	public function register_settings() {
+	public function register_settings()
+	{
 		register_setting('gcw_credentials', 'gcw-api-access-token', 				'string');
 		register_setting('gcw_credentials', 'gcw-api-secret-access-token', 			'string');
+
 		register_setting('gcw_settings', 	'gcw-settings-auto-imports', 			'boolean');
 		register_setting('gcw_settings', 	'gcw-settings-categories-selection', 	'array');
 		register_setting('gcw_settings', 	'gcw-settings-attributes-selection', 	'array');
@@ -101,7 +103,8 @@ class GCW_Admin
 	 *
 	 * @since    1.0.0
 	 */
-	public function add_admin_menu() {
+	public function add_admin_menu()
+	{
 		add_menu_page(
 			'GestãoClick',
 			'GestãoClick',
@@ -272,11 +275,10 @@ class GCW_Admin
 
 	/**
 	 * Execute the importations of categories and products by cron schdeduled event.
-	 * The execution can be setted at cPanel Cronjobs
 	 * 
 	 * @since    1.0.0
 	 */
-    public function import_gestaoclick()
+    public function import_all()
 	{
 		$this->categories = new GCW_WC_Categories();
 		$this->categories->import('all');

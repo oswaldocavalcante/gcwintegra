@@ -257,7 +257,7 @@ class GCW_Shortcode_Checkout
             'post_author' => $user_id
         ));
 
-        $response = $gc_orcamento->update('introducao', home_url('orcamentos/' . $gc_orcamento_codigo));
+        $gc_orcamento->update('introducao', 'Gerado pelo site: ' . home_url('orcamentos/' . $gc_orcamento_codigo));
 
         // Marcar armazena os dados do orçamento
         update_post_meta($quote_id, 'gc_cliente_id', $gc_cliente_id);
@@ -271,7 +271,7 @@ class GCW_Shortcode_Checkout
         update_post_meta($quote_id, 'items',    $this->session_quote_items);
 
         // Limpar os dados do orçamento armazenados na seção.
-        WC()->session->cleanup_sessions();
+        WC()->session->delete_session(get_current_user_id());
 
         wp_send_json_success(array(
             'message' => 'Orçamento salvo e enviado com sucesso.',
