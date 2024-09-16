@@ -203,20 +203,25 @@ class GCW_Shortcode_Checkout
         // Cria ou resgata o usuário logado
         if (is_user_logged_in()) {
             $user_id = get_current_user_id();
-        } else {
-            if (email_exists($this->input_email)) {
+        } 
+        else 
+        {
+            if (email_exists($this->input_email)) 
+            {
                 wp_send_json_error(array('message' => 'Este e-mail já está registrado. Faça login para concluir.'));
                 return;
             }
 
             $user_id = wp_create_user($this->input_email, wp_generate_password(), $this->input_email);
-            if (is_wp_error($user_id)) {
+            if (is_wp_error($user_id))
+            {
                 wp_send_json_error(array('message' => 'Erro ao criar o usuário. Tente novamente.'));
                 return;
             }
 
             // Atualiza os dados do usuário para o WordPress
-            wp_update_user(array(
+            wp_update_user(array
+            (
                 'ID'            => $user_id,
                 'first_name'    => $this->input_first_name,
                 'last_name'     => $this->input_last_name,
@@ -248,16 +253,16 @@ class GCW_Shortcode_Checkout
 
         $gc_orcamento = new GCW_GC_Orcamento($gc_cliente_id, $this->session_quote_items, $this->session_shipping_rate);
         $gc_orcamento_codigo = $gc_orcamento->export();
+        $gc_orcamento->update('introducao', 'Gerado pelo site: ' . home_url('orcamentos/' . $gc_orcamento_codigo));
 
         // Criar um novo post do tipo 'quote'
-        $quote_id = wp_insert_post(array(
+        $quote_id = wp_insert_post(array
+        (
             'post_title'  => $gc_orcamento_codigo,
             'post_status' => 'publish',
             'post_type'   => 'orcamento',
             'post_author' => $user_id
         ));
-
-        $gc_orcamento->update('introducao', 'Gerado pelo site: ' . home_url('orcamentos/' . $gc_orcamento_codigo));
 
         // Marcar armazena os dados do orçamento
         update_post_meta($quote_id, 'gc_cliente_id', $gc_cliente_id);
@@ -273,9 +278,10 @@ class GCW_Shortcode_Checkout
         // Limpar os dados do orçamento armazenados na seção.
         WC()->session->delete_session(get_current_user_id());
 
-        wp_send_json_success(array(
-            'message' => 'Orçamento salvo e enviado com sucesso.',
-            'redirect_url' => get_permalink($quote_id)
+        wp_send_json_success(array
+        (
+            'message'       => 'Orçamento salvo e enviado com sucesso.',
+            'redirect_url'  => get_permalink($quote_id)
         ));
     }
 }

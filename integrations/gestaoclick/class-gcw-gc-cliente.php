@@ -2,8 +2,8 @@
 
 require_once 'class-gcw-gc-api.php';
 
-class GCW_GC_Cliente extends GCW_GC_Api {
-
+class GCW_GC_Cliente extends GCW_GC_Api
+{
     private $id = null;
 
     private $api_headers;
@@ -13,22 +13,27 @@ class GCW_GC_Cliente extends GCW_GC_Api {
      * Stores client data.
      * @var array
      */
-    private $data = array(
+    private $data = array
+    (
         'tipo_pessoa'   => '',
         'nome'          => '',
         'cpf'           => '',
         'cnpj'          => '',
         'email'         => '',
         'telefone'      => '',
-        'contatos'      => array(
-            'contato'   => array(
+        'contatos'      => array
+        (
+            'contato'   => array
+            (
                 'nome'          => '',
                 'cargo'         => '',
                 'observacao'    => ''
             )
         ),
-        'enderecos'     => array(
-            'endereco'  => array(
+        'enderecos'     => array
+        (
+            'endereco'  => array
+            (
                 'cep'           => '',
                 'logradouro'    => '',
                 'numero'        => '',
@@ -53,14 +58,17 @@ class GCW_GC_Cliente extends GCW_GC_Api {
 
         if($context == 'order') 
         {
-            $this->data = array(
+            $this->data = array
+            (
                 'tipo_pessoa'   => 'PF',
                 'nome'          => $wc_customer->get_first_name() . ' ' . $wc_customer->get_last_name(),
                 'cpf'           => $wc_customer->get_meta('billing_cpf'),
                 'email'         => $wc_customer->get_email(),
                 'telefone'      => $wc_customer->get_billing_phone(),
-                'enderecos'     => array(
-                    'endereco'  => array(
+                'enderecos'     => array
+                (
+                    'endereco'  => array
+                    (
                         'cep'           => $wc_customer->get_billing_postcode(),
                         'logradouro'    => $wc_customer->get_billing_address_1(),
                         'numero'        => $wc_customer->get_meta('billing_number'),
@@ -72,22 +80,29 @@ class GCW_GC_Cliente extends GCW_GC_Api {
                     )
                 ),
             );
-        } elseif ($context == 'quote') {
-            $this->data = array(
+        } 
+        elseif ($context == 'quote') 
+        {
+            $this->data = array
+            (
                 'tipo_pessoa'   => 'PJ',
                 'nome'          => $wc_customer->get_billing_company(),
                 'cnpj'          => $wc_customer->get_meta('billing_cnpj'),
                 'email'         => $wc_customer->get_billing_email(),
                 'telefone'      => $wc_customer->get_billing_phone(),
-                'contatos'      => array(
-                    'contato'   => array(
+                'contatos'      => array
+                (
+                    'contato'   => array
+                    (
                         'nome'          => $wc_customer->get_billing_first_name() . $wc_customer->get_billing_last_name(),
                         'contato'       => $wc_customer->get_billing_phone(),
                         'observacao'    => $wc_customer->get_billing_email(),
                     )
                 ),
-                'enderecos'     => array(
-                    'endereco'  => array(
+                'enderecos'     => array
+                (
+                    'endereco'  => array
+                    (
                         'cep'           => $wc_customer->get_billing_postcode(),
                         'logradouro'    => $wc_customer->get_billing_address_1(),
                         'complemento'   => $wc_customer->get_billing_address_2(),
@@ -108,9 +123,11 @@ class GCW_GC_Cliente extends GCW_GC_Api {
             return $this->id;
         }
 
-        $response = wp_remote_post( 
+        $response = wp_remote_post
+        ( 
             $this->api_endpoint, 
-            array_merge(
+            array_merge
+            (
                 $this->api_headers,
                 array( 'body' => wp_json_encode($this->data) ),
             ) 
@@ -118,10 +135,12 @@ class GCW_GC_Cliente extends GCW_GC_Api {
 
         $response_body = json_decode(wp_remote_retrieve_body( $response ), true);
 
-        if( $response_body['code'] == 200 ) {
+        if( $response_body['code'] == 200 ) 
+        {
             $this->id = $response_body['data']['id'];
             return $this->id;
-        } else {
+        } 
+        else {
             return false;
         }
     }
@@ -143,9 +162,7 @@ class GCW_GC_Cliente extends GCW_GC_Api {
 
     public function get_cliente_by_cpf_cnpj($cpf_cnpj) 
     {
-
-        if ($cpf_cnpj == '')
-            return false;
+        if ($cpf_cnpj == '') return false;
 
         $body = wp_remote_retrieve_body(
             wp_remote_get($this->api_endpoint . '?cpf_cnpj=' . $cpf_cnpj, $this->api_headers)
@@ -153,10 +170,12 @@ class GCW_GC_Cliente extends GCW_GC_Api {
 
         $body = json_decode($body, true);
 
-        if (is_array($body['data'])) {
+        if (is_array($body['data'])) 
+        {
             $this->id = $body['data'][0]['id'];
             return $body['data'][0];
-        } else {
+        } 
+        else {
             return false;
         }
     }

@@ -100,7 +100,8 @@ class GCW_GC_Orcamento extends GCW_GC_Api {
             $this->url          = 'https://gestaoclick.com/proposta/' . $this->hash;
 
             return $this->codigo;
-        } else {
+        } 
+        else {
             return false;
         }
     }

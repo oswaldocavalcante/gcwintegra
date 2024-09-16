@@ -112,6 +112,18 @@ class GCW_WC_Integration extends WC_Integration {
                 'description'   => __( 'A transportadora padrão para ser usada em novas vendas pagas exportadas ao GestaoClick.', 'gestaoclick' ),
                 'options'       => $this->gc_transportadoras_options,
             ),
+            'gcw-settings-quote-section' => array(
+                'title'         => __('Orçamentos', 'gestaoclick'),
+                'type'          => 'title',
+                'description'   => __('Configure o funcionamento de orçamentos que serão enviados para o GestãoClick.'),
+            ),
+            'gcw-settings-quote-enabler' => array(
+                'title'         => __('Habilitar orçamentos', 'gestaoclick'),
+                'type'          => 'checkbox',
+                'label'         => __('Clique para habilitar o módulo de orçamentos.', 'gestaoclick'),
+                'default'       => 'no',
+                'description'   => __('Produtos configurados para não ter controle de estoque no GestãoClick e importados para o WooCommerce, serão tratados como produtos para orçamentos.', 'gestaoclick'),
+            ),
         );
     }
 
@@ -127,7 +139,6 @@ class GCW_WC_Integration extends WC_Integration {
         update_option( 'gcw-settings-export-orders',        $this->settings['gcw-settings-export-orders'] );
         update_option( 'gcw-settings-export-trasportadora', $this->settings['gcw-settings-export-trasportadora'] );
         update_option( 'gcw-settings-export-situacao',      $this->settings['gcw-settings-export-situacao'] );
-
 
         echo '<div id="gcw_settings">';
         echo '<h2 class="gcw-integration-title">' . esc_html( $this->get_method_title() ) . '</h2>';
@@ -148,7 +159,8 @@ class GCW_WC_Integration extends WC_Integration {
 
     public function add_cron_interval( $schedules ) 
     { 
-        $schedules['fifteen_minutes'] = array(
+        $schedules['fifteen_minutes'] = array
+        (
             'interval' => 900,
             'display'  => __( 'Every Fifteen Minutes', 'gestaoclick' ), 
         );

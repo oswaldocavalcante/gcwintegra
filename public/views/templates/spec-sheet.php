@@ -54,16 +54,13 @@ $printing_logo_url_back  = isset($customizations['printing_logos']['back']) ? $c
 $printing_logo_qr_code_front = create_qr_code($printing_logo_url_front);
 $printing_logo_qr_code_back  = create_qr_code($printing_logo_url_back);
 
-function create_qr_code($url, $size = 70, $margin = 2)
+function create_qr_code($url, $size = 70, $margin = 5)
 {
-    if (!$url)
-    {
+    if (!$url)  {
         return null;
     }
 
-    $qr_code = QrCode::create($url)
-        ->setSize($size)
-        ->setMargin($margin);
+    $qr_code = QrCode::create($url)->setSize($size)->setMargin($margin);
     $writer = new PngWriter();
     $result = $writer->write($qr_code);
 
@@ -164,6 +161,11 @@ function create_qr_code($url, $size = 70, $margin = 2)
         }
 
         .image_wrapper .product-image {
+            width: 100%;
+            height: auto;
+        }
+
+        .qr-code {
             width: 100%;
             height: auto;
         }
@@ -335,7 +337,7 @@ function create_qr_code($url, $size = 70, $margin = 2)
                     <tr>
                         <?php if ($printing_logo_qr_code_back): ?>
                             <td>
-                                <img src="<?php echo $printing_logo_qr_code_back; ?>" />
+                                <img class="qr-code" src="<?php echo $printing_logo_qr_code_back; ?>" />
                             </td>
                         <?php endif; ?>
                         <td>
@@ -390,37 +392,32 @@ function create_qr_code($url, $size = 70, $margin = 2)
         </tr>
         <?php
 
-        if (is_array($customizations['layers'])):
-
-            foreach ($customizations['layers'] as $key => $layer):
-
-                $customization_layer = array_filter($pcw_layers, function ($pcw_layer) use ($key)
-                {
+        if (is_array($customizations['layers']))
+        :
+            foreach ($customizations['layers'] as $key => $layer)
+            :
+                $customization_layer = array_filter($pcw_layers, function ($pcw_layer) use ($key) {
                     return $pcw_layer['id'] == $key;
                 });
                 $customization_layer = reset($customization_layer);
 
-                foreach ($layer['options'] as $option_key => $option) :
-
-                    $customization_option = array_filter($customization_layer['options'], function ($pcw_layer_option) use ($option_key)
-                    {
+                foreach ($layer['options'] as $option_key => $option)
+                :
+                    $customization_option = array_filter($customization_layer['options'], function ($pcw_layer_option) use ($option_key) {
                         return $pcw_layer_option['id'] == $option_key;
                     });
                     $customization_option = reset($customization_option);
 
-                    foreach ($customization_option['colors'] as $color)
-                    {
-                        $customization_color = array_filter($customization_option['colors'], function ($pcw_option_color) use ($color)
-                        {
-                            return $pcw_option_color['id'] == $color['id'];
-                        });
-                        $customization_color = reset($customization_color);
+                    $pcw_option_colors = $customization_option['colors'] ? $customization_option['colors'] : get_option('pcw-settings-colors'); //Se o item customizado não tiver opções de cor, obtenha as cores padrão
+                    $customization_color = array_filter($pcw_option_colors, function ($pcw_option_color) use ($option) {
+                        return $pcw_option_color['id'] == $option['color'];
+                    });
+                    $customization_color = reset($customization_color);
 
-                        $color_name = $customization_color['name'];
-                        $color_value = $customization_color['value'];
-                    }
+                    $color_name = $customization_color['name'];
+                    $color_value = $customization_color['value'];
 
-        ?>
+                    ?>
                     <tr>
                         <td>
                             <p><?php echo $customization_number++; ?></p>
@@ -435,7 +432,7 @@ function create_qr_code($url, $size = 70, $margin = 2)
                             <p><?php echo ($color_name ? $color_name : '') . ' ' . ($color_value ? '(' . $color_value . ')' : ''); ?></p>
                         </td>
                     </tr>
-        <?php
+                    <?php
                 endforeach;
             endforeach;
         endif;
