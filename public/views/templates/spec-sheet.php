@@ -230,7 +230,7 @@ function create_qr_code($url, $size = 70, $margin = 5)
     <p><br /></p>
 
     <div class="textbox">
-        <p id="title">FICHA TÉCNICA – ITEM <?php echo $orcamento_codigo . '.' . $item_number; ?></p>
+        <p id="title">FICHA TÉCNICA <?php echo $orcamento_codigo . '.' . $item_number; ?></p>
     </div>
 
     <p><br /></p>
