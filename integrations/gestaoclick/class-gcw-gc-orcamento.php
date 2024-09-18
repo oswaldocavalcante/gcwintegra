@@ -50,8 +50,8 @@ class GCW_GC_Orcamento extends GCW_GC_Api {
         foreach ($wc_items as $wc_item) 
         {
             $wc_product     = wc_get_product($wc_item['product_id']);
-            $customizations = $wc_item['customizations'];
             $quantity       = $wc_item['quantity'];
+            $customizations_cost = $wc_item['customizations']['cost'] ? $wc_item['customizations']['cost'] : 0;
 
             if ($wc_product->get_parent_id())
             {
@@ -63,7 +63,7 @@ class GCW_GC_Orcamento extends GCW_GC_Api {
                         'produto_id'    => $gc_product_id,
                         'variacao_id'   => $gc_variation_id,
                         'quantidade'    => $quantity,
-                        'valor_venda'   => $wc_product->get_price() + $customizations['cost'],
+                        'valor_venda'   => $wc_product->get_price() + $customizations_cost,
                     )
                 );
             } 
@@ -74,7 +74,7 @@ class GCW_GC_Orcamento extends GCW_GC_Api {
                     'produto' => array(
                         'produto_id'    => $gc_product_id,
                         'quantidade'    => $quantity,
-                        'valor_venda'   => $wc_product->get_price() + $customizations['cost'],
+                        'valor_venda'   => $wc_product->get_price() + $customizations_cost,
                     )
                 );
             }

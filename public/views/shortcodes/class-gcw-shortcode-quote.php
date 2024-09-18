@@ -36,7 +36,7 @@ class GCW_Shortcode_Quote
         ?>
             <div id="gcw-quote-container">
 
-                <div id="gcw_quote_forms_container">
+                <div id="gcw-quote-forms-container">
                     <form id="gcw-quote-form" class="woocommerce-cart-form" method="post">
                         <table id="gcw-quote-woocommerce-table" class="shop_table shop_table_responsive cart woocommerce-cart-form__contents" cellspacing="0">
 
@@ -178,7 +178,7 @@ class GCW_Shortcode_Quote
                     </form>
                 </div>
 
-                <div id="gcw-quote-totals">
+                <div id="gcw-quote-totals-container">
 
                     <h2>Total do orçamento</h2>
                     <div id="gcw_quote_totals_subtotal" class="gcw_quote_totals_section gcw_quote_space_between">

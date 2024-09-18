@@ -41,124 +41,131 @@ if (have_posts()) :
             $gc_url         = get_post_meta($quote_id, 'gc_url', true);
 ?>
 
-            <div id="gcw_quote_forms_container">
+            <div id="gcw-quote-container">
 
-                <table id="gcw-quote-woocommerce-table" class="shop_table shop_table_responsive cart woocommerce-cart-form__contents" cellspacing="0">
+                <div id="gcw-quote-totals-container" style="width: fit-content;">
 
-                    <thead>
-                        <tr>
-                            <th class="product-thumbnail"> <span class="screen-reader-text"><?php esc_html_e('Thumbnail image', 'woocommerce'); ?></span></th>
-                            <th class="product-name"> <?php esc_html_e('Product', 'woocommerce'); ?></th>
-                            <th class="product-quantity"> <?php esc_html_e('Quantity', 'woocommerce'); ?></th>
-                            <?php if (current_user_can('manage_options')) : ?>
-                                <th>Ações</th>
-                            <?php endif; ?>
-                        </tr>
-                    </thead>
+                    <h2>Orçamento <?php echo esc_attr($gc_codigo); ?></h2>
 
-                    <tbody <?php echo esc_html('id=gcw-quote-tbody'); ?>>
-                        <?php
-                        foreach ($quote_items as $quote_item_key => $quote_item) :
+                    <section class="gcw_quote_totals_section gcw_quote_space_between">
+                        <span><?php echo esc_html('Data', 'gestaoclick'); ?></span>
+                        <?php echo get_the_date(); ?>
+                    </section>
 
-                            $product_id         = $quote_item['product_id'];
-                            $_product           = wc_get_product($product_id);
-                            $product_name       = get_the_title($product_id);
-                            $product_permalink  = $_product->get_permalink($quote_item);
-                            $customizations     = $quote_item['customizations'];
+                    <section id="gcw_quote_totals_total" class="gcw_quote_totals_section gcw_quote_space_between">
+                        <span><?php echo esc_html('Situação', 'gestaoclick'); ?></span>
+                        <?php echo esc_attr($status); ?>
+                    </section>
 
-                        ?>
-                            <tr <?php echo esc_html(sprintf('id=gcw-quote-row-item-%s', $product_id)); ?>>
+                    <section id="gcw_quote_shipping_address" class="gcw_quote_totals_section">
+                        <div class="gcw_quote_space_between">
+                            <span><?php echo esc_html('Envio', 'gestaoclick'); ?></span>
+                            <?php echo esc_attr($tracking); ?>
+                        </div>
+                        <p><?php echo 'Endereço de envio'; ?></p>
+                    </section>
 
-                                <td class="product-thumbnail">
-                                    <?php
+                    <section class="gcw_button_wrapper">
+                        <a href="<?php echo esc_url($gc_url); ?>" class="gcw_button" target="_blank">Imprimir orçamento</a>
+                    </section>
 
-                                    if (is_array($customizations) && isset($customizations['images']))
-                                    {
-                                        $front_image = $customizations['images']['front'] ?? null;
-                                        $back_image = $customizations['images']['back'] ?? null;
+                </div>
 
-                                        echo '<img src="' . $front_image . '" alt="Front Image">';
-                                        echo '<img src="' . $back_image . '" alt="Back Image">';
-                                    }
-                                    else
-                                    {
-                                        $thumbnail = apply_filters('quote_item_thumbnail', $_product->get_image(), $quote_item, $quote_item_key);
+                <div id="gcw-quote-forms-container">
 
-                                        if (!$product_permalink) {
-                                            echo $thumbnail; // PHPCS: XSS ok.
-                                        }
-                                        else {
-                                            printf('<a href="%s">%s</a>', esc_url($product_permalink), $thumbnail); // PHPCS: XSS ok.
-                                        }
-                                    }
+                    <table id="gcw-quote-woocommerce-table" class="shop_table shop_table_responsive cart woocommerce-cart-form__contents" cellspacing="0">
 
-                                    ?>
-                                </td>
-
-                                <td class="product-name" data-title="<?php esc_attr_e('Product', 'woocommerce'); ?>">
-                                    <?php
-
-                                    if (!$product_permalink) {
-                                        echo wp_kses_post($product_name . '&nbsp;');
-                                    }
-                                    else {
-                                        echo wp_kses_post(sprintf('<a href="%s">%s</a>', esc_url($product_permalink), $_product->get_name()));
-                                    }
-
-                                    ?>
-                                </td>
-
-                                <td class="product-quantity" data-title="<?php esc_attr_e('Quantity', 'woocommerce'); ?>">
-                                    <?php echo $quote_item['quantity'] ?>
-                                </td>
-
+                        <thead>
+                            <tr>
+                                <th class="product-thumbnail"> <span class="screen-reader-text"><?php esc_html_e('Thumbnail image', 'woocommerce'); ?></span></th>
+                                <th class="product-name"> <?php esc_html_e('Product', 'woocommerce'); ?></th>
+                                <th class="product-quantity"> <?php esc_html_e('Quantity', 'woocommerce'); ?></th>
                                 <?php if (current_user_can('manage_options')) : ?>
-                                    <td>
-                                        <a href="<?php echo '#'; ?>" class="gcw_button" id="gcw_spec_sheet" data-product-id="<?php echo $product_id; ?>" data-quote-id="<?php echo $quote_id; ?>">Ficha técnica</a>
-                                    </td>
+                                    <th>Ações</th>
                                 <?php endif; ?>
-
                             </tr>
-                        <?php
+                        </thead>
 
-                        endforeach;
-                        ?>
+                        <tbody <?php echo esc_html('id=gcw-quote-tbody'); ?>>
+                            <?php
+                            foreach ($quote_items as $quote_item_key => $quote_item) :
 
-                    </tbody>
-                </table>
+                                $product_id         = $quote_item['product_id'];
+                                $_product           = wc_get_product($product_id);
+                                $product_name       = get_the_title($product_id);
+                                $product_permalink  = $_product->get_permalink($quote_item);
+                                $customizations     = $quote_item['customizations'];
 
-            </div>
+                            ?>
+                                <tr <?php echo esc_html(sprintf('id=gcw-quote-row-item-%s', $product_id)); ?>>
 
-            <div id="gcw-quote-totals" style="width: fit-content;">
+                                    <td class="product-thumbnail">
+                                        <?php
 
-                <h2>Orçamento <?php echo esc_attr($gc_codigo); ?></h2>
+                                        if (is_array($customizations) && isset($customizations['images']))
+                                        {
+                                            $front_image = $customizations['images']['front'] ?? null;
+                                            $back_image = $customizations['images']['back'] ?? null;
 
-                <section class="gcw_quote_totals_section gcw_quote_space_between">
-                    <span><?php echo esc_html('Data', 'gestaoclick'); ?></span>
-                    <?php echo get_the_date(); ?>
-                </section>
+                                            echo '<img src="' . $front_image . '" alt="Front Image">';
+                                            echo '<img src="' . $back_image . '" alt="Back Image">';
+                                        }
+                                        else
+                                        {
+                                            $thumbnail = apply_filters('quote_item_thumbnail', $_product->get_image(), $quote_item, $quote_item_key);
 
-                <section id="gcw_quote_totals_total" class="gcw_quote_totals_section gcw_quote_space_between">
-                    <span><?php echo esc_html('Situação', 'gestaoclick'); ?></span>
-                    <?php echo esc_attr($status); ?>
-                </section>
+                                            if (!$product_permalink)
+                                            {
+                                                echo $thumbnail; // PHPCS: XSS ok.
+                                            }
+                                            else
+                                            {
+                                                printf('<a href="%s">%s</a>', esc_url($product_permalink), $thumbnail); // PHPCS: XSS ok.
+                                            }
+                                        }
 
-                <section id="gcw_quote_shipping_address" class="gcw_quote_totals_section">
-                    <div class="gcw_quote_space_between">
-                        <span><?php echo esc_html('Envio', 'gestaoclick'); ?></span>
-                        <?php echo esc_attr($tracking); ?>
-                    </div>
-                    <p><?php echo 'Endereço de envio'; ?></p>
-                </section>
+                                        ?>
+                                    </td>
 
-                <section class="gcw_button_wrapper">
-                    <a href="<?php echo esc_url($gc_url); ?>" class="gcw_button" target="_blank">Imprimir orçamento</a>
-                </section>
+                                    <td class="product-name" data-title="<?php esc_attr_e('Product', 'woocommerce'); ?>">
+                                        <?php
 
+                                        if (!$product_permalink)
+                                        {
+                                            echo wp_kses_post($product_name . '&nbsp;');
+                                        }
+                                        else
+                                        {
+                                            echo wp_kses_post(sprintf('<a href="%s">%s</a>', esc_url($product_permalink), $_product->get_name()));
+                                        }
+
+                                        ?>
+                                    </td>
+
+                                    <td class="product-quantity" data-title="<?php esc_attr_e('Quantity', 'woocommerce'); ?>">
+                                        <?php echo $quote_item['quantity'] ?>
+                                    </td>
+
+                                    <?php if (current_user_can('manage_options')) : ?>
+                                        <td>
+                                            <a href="<?php echo '#'; ?>" class="gcw_button" id="gcw_spec_sheet" data-product-id="<?php echo $product_id; ?>" data-quote-id="<?php echo $quote_id; ?>">Ficha técnica</a>
+                                        </td>
+                                    <?php endif; ?>
+
+                                </tr>
+                            <?php
+
+                            endforeach;
+                            ?>
+
+                        </tbody>
+                    </table>
+
+                </div>
+                
             </div>
 
 <?php
-
         else :
             echo '<p>Nenhum item encontrado neste orçamento.</p>';
         endif;

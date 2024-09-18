@@ -76,7 +76,7 @@ class GCW_Shortcode_Checkout
         ?>
         <form id="gcw-quote-container">
 
-            <div id="gcw_quote_forms_container">
+            <div id="gcw-quote-forms-container">
 
                 <h2><?php echo esc_html(__("Empresa", "gestaoclick")); ?></h2>
                 <section id="gcw-section-institution" class="gcw-quote-section">
@@ -124,7 +124,7 @@ class GCW_Shortcode_Checkout
 
             </div>
 
-            <div id="gcw-quote-totals">
+            <div id="gcw-quote-totals-container">
 
                 <h2>Total do orçamento</h2>
 
@@ -250,9 +250,20 @@ class GCW_Shortcode_Checkout
 
         $gc_cliente = new GCW_GC_Cliente($customer, 'quote');
         $gc_cliente_id = $gc_cliente->export();
+        if (!$gc_cliente_id)
+        {
+            wp_send_json_error(array('message' => 'Erro ao exportar o usuário. Tente novamente.'));
+            return;
+        }
 
         $gc_orcamento = new GCW_GC_Orcamento($gc_cliente_id, $this->session_quote_items, $this->session_shipping_rate);
         $gc_orcamento_codigo = $gc_orcamento->export();
+        if (!$gc_orcamento_codigo)
+        {
+            wp_send_json_error(array('message' => 'Erro ao exportar o orçamento. Tente novamente.'));
+            return;
+        }
+
         $gc_orcamento->update('introducao', 'Gerado pelo site: ' . home_url('orcamentos/' . $gc_orcamento_codigo));
 
         // Criar um novo post do tipo 'quote'
