@@ -85,7 +85,8 @@ class GCW_GC_Orcamento extends GCW_GC_Api {
 
     public function export()
     {
-        $response = wp_remote_post(
+        $response = wp_remote_post
+        (
             $this->api_endpoint,
             array_merge($this->api_headers, ["body" => wp_json_encode($this->data)])
         );

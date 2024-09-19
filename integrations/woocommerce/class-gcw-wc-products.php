@@ -31,14 +31,17 @@ class GCW_WC_Products extends GCW_GC_Api {
 
         do 
         {
-            $body = wp_remote_retrieve_body( 
+            $response = wp_remote_retrieve_body( 
                 wp_remote_get( $this->api_endpoint . '?pagina=' . $proxima_pagina, $this->api_headers )
             );
 
-            $body_array = json_decode($body, true);
-            $proxima_pagina = $body_array['meta']['proxima_pagina'];
-
-            $products = array_merge( $products, $body_array['data'] );
+            $response = json_decode($response, true);
+            
+            if(is_array($response) && $response['code'] == 200)
+            {
+                $proxima_pagina = $response['meta']['proxima_pagina'];
+                $products = array_merge($products, $response['data']);
+            }
         } 
         while($proxima_pagina != null);
 
@@ -180,7 +183,7 @@ class GCW_WC_Products extends GCW_GC_Api {
         foreach( $variations as $variation ) {
             array_push( $options, $variation['variacao']['nome'] );
         }
-        
+
         $attribute->set_options($options);
 
         return $attribute;

@@ -34,14 +34,17 @@ class GCW_WC_Categories extends GCW_GC_Api {
 
         do 
         {
-            $body = wp_remote_retrieve_body( 
+            $response = wp_remote_retrieve_body( 
                 wp_remote_get( $this->api_endpoint . '?pagina=' . $proxima_pagina, $this->api_headers )
             );
 
-            $body_array = json_decode($body, true);
-            $proxima_pagina = $body_array['meta']['proxima_pagina'];
+            $response = json_decode($response, true);
 
-            $categories = array_merge( $categories, $body_array['data'] );
+            if(is_array($response) && $response['code'] == 200)
+            {
+                $proxima_pagina = $response['meta']['proxima_pagina'];
+                $categories = array_merge($categories,$response['data']);
+            }
         } 
         while ( $proxima_pagina != null );
 

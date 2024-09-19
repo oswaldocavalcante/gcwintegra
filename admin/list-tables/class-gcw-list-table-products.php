@@ -113,7 +113,7 @@ class GCW_List_Table_Products extends WP_List_Table {
         return ($order === 'asc') ? $result : -$result;
     }
 
-    public function prepare_items() 
+    public function prepare_items()
     {
         $products = new GCW_WC_Products();
         $this->table_data = $products->fetch_api();

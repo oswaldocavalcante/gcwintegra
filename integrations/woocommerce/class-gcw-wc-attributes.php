@@ -17,7 +17,8 @@ class GCW_WC_Attributes extends GCW_GC_Api {
     private $api_endpoint;
     private $api_headers;
 
-    public function __construct() {
+    public function __construct() 
+    {
         parent::__construct();
         $this->api_endpoint = parent::get_endpoint_attributes();
         $this->api_headers =  parent::get_headers();
@@ -25,23 +26,28 @@ class GCW_WC_Attributes extends GCW_GC_Api {
         add_filter( 'gestaoclick_import_attributes', array( $this, 'import' ) );
     }
 
-    public function fetch_api() {
+    public function fetch_api() 
+    {
         $attributes = [];
         $proxima_pagina = 1;
 
-        do {
-            $body = wp_remote_retrieve_body( 
+        do
+        {
+            $response = wp_remote_retrieve_body( 
                 wp_remote_get( $this->api_endpoint . '?pagina=' . $proxima_pagina, $this->api_headers )
             );
 
-            $body_array = json_decode($body, true);
-            $proxima_pagina = $body_array['meta']['proxima_pagina'];
+            $response = json_decode($response, true);
 
-            $attributes = array_merge( $attributes, $body_array['data'] );
+            if(is_array($response) && $response['code'] == 200)
+            {
+                $proxima_pagina = $response['meta']['proxima_pagina'];
+                $attributes = array_merge($attributes, $response['data']);
+            }
+        } 
+        while($proxima_pagina != null);
 
-        } while ( $proxima_pagina != null );
-
-        update_option( 'gestaoclick-attributes', $attributes );
+        return $attributes;
     }
 
     // public function import( $attributes_ids ) {
