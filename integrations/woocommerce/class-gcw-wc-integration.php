@@ -32,7 +32,8 @@ class GCW_WC_Integration extends WC_Integration {
 
     public function init_form_fields() 
     {
-        if( GCW_GC_Api::test_connection() ) {
+        if( GCW_GC_Api::test_connection() ) 
+        {
             $gc_transportadoras = new GCW_GC_Transportadoras();
             $this->gc_transportadoras_options = $gc_transportadoras->get_options_for_settings();
 
@@ -43,81 +44,95 @@ class GCW_WC_Integration extends WC_Integration {
             $this->gc_categorias_options = $gc_categorias->get_options_for_settings();
         }
 
-        $this->form_fields = array(
-            'gcw-api-credentials-section' => array(
+        $this->form_fields = array
+        (
+            'gcw-api-credentials-section' => array
+            (
                 'title'         => __( 'Credenciais de acesso da API', 'gestaoclick' ),
                 'type'          => 'title',
                 'description'   => sprintf(__('Veja como obter suas credenciais em <a href="https://gestaoclick.com/integracao_api/configuracoes/gerar_token" target="blank">%s</a>', 'gestaoclick'), 'https://gestaoclick.com/integracao_api/configuracoes/gerar_token'),
             ),
-            'gcw-api-access-token' => array(
+            'gcw-api-access-token' => array
+            (
                 'title'       	=> __( 'Access Token', 'gestaoclick' ),
                 'type'        	=> 'text',
                 'description' 	=> __( 'Seu Access Token das configurações de API do GestãoClick.', 'gestaoclick' ),
                 'default'     	=> '',
             ),
-            'gcw-api-secret-access-token' => array(
+            'gcw-api-secret-access-token' => array
+            (
                 'title'       	=> __( 'Secret Access Token', 'gestaoclick' ),
                 'type'        	=> 'text',
                 'description' 	=> __('Seu Secret Access Token das configurações de API do GestãoClick.', 'gestaoclick' ),
                 'default'     	=> '',
             ),
-            'gcw-settings-imports-section' => array(
+            'gcw-settings-imports-section' => array
+            (
                 'title'         => __( 'Importações', 'gestaoclick' ),
                 'type'          => 'title',
                 'description'   => __( 'Configure como realizar importações para o WooCommerce.' ),
             ),
-            'gcw-settings-auto-imports' => array(
+            'gcw-settings-auto-imports' => array
+            (
                 'title'         => __( 'Auto-importar', 'gestaoclick' ),
                 'type'          => 'checkbox',
                 'label'         => __( 'Habilitar auto-importação', 'gestaoclick' ),
                 'default'       => 'no',
                 'description'   => __( 'Habilite para sincronizar periodicamente (a cada 15 minutos) o WooCommerce com o GestãoClick.', 'gestaoclick' ),
             ),
-            'gcw-settings-categories-selection' => array(
+            'gcw-settings-categories-selection' => array
+            (
                 'title'         => __( 'Seleção de Categorias', 'gestaoclick' ),
                 'type'          => 'multiselect',
                 'description'   => __( 'Selecione as categorias para importar seus produtos do GestãoClick.', 'gestaoclick' ),
                 'options'       => $this->gc_categorias_options,
                 'css' => 'height: 300px;',
             ),
-            'gcw-settings-products-blacklist' => array(
+            'gcw-settings-products-blacklist' => array
+            (
                 'title'         => __( 'Produtos proibidos', 'gestaoclick' ),
                 'type'          => 'textarea',
                 'placeholder'   => '2012254018005...',
                 'description'   => __( 'Lista de códigos de produtos para não importar do GestãoClick (um código de produto por linha).', 'gestaoclick' ),
             ),
-            'gcw-settings-exports-section' => array(
+            'gcw-settings-exports-section' => array
+            (
                 'title'         => __( 'Exportações', 'gestaoclick' ),
                 'type'          => 'title',
                 'description'   => __('Configure como realizar exportações para o GestãoClick.' ),
             ),
-            'gcw-settings-export-orders' => array(
+            'gcw-settings-export-orders' => array
+            (
                 'title'         => __( 'Auto-exportar vendas', 'gestaoclick' ),
                 'type'          => 'checkbox',
                 'label'         => __( 'Habilitar auto-exportar vendas', 'gestaoclick' ),
                 'default'       => 'no',
                 'description'   => __( 'Sempre exportar novas vendas pagas e seus respectivos clientes ao GestãoClick.', 'gestaoclick' ),
             ),
-            'gcw-settings-export-situacao' => array(
+            'gcw-settings-export-situacao' => array
+            (
                 'title'         => __('Situação padrão ao exportar vendas ao GestãoClick', 'gestaoclick'),
                 'type'          => 'select',
                 'label'         => __('Selecione a situação padrão para novas vendas exportadas', 'gestaoclick'),
                 'description'   => __('A situação padrão para ser usada em novas vendas pagas exportadas para o GestaoClick.', 'gestaoclick'),
                 'options'       => $this->gc_situacoes_options,
             ),
-            'gcw-settings-export-trasportadora' => array(
+            'gcw-settings-export-trasportadora' => array
+            (
                 'title'         => __( 'Transportadora padrão ao exportar vendas ao GestãoClick', 'gestaoclick' ),
                 'type'          => 'select',
                 'label'         => __( 'Selecione a transportadora padrão para novas vendas exportadas', 'gestaoclick' ),
                 'description'   => __( 'A transportadora padrão para ser usada em novas vendas pagas exportadas ao GestaoClick.', 'gestaoclick' ),
                 'options'       => $this->gc_transportadoras_options,
             ),
-            'gcw-settings-quote-section' => array(
+            'gcw-settings-quote-section' => array
+            (
                 'title'         => __('Orçamentos', 'gestaoclick'),
                 'type'          => 'title',
                 'description'   => __('Configure o funcionamento de orçamentos que serão enviados para o GestãoClick.'),
             ),
-            'gcw-settings-quote-enabler' => array(
+            'gcw-settings-quote-enabler' => array
+            (
                 'title'         => __('Habilitar orçamentos', 'gestaoclick'),
                 'type'          => 'checkbox',
                 'label'         => __('Clique para habilitar o módulo de orçamentos.', 'gestaoclick'),

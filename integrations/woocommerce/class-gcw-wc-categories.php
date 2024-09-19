@@ -17,12 +17,14 @@ class GCW_WC_Categories extends GCW_GC_Api {
     private $api_endpoint;
     private $api_headers;
 
+    private $fetched_categories = array();
+
     public function __construct() {
         parent::__construct();
         $this->api_endpoint = parent::get_endpoint_categories();
         $this->api_headers =  parent::get_headers();
         
-        add_filter( 'gestaoclick_import_categories', array( $this, 'import' ) );
+        add_filter('gestaoclick_import_categories', array( $this, 'import' ));
     }
 
     public function fetch_api()
@@ -30,7 +32,8 @@ class GCW_WC_Categories extends GCW_GC_Api {
         $categories = [];
         $proxima_pagina = 1;
 
-        do {
+        do 
+        {
             $body = wp_remote_retrieve_body( 
                 wp_remote_get( $this->api_endpoint . '?pagina=' . $proxima_pagina, $this->api_headers )
             );
@@ -39,38 +42,43 @@ class GCW_WC_Categories extends GCW_GC_Api {
             $proxima_pagina = $body_array['meta']['proxima_pagina'];
 
             $categories = array_merge( $categories, $body_array['data'] );
+        } 
+        while ( $proxima_pagina != null );
 
-        } while ( $proxima_pagina != null );
+        $this->fetched_categories = $categories;
 
-        update_option( 'gestaoclick-categories', $categories );
         return $categories;
     }
 
-    public function import( $categories_ids )
+    public function import($categories_ids)
     {
-        $categories             = get_option( 'gestaoclick-categories' );
-        $categories_selection   = get_option( 'gcw-settings-categories-selection' );
-        $selected_categories    = array();
+        $categories             = $this->fetch_api();
+        $categories_selection   = get_option('gcw-settings-categories-selection');
 
-        if( $categories_selection ) {
+        if( $categories_selection ) 
+        {
             $filtered_categories = array_filter($categories, function ($item) use ($categories_selection) {
                 return (in_array($item['id'], $categories_selection));
             });
+
             $categories = $filtered_categories;
         }
 
         // Filtering selected categories
-        if (is_array($categories_ids)){
+        $selected_categories = array();
+        if (is_array($categories_ids))
+        {
             $selected_categories = array_filter($categories, function ($item) use ($categories_ids) {
                 return in_array($item['id'], $categories_ids);
             });
-        } elseif ($categories_ids == 'all') {
+        } 
+        elseif ($categories_ids == 'all') {
             $selected_categories = $categories;
         }
 
         // Runs 1x for registry and 2x for set parent categories
         foreach ($selected_categories as $category ) {
-            $this->save( $category );
+            $this->save($category);
         }
 
         foreach ($selected_categories as $category) {
@@ -80,7 +88,7 @@ class GCW_WC_Categories extends GCW_GC_Api {
         wp_admin_notice(sprintf('GestãoClick: %d categorias importadas com sucesso.', count($selected_categories)), array('type' => 'success', 'dismissible' => true));
     }
 
-    private function save( $category )
+    private function save($category)
     {
         $taxonomy       = 'product_cat';
         $category_term  = get_term_by( 'slug', sanitize_title($category['nome'] ), $taxonomy );
@@ -90,36 +98,39 @@ class GCW_WC_Categories extends GCW_GC_Api {
             $parent_term_id = 0;
 
             if($category['grupo_pai_id']) { //If category has a parent, get it to update its parent
-                $parent_term_id = $this->get_category_parent_id($category, $taxonomy);
+                $parent_term_id = $this->get_category_parent_id($this->fetched_categories, $category, $taxonomy);
             }
 
-            wp_update_term(
+            wp_update_term
+            (
                 $category_term->term_id, 
                 $taxonomy, 
-                array(
+                array
+                (
                     'description' => $category['meta_descricao'],
                     'parent' => $parent_term_id,
                 )
             );
-        } else //If category doesn't exist, create it
+        } 
+        else //If category doesn't exist, create it
         { 
-            wp_insert_term( 
+            wp_insert_term
+            ( 
                 $category['nome'], 
                 $taxonomy,
-                array(
-                    'slug' => sanitize_title($category['nome']),
-                )
+                array('slug' => sanitize_title($category['nome']))
             );
         }
     }
 
-    public function get_category_parent_id( $category, $taxonomy )
+    public function get_category_parent_id($gc_categories, $gc_category, $taxonomy)
     {
-        $categories = get_option('gestaoclick-categories');
-
-        foreach ($categories as $parent_candidate) {
-            if($category['grupo_pai_id'] == $parent_candidate['id']) {
+        foreach ($gc_categories as $parent_candidate)
+        {
+            if($gc_category['grupo_pai_id'] == $parent_candidate['id']) 
+            {
                 $parent_category = get_term_by('slug', sanitize_title($parent_candidate['nome']), $taxonomy);
+                
                 return $parent_category->term_id;
             }
         }

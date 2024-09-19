@@ -14,14 +14,12 @@ class GCW_WC_Products extends GCW_GC_Api {
 
     private $api_endpoint;
     private $api_headers;
-    public $attributes_preset;
 
     public function __construct()
     {
         parent::__construct();
         $this->api_endpoint = parent::get_endpoint_items();
         $this->api_headers =  parent::get_headers();
-        $this->attributes_preset = $this->get_attributes_preset();
 
         add_filter( 'gestaoclick_import_products', array( $this, 'import' ) );
     }
@@ -31,7 +29,8 @@ class GCW_WC_Products extends GCW_GC_Api {
         $products = [];
         $proxima_pagina = 1;
 
-        do {
+        do 
+        {
             $body = wp_remote_retrieve_body( 
                 wp_remote_get( $this->api_endpoint . '?pagina=' . $proxima_pagina, $this->api_headers )
             );
@@ -40,45 +39,52 @@ class GCW_WC_Products extends GCW_GC_Api {
             $proxima_pagina = $body_array['meta']['proxima_pagina'];
 
             $products = array_merge( $products, $body_array['data'] );
+        } 
+        while($proxima_pagina != null);
 
-        } while ( $proxima_pagina != null );
-
-        update_option( 'gestaoclick-products', $products );
+        return $products;
     }
 
     public function import( $products_codes ) 
     {
-        $products               = get_option( 'gestaoclick-products' );
+        $products               = $this->fetch_api();
         $products_blacklist     = get_option( 'gcw-settings-products-blacklist' );
         $categories_selection   = get_option( 'gcw-settings-categories-selection' );
         $products_selection     = array();
 
-        if( $categories_selection ) {
+        if( $categories_selection ) 
+        {
             $filtered_categories = array_filter($products, function ($item) use ($categories_selection) {
                 return (in_array($item['grupo_id'], $categories_selection));
             });
+
             $products = $filtered_categories;
         }
 
-        if( $products_blacklist ) {
+        if( $products_blacklist ) 
+        {
             $filtered_products = array_filter($products, function ($item) use ($products_blacklist) {
                 return (!in_array($item['codigo_barra'], $products_blacklist));
             });
+
             $products = $filtered_products;
         }
 
-        if( is_array($products_codes) ) {
+        if( is_array($products_codes) ) 
+        {
             $products_selection = array_filter($products, function ($item) use ($products_codes) {
                 return (in_array($item['codigo_barra'], $products_codes));
             });
-        } elseif( $products_codes == 'all' ) {
+        } 
+        elseif( $products_codes == 'all' ) {
             $products_selection = $products;
         }
 
-        foreach ($products_selection as $product_data) {
-
+        foreach ($products_selection as $product_data) 
+        {
             // Save the product as simple or variable
-            if ($product_data['possui_variacao'] == '1') {
+            if ($product_data['possui_variacao'] == '1') 
+            {
                 $product = $this->save($product_data);
 
                 $attributes = [];
@@ -88,7 +94,8 @@ class GCW_WC_Products extends GCW_GC_Api {
                 $product->save();
 
                 $this->save_product_variable_variations($product->get_id(), $product_data['variacoes']);
-            } else {
+            } 
+            else {
                 $product = $this->save($product_data);
             }
 
@@ -104,10 +111,12 @@ class GCW_WC_Products extends GCW_GC_Api {
     {
         $category_object = get_term_by('slug', sanitize_title($category_name), 'product_cat');
 
-        if ($category_object != false) {
+        if ($category_object != false) 
+        {
             $category_id = $category_object->term_id;
             return $category_id;
-        } else {
+        } 
+        else {
             return false;
         }
     }
@@ -140,12 +149,16 @@ class GCW_WC_Products extends GCW_GC_Api {
 
         if ($product_exists) {
             $product = wc_get_product($product_exists);
-        } else {
-            if( (int) $product_data['possui_variacao'] ) {
+        } 
+        else 
+        {
+            if((int) $product_data['possui_variacao']) {
                 $product = new WC_Product_Variable();
-            } else{
+            }
+            else {
                 $product = new WC_Product_Simple();
             }
+
             $product->add_meta_data('gestaoclick_gc_product_id', (int) $product_data['id'], true);
         }
 
@@ -167,6 +180,7 @@ class GCW_WC_Products extends GCW_GC_Api {
         foreach( $variations as $variation ) {
             array_push( $options, $variation['variacao']['nome'] );
         }
+        
         $attribute->set_options($options);
 
         return $attribute;
@@ -176,15 +190,17 @@ class GCW_WC_Products extends GCW_GC_Api {
     {
         $parent_product = wc_get_product($parent_product_id);
 
-        foreach ($variations as $variation_data) {
-
+        foreach ($variations as $variation_data) 
+        {
             $sku = $variation_data['variacao']['codigo'];
             $variation_id_exists = wc_get_product_id_by_sku($sku);
             $variation = null;
 
             if ($variation_id_exists) {
                 $variation = wc_get_product($variation_id_exists);
-            } else {
+            } 
+            else 
+            {
                 $variation = new WC_Product_Variation();
                 $variation->set_sku($variation_data['variacao']['codigo']);
                 $variation->add_meta_data( 'gestaoclick_gc_variation_id', (int) $variation_data['variacao']['id'], true );
@@ -200,7 +216,7 @@ class GCW_WC_Products extends GCW_GC_Api {
             $variation->set_attributes(array('modelo' => $variation_data['variacao']['nome']));
             $variation->save();
 
-            $parent_product->save(); //Can it be moved to after foreach?
+            $parent_product->save();
         }
     }
 
@@ -210,13 +226,18 @@ class GCW_WC_Products extends GCW_GC_Api {
         $taxonomies = wc_get_attribute_taxonomies();
         $attributes_selection = array();
 
-        if ($taxonomies) {
-            foreach ($taxonomies as $taxonomy) {
-                if (taxonomy_exists(wc_attribute_taxonomy_name($taxonomy->attribute_name))) {
-                    $terms = get_terms(array(
+        if ($taxonomies) 
+        {
+            foreach ($taxonomies as $taxonomy) 
+            {
+                if (taxonomy_exists(wc_attribute_taxonomy_name($taxonomy->attribute_name))) 
+                {
+                    $terms = get_terms(array
+                    (
                         'taxonomy' => wc_attribute_taxonomy_name($taxonomy->attribute_name),
                         'hide_empty' => false,
                     ));
+
                     foreach ($terms as $term) {
                         $attributes_selection[] = $term->name;
                     }
@@ -231,30 +252,36 @@ class GCW_WC_Products extends GCW_GC_Api {
     private function get_filters_attributes($product_name)
     {
         // Get all preset of attributes in WooCommerce
-        $attributes_selection = $this->attributes_preset;
+        $attributes_selection = $this->get_attributes_preset();
         $attributes_names = array();
         $attributes = array();
 
         // Get filters attributes names in product name parts
         $product_name_parts = explode(' - ', $product_name);
-        foreach ($product_name_parts as $name_part) {
+        foreach ($product_name_parts as $name_part) 
+        {
             $attributes_candidates = explode('/', $name_part);
-            foreach ($attributes_candidates as $attribute_candidate) {
+            foreach ($attributes_candidates as $attribute_candidate) 
+            {
                 if (in_array($attribute_candidate, $attributes_selection)) {
                     $attributes_names[] = $attribute_candidate;
                 }
             }
         }
 
-        foreach ($attributes_names as $attribute_name) {
-            if (in_array($attribute_name, $attributes_selection)) {
-
+        foreach ($attributes_names as $attribute_name) 
+        {
+            if (in_array($attribute_name, $attributes_selection)) 
+            {
                 $taxonomies = wc_get_attribute_taxonomies();
                 $terms = array();
 
-                if ($taxonomies) {
-                    foreach ($taxonomies as $taxonomy) {
-                        if (taxonomy_exists(wc_attribute_taxonomy_name($taxonomy->attribute_name))) {
+                if ($taxonomies) 
+                {
+                    foreach ($taxonomies as $taxonomy) 
+                    {
+                        if (taxonomy_exists(wc_attribute_taxonomy_name($taxonomy->attribute_name))) 
+                        {
                             $attribute = new WC_Product_Attribute();
                             $attribute->set_id(sizeof($attributes) + 1);
                             $attribute->set_name('pa_' . $taxonomy->attribute_name);
@@ -262,16 +289,21 @@ class GCW_WC_Products extends GCW_GC_Api {
                             $attribute->set_variation(false);
 
                             $options = array();
-                            $terms = get_terms(array(
+                            $terms = get_terms(array
+                            (
                                 'taxonomy' => wc_attribute_taxonomy_name($taxonomy->attribute_name),
                                 'hide_empty' => false,
                             ));
-                            foreach ($terms as $term) {
+
+                            foreach ($terms as $term) 
+                            {
                                 if (in_array($term->name, $attributes_names)) {
                                     array_push($options, $term->term_id);
                                 }
                             }
-                            if ($options) {
+
+                            if ($options) 
+                            {
                                 $attribute->set_options($options);
                                 $attributes[] = $attribute;
                             }
