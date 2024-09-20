@@ -80,18 +80,18 @@ class GCW_List_Table_Categories extends WP_List_Table {
         return $actions;
     }
 
-    function process_bulk_action()
+    function process_bulk_action(GCW_WC_Categories $categories)
     {
         if('import' === $this->current_action()) 
         {
             if (isset($_POST['gcw_nonce_categories']) && wp_verify_nonce($_POST['gcw_nonce_categories'], 'gcw_form_categories')) {
                 $selected_items = isset($_POST['bulk-action']) ? $_POST['bulk-action'] : array();
-                apply_filters( 'gestaoclick_import_categories', $selected_items );
+                $categories->import($selected_items);
             }
         }
 
         if('import_all' === $this->current_action()) {
-            apply_filters( 'gestaoclick_import_categories', 'all' );
+            $categories->import('all');
         }
     }
 
@@ -121,7 +121,7 @@ class GCW_List_Table_Categories extends WP_List_Table {
         $sortable = $this->get_sortable_columns();
         $primary  = 'name';
         $this->_column_headers = array($columns, $hidden, $sortable, $primary);
-        $this->process_bulk_action();
+        $this->process_bulk_action($categories);
         
         /* pagination */
         $total_items = count($this->table_data);

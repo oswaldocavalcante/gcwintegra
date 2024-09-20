@@ -105,7 +105,8 @@ class GCW_Admin
 	 */
 	public function add_admin_menu()
 	{
-		add_menu_page(
+		add_menu_page
+		(
 			'GestãoClick',
 			'GestãoClick',
 			'manage_options',
@@ -115,17 +116,19 @@ class GCW_Admin
 			56
 		);
 
-		add_submenu_page( 
+		add_submenu_page
+		( 
 			'gestaoclick', 
 			'Sincronizar produtos', 
 			'Produtos', 
 			'manage_options',
-			'gestaoclick', 
+			'gestaoclick-products', 
 			array($this, 'display_products'),
 			1,
 		);
 
-		add_submenu_page( 
+		add_submenu_page
+		( 
 			'gestaoclick', 
 			'Sincronizar categorias', 
 			'Categorias', 
@@ -135,7 +138,8 @@ class GCW_Admin
 			2,
 		);
 
-		add_submenu_page( 
+		add_submenu_page
+		( 
 			'gestaoclick', 
 			'Sincronizar atributos', 
 			'Atributos', 
@@ -145,7 +149,8 @@ class GCW_Admin
 			3,
 		);
 
-		add_submenu_page( 
+		add_submenu_page
+		( 
 			'gestaoclick', 
 			'Configurações', 
 			'Configurações', 
@@ -167,7 +172,8 @@ class GCW_Admin
 
 	public function create_quote_post_type()
 	{
-		$labels = array(
+		$labels = array
+		(
 			'name' 				=> 'Orçamentos',
 			'singular_name' 	=> 'Orçamento',
 			'add_new' 			=> 'Adicionar novo',
@@ -182,7 +188,8 @@ class GCW_Admin
 			'menu_name' 		=> 'Orçamentos',
 		);
 
-		$args = array(
+		$args = array
+		(
 			'labels' 		=> $labels,
 			'public' 		=> true,
 			'has_archive' 	=> true,
@@ -225,9 +232,7 @@ class GCW_Admin
 	{
 		$this->products = new GCW_WC_Products();
 
-		if($this->products::test_connection())
-		{
-			$this->products->fetch_api();
+		if($this->products::test_connection()) {
 			require_once plugin_dir_path(dirname(__FILE__)) . 'admin/views/gcw-admin-page-products.php';
 		} 
 		else {
@@ -244,9 +249,7 @@ class GCW_Admin
 	{
 		$this->categories = new GCW_WC_Categories();
 
-		if($this->categories::test_connection())
-		{
-			$this->categories->fetch_api();
+		if($this->categories::test_connection()) {
 			require_once plugin_dir_path(dirname(__FILE__)) . 'admin/views/gcw-admin-page-categories.php';
 		} 
 		else {
@@ -263,9 +266,7 @@ class GCW_Admin
 	{
 		$this->attributes = new GCW_WC_Attributes();
 		
-		if($this->attributes::test_connection())
-		{
-			$this->attributes->fetch_api();
+		if($this->attributes::test_connection()) {
 			require_once plugin_dir_path(dirname(__FILE__)) . 'admin/views/gcw-admin-page-attributes.php';
 		} 
 		else {

@@ -18,10 +18,9 @@ class GCW_WC_Products extends GCW_GC_Api {
     public function __construct()
     {
         parent::__construct();
+        
         $this->api_endpoint = parent::get_endpoint_items();
         $this->api_headers =  parent::get_headers();
-
-        add_filter( 'gestaoclick_import_products', array( $this, 'import' ) );
     }
 
     public function fetch_api() 
@@ -36,7 +35,7 @@ class GCW_WC_Products extends GCW_GC_Api {
             );
 
             $response = json_decode($response, true);
-            
+
             if(is_array($response) && $response['code'] == 200)
             {
                 $proxima_pagina = $response['meta']['proxima_pagina'];
@@ -48,7 +47,7 @@ class GCW_WC_Products extends GCW_GC_Api {
         return $products;
     }
 
-    public function import( $products_codes ) 
+    public function import($products_codes) 
     {
         $products               = $this->fetch_api();
         $products_blacklist     = get_option( 'gcw-settings-products-blacklist' );
@@ -83,34 +82,14 @@ class GCW_WC_Products extends GCW_GC_Api {
             $products_selection = $products;
         }
 
-        foreach ($products_selection as $product_data) 
-        {
-            // Save the product as simple or variable
-            if ($product_data['possui_variacao'] == '1') 
-            {
-                $product = $this->save($product_data);
-
-                $attributes = [];
-                $attributes[] = $this->get_product_variable_attributes($product_data['variacoes']);
-
-                $product->set_attributes($attributes);
-                $product->save();
-
-                $this->save_product_variable_variations($product->get_id(), $product_data['variacoes']);
-            } 
-            else {
-                $product = $this->save($product_data);
-            }
-
-            $filters = $this->get_filters_attributes($product->get_name());
-            $product->set_attributes(array_merge($product->get_attributes(), $filters));
-            $product->save();
+        foreach ($products_selection as $product_data) {         
+            $this->save($product_data);
         }
 
         wp_admin_notice( sprintf('GestãoClick: %d produtos importados com sucesso.', count($products_selection)), array('type' => 'success', 'dismissible' => true));
     }
 
-    private function get_category_id( $category_name ) 
+    private function get_category_id($category_name) 
     {
         $category_object = get_term_by('slug', sanitize_title($category_name), 'product_cat');
 
@@ -124,39 +103,30 @@ class GCW_WC_Products extends GCW_GC_Api {
         }
     }
 
-    private function save( $product_data )
+    private function save($product_data)
     {
-        $category_ids[] = $this->get_category_id($product_data['nome_grupo']);
-
-        $product_props = array(
-            'sku'           => $product_data['codigo_barra'],
-            'name'          => $product_data['nome'],
-            'regular_price' => $product_data['valor_venda'],
-            'sale_price'    => $product_data['valor_venda'],
-            'description'   => $product_data['descricao'],
-            'date_created'  => $product_data['cadastrado_em'],
-            'date_modified' => $product_data['modificado_em'],
-            'description'   => $product_data['descricao'],
-            'stock_quantity'=> $product_data['estoque'],
-            'manage_stock'  => (int) $product_data['movimenta_estoque'],
-            'stock_status'  => (int) $product_data['movimenta_estoque'] ? '' : 'onbackorder',
-            'weight'        => (int) $product_data['peso']          ? $product_data['peso']         : '',
-            'length'        => (int) $product_data['comprimento']   ? $product_data['comprimento']  : '',
-            'width'         => (int) $product_data['largura']       ? $product_data['largura']      : '',
-            'height'        => (int) $product_data['altura']        ? $product_data['altura']       : '',
-            'category_ids'  => $category_ids,
-        );
-
-        $product_exists = wc_get_product_id_by_sku($product_props['sku']);
+        $product_exists = wc_get_product_id_by_sku($product_data['codigo_barra']);
         $product = null;
 
-        if ($product_exists) {
+        if ($product_exists) 
+        {
             $product = wc_get_product($product_exists);
+
+            if ($product->get_meta('gestaoclick_last_update') == $product_data['modificado_em']) {
+                return;
+            }
         } 
         else 
         {
-            if((int) $product_data['possui_variacao']) {
+            if((int) $product_data['possui_variacao']) 
+            {
                 $product = new WC_Product_Variable();
+
+                $attributes = array($this->get_product_variable_attributes($product_data['variacoes']));
+                $product->set_attributes($attributes);
+                $product->save();
+
+                $this->save_product_variable_variations($product->get_id(), $product_data['variacoes']);
             }
             else {
                 $product = new WC_Product_Simple();
@@ -165,13 +135,35 @@ class GCW_WC_Products extends GCW_GC_Api {
             $product->add_meta_data('gestaoclick_gc_product_id', (int) $product_data['id'], true);
         }
 
+        $product_props = array
+        (
+            'sku'           => $product_data['codigo_barra'],
+            'name'          => $product_data['nome'],
+            'regular_price' => $product_data['valor_venda'],
+            'sale_price'    => $product_data['valor_venda'],
+            'description'   => $product_data['descricao'],
+            'date_created'  => $product_data['cadastrado_em'],
+            'date_modified' => $product_data['modificado_em'],
+            'description'   => $product_data['descricao'],
+            'stock_quantity' => $product_data['estoque'],
+            'manage_stock'  => (int) $product_data['movimenta_estoque'],
+            'stock_status'  => (int) $product_data['movimenta_estoque'] ? '' : 'onbackorder',
+            'weight'        => (int) $product_data['peso']          ? $product_data['peso']         : '',
+            'length'        => (int) $product_data['comprimento']   ? $product_data['comprimento']  : '',
+            'width'         => (int) $product_data['largura']       ? $product_data['largura']      : '',
+            'height'        => (int) $product_data['altura']        ? $product_data['altura']       : '',
+            'category_ids'  => array($this->get_category_id($product_data['nome_grupo'])),
+        );
+
         $product->set_props($product_props);
+        $product->set_attributes(array_merge($product->get_attributes(), $this->get_filters_attributes($product->get_name())));
+        $product->add_meta_data('gestaoclick_last_update', $product_data['modificado_em'], true);
         $product->save();
 
         return $product;
     }
 
-    private function get_product_variable_attributes( $variations )
+    private function get_product_variable_attributes($variations)
     {
         $attribute = new WC_Product_Attribute();
         $attribute->set_id(0);
@@ -189,7 +181,7 @@ class GCW_WC_Products extends GCW_GC_Api {
         return $attribute;
     }
 
-    private function save_product_variable_variations( $parent_product_id, $variations )
+    private function save_product_variable_variations($parent_product_id, $variations)
     {
         $parent_product = wc_get_product($parent_product_id);
 

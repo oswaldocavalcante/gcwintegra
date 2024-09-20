@@ -19,12 +19,12 @@ class GCW_WC_Categories extends GCW_GC_Api {
 
     private $fetched_categories = array();
 
-    public function __construct() {
+    public function __construct() 
+    {
         parent::__construct();
+        
         $this->api_endpoint = parent::get_endpoint_categories();
         $this->api_headers =  parent::get_headers();
-        
-        add_filter('gestaoclick_import_categories', array( $this, 'import' ));
     }
 
     public function fetch_api()

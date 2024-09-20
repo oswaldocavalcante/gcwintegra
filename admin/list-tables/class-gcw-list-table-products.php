@@ -81,19 +81,19 @@ class GCW_List_Table_Products extends WP_List_Table {
         return $actions;
     }
 
-    function process_bulk_action() 
+    function process_bulk_action(GCW_WC_Products $products) 
     {
         if('import' === $this->current_action()) 
         {
             if(isset($_POST['gcw_nonce_products']) && wp_verify_nonce($_POST['gcw_nonce_products'], 'gcw_form_products'))
             {
                 $selected_items = isset($_POST['bulk-action']) ? $_POST['bulk-action'] : array();
-                apply_filters('gestaoclick_import_products', $selected_items);
+                $products->import($selected_items);
             }
         }
 
         if( 'import_all' === $this->current_action() ) {
-            apply_filters( 'gestaoclick_import_products', 'all' );
+            $products->import('all');
         }
     }
 
@@ -123,7 +123,7 @@ class GCW_List_Table_Products extends WP_List_Table {
         $sortable = $this->get_sortable_columns();
         $primary  = 'name';
         $this->_column_headers = array($columns, $hidden, $sortable, $primary);
-        $this->process_bulk_action();
+        $this->process_bulk_action($products);
         
         /* pagination */
         $total_items = count($this->table_data);
