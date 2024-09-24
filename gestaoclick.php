@@ -16,7 +16,7 @@
  * Plugin Name:       GestaoClick
  * Plugin URI:        https://github.com/oswaldocavalcante/gestaoclick
  * Description:       Integrates GestãoClick for WooCommerce.
- * Version:           3.1.3
+ * Version:           3.1.4
  * Author:            Oswaldo Cavalcante
  * Author URI:        https://oswaldocavalcante.com/
  * License:           GPL-2.0+
@@ -35,7 +35,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'GCW_VERSION', '3.1.3' );
+define( 'GCW_VERSION', '3.1.4' );
 
 if (!defined('GCW_PLUGIN_FILE')) {
 	define('GCW_PLUGIN_FILE', __FILE__);

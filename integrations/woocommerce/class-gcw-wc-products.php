@@ -118,15 +118,8 @@ class GCW_WC_Products extends GCW_GC_Api {
         } 
         else 
         {
-            if((int) $product_data['possui_variacao']) 
-            {
+            if((int) $product_data['possui_variacao']) {
                 $product = new WC_Product_Variable();
-
-                $attributes = array($this->get_product_variable_attributes($product_data['variacoes']));
-                $product->set_attributes($attributes);
-                $product->save();
-
-                $this->save_product_variable_variations($product->get_id(), $product_data['variacoes']);
             }
             else {
                 $product = new WC_Product_Simple();
@@ -135,12 +128,20 @@ class GCW_WC_Products extends GCW_GC_Api {
             $product->add_meta_data('gestaoclick_gc_product_id', (int) $product_data['id'], true);
         }
 
+        if($product instanceof WC_Product_Variable)
+        {
+            $attributes = array($this->get_product_variable_attributes($product_data['variacoes']));
+            $product->set_attributes($attributes);
+            $product->save();
+
+            $this->save_product_variable_variations($product->get_id(), $product_data['variacoes']);
+        }
+
         $product_props = array
         (
             'sku'           => $product_data['codigo_barra'],
             'name'          => $product_data['nome'],
-            'regular_price' => $product_data['valor_venda'],
-            'sale_price'    => $product_data['valor_venda'],
+            'price'         => $product_data['valor_venda'],
             'description'   => $product_data['descricao'],
             'date_created'  => $product_data['cadastrado_em'],
             'date_modified' => $product_data['modificado_em'],
@@ -158,9 +159,8 @@ class GCW_WC_Products extends GCW_GC_Api {
         $product->set_props($product_props);
         $product->set_attributes(array_merge($product->get_attributes(), $this->get_filters_attributes($product->get_name())));
         $product->add_meta_data('gestaoclick_last_update', $product_data['modificado_em'], true);
-        $product->save();
-
-        return $product;
+        
+        return $product->save();
     }
 
     private function get_product_variable_attributes($variations)
