@@ -93,36 +93,64 @@ class GCW_WC_Categories extends GCW_GC_Api {
 
     private function save($category)
     {
-        $taxonomy       = 'product_cat';
-        $category_term  = get_term_by( 'slug', sanitize_title($category['nome'] ), $taxonomy );
+        $taxonomy = 'product_cat';
+        
+        // Buscar a categoria pelo meta dado 'gc_category_id'
+        $category_term = get_terms(array(
+            'taxonomy' => $taxonomy,
+            'meta_query' => array
+            (
+                array
+                (
+                    'key' => 'gc_category_id',
+                    'value' => $category['id'],
+                    'compare' => '='
+                )
+            ),
+            'hide_empty' => false,
+        ));
 
-        if($category_term) //If category already exists, update it
+        // Se a categoria foi encontrada
+        if (!empty($category_term) && !is_wp_error($category_term)) 
         {
+            $category_term = $category_term[0];
             $parent_term_id = 0;
 
-            if($category['grupo_pai_id']) { //If category has a parent, get it to update its parent
+            if ($category['grupo_pai_id']) {
                 $parent_term_id = $this->get_category_parent_id($this->fetched_categories, $category, $taxonomy);
             }
 
+            // Atualizar a categoria existente
             wp_update_term
             (
-                $category_term->term_id, 
-                $taxonomy, 
-                array
-                (
+                $category_term->term_id,
+                $taxonomy,
+                array(
+                    'name' => $category['nome'],
+                    'slug' => sanitize_title($category['nome']),
                     'description' => $category['meta_descricao'],
                     'parent' => $parent_term_id,
                 )
             );
         } 
-        else //If category doesn't exist, create it
-        { 
-            wp_insert_term
-            ( 
-                $category['nome'], 
+        else 
+        {
+            // Criar uma nova categoria
+            $new_category = wp_insert_term
+            (
+                $category['nome'],
                 $taxonomy,
-                array('slug' => sanitize_title($category['nome']))
+                array(
+                    'slug' => sanitize_title($category['nome']),
+                    'description' => $category['meta_descricao'],
+                    'parent' => $this->get_category_parent_id($this->fetched_categories, $category, $taxonomy),
+                )
             );
+
+            if (!is_wp_error($new_category)) {
+                // Adicionar o meta dado 'gc_category_id' à nova categoria
+                add_term_meta($new_category['term_id'], 'gc_category_id', $category['id'], true);
+            }
         }
     }
 
@@ -130,11 +158,23 @@ class GCW_WC_Categories extends GCW_GC_Api {
     {
         foreach ($gc_categories as $parent_candidate)
         {
-            if($gc_category['grupo_pai_id'] == $parent_candidate['id']) 
+            if($gc_category['grupo_pai_id'] == $parent_candidate['id'])
             {
-                $parent_category = get_term_by('slug', sanitize_title($parent_candidate['nome']), $taxonomy);
+                $parent_terms = get_terms(array(
+                    'taxonomy' => $taxonomy,
+                    'meta_query' => array
+                    (
+                        array
+                        (
+                            'key' => 'gc_category_id',
+                            'value' => $parent_candidate['id'],
+                            'compare' => '='
+                        )
+                    ),
+                    'hide_empty' => false,
+                ));
                 
-                return $parent_category->term_id;
+                return $parent_terms[0]->term_id;
             }
         }
 
