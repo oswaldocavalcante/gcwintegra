@@ -15,7 +15,6 @@ require_once GCW_ABSPATH . 'integrations/woocommerce/class-gcw-wc-products.php';
 require_once GCW_ABSPATH . 'integrations/woocommerce/class-gcw-wc-categories.php';
 require_once GCW_ABSPATH . 'integrations/woocommerce/class-gcw-wc-attributes.php';
 require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-venda.php';
-require_once GCW_ABSPATH . 'integrations/stone/class-gcw-cs-webhook.php';
 
 class GCW_Admin 
 {
@@ -23,49 +22,12 @@ class GCW_Admin
 	private $categories;
 	private $attributes;
 
-	/**
-	 * Initialize the class and set its properties.
-	 *
-	 * @since    1.0.0
-	 */
-	public function __construct() 
-	{		
-		if (!$this->is_woocommerce_active())
-		{	
-			wp_admin_notice(
-				wp_kses(
-					sprintf( 
-						// translators: "Placeholder for Woocommerce link"
-						__('GestãoClick: por favor, instale e ative o %s.', 'gestaoclick'),
-						'<a href="http://wordpress.org/plugins/woocommerce/">' . __('WooCommerce', 'gestaoclick') . '</a>'
-					),
-					array('a' => array('href' => array()))
-				), 
-				array('type' => 'error')
-			);
-		}
-	}
-
-	public function add_woocommerce_integration( $integrations )
+	public function add_woocommerce_integration($integrations)
 	{
 		require_once plugin_dir_path(dirname(__FILE__)) . 'integrations/woocommerce/class-gcw-wc-integration.php';
 		$integrations[] = 'GCW_WC_Integration';
 
 		return $integrations;
-	}	
-
-	public function is_woocommerce_active()
-	{
-		$active_plugins = (array) get_option( 'active_plugins', array() );
-
-		if ( is_multisite() ) {
-			$active_plugins = array_merge( $active_plugins, get_site_option( 'active_sitewide_plugins', array() ) );
-		}
-		if ( in_array( 'woocommerce/woocommerce.php', $active_plugins ) || array_key_exists( 'woocommerce/woocommerce.php', $active_plugins ) ) {
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 	/**
