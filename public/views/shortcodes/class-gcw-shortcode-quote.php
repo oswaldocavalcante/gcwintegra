@@ -233,17 +233,24 @@ class GCW_Shortcode_Quote
             $quantities = $_POST['gcw_quote_item_quantity'];
 
             $quote_items = array();
+            $quote_items_quantity = 0;
 
             foreach ($item_ids as $product_id) {
-                if (isset($quantities[$product_id])) {
-                    $quote_items[] = array(
+                if (isset($quantities[$product_id])) 
+                {
+                    $product_quantity = intval($quantities[$product_id]);
+                    $quote_items[] = array
+                    (
                         'product_id' => intval($product_id),
-                        'quantity' => intval($quantities[$product_id])
+                        'quantity' => $product_quantity
                     );
+
+                    $quote_items_quantity = $quote_items_quantity + $product_quantity;
                 }
             }
 
-            WC()->session->set('quote_items', $quote_items);
+            WC()->session->set('quote_items',           $quote_items);
+            WC()->session->set('quote_items_quantity',  $quote_items_quantity);
 
             wc_add_notice(__('Orçamento atualizado com sucesso.', 'gestaoclick'), 'success');
         }
@@ -458,8 +465,16 @@ class GCW_Shortcode_Quote
 
     public function ajax_proceed_to_checkout()
     {
-        if (!WC()->session->get('has_selected_shipping_method')) {
+        if (!WC()->session->get('has_selected_shipping_method'))
+        {
             wp_send_json_error(array('message' => 'Você precisa selecionar um método de envio.'));
+
+            return;
+        }
+
+        if(WC()->session->get('quote_items_quantity') < get_option('gcw-settings-quote-minimum'))
+        {
+            wp_send_json_error(array('message' => sprintf('A quantidade mínima é de %d itens. Adicione mais itens ao seu orçamento.', get_option('gcw-settings-quote-minimum'))));
 
             return;
         }

@@ -23,7 +23,8 @@
 
 class Gestaoclick_Activator {
 
-	public static function activate() {
+	public static function activate()
+	{
 		self::create_quote_page();
 		self::create_quote_checkout_page();
 
@@ -37,11 +38,13 @@ class Gestaoclick_Activator {
 		// Verificar se a página já existe
 		$page_title = 'Orçamento';
 		$page_content = '[gestaoclick_orcamento]';
-		$page_check = get_page_by_title($page_title);
+		$page_check = get_page_by_path('orcamento');
 
 		// Se a página não existir, crie-a
-		if (!isset($page_check->ID)) {
-			$page_id = wp_insert_post(array(
+		if (!isset($page_check->ID))
+		{
+			$page_id = wp_insert_post(array
+			(
 				'post_title'     => $page_title,
 				'post_content'   => $page_content,
 				'post_status'    => 'publish',
@@ -54,7 +57,9 @@ class Gestaoclick_Activator {
 			update_option('gcw_quote_page_id', $page_id);
 			update_option('gcw_quote_page_url', get_permalink($page_id));
 
-		} else {
+		} 
+		else 
+		{
 			// Atualizar a opção com o ID da página existente
 			update_option('gcw_quote_page_id', $page_check->ID);
 			update_option('gcw_quote_page_url', get_permalink($page_check->ID));
@@ -66,11 +71,13 @@ class Gestaoclick_Activator {
 		// Verificar se a página já existe
 		$page_title = 'Finalizar Orçamento';
 		$page_content = '[gestaoclick_finalizar_orcamento]';
-		$page_check = get_page_by_title($page_title);
+		$page_check = get_page_by_path('finalizar-orcamento');
 
 		// Se a página não existir, crie-a
-		if (!isset($page_check->ID)) {
-			$page_id = wp_insert_post(array(
+		if (!isset($page_check->ID)) 
+		{
+			$page_id = wp_insert_post(array
+			(
 				'post_title'     => $page_title,
 				'post_content'   => $page_content,
 				'post_status'    => 'publish',

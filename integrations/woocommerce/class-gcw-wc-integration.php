@@ -86,7 +86,7 @@ class GCW_WC_Integration extends WC_Integration {
                 'type'          => 'multiselect',
                 'description'   => __( 'Selecione as categorias para importar seus produtos do GestãoClick.', 'gestaoclick' ),
                 'options'       => $this->gc_categorias_options,
-                'css' => 'height: 300px;',
+                'css'           => 'height: 300px;',
             ),
             'gcw-settings-products-blacklist' => array
             (
@@ -135,9 +135,17 @@ class GCW_WC_Integration extends WC_Integration {
             (
                 'title'         => __('Habilitar orçamentos', 'gestaoclick'),
                 'type'          => 'checkbox',
-                'label'         => __('Clique para habilitar o módulo de orçamentos.', 'gestaoclick'),
+                'label'         => __('Habilitar o módulo de orçamentos.', 'gestaoclick'),
                 'default'       => 'no',
                 'description'   => __('Produtos configurados para não ter controle de estoque no GestãoClick e importados para o WooCommerce, serão tratados como produtos para orçamentos.', 'gestaoclick'),
+            ),
+            'gcw-settings-quote-minimum' => array(
+                'title'         => __('Quantidade mínima', 'gestaoclick'),
+                'label'         => __('Configura uma quantidade mínima de todos os itens para um orçamento.', 'gestaoclick'),
+                'description'   => __('Se um orçamento não atingir a quantidade mínima de produtos, ele não será enviado ao GestãoClick e o cliente será notificado. Insira 0 para não impor uma quantidade mínima.', 'gestaoclick'),
+                'type'          => 'number',
+                'default'       => '0',
+                'placeholder'   => '0',
             ),
         );
     }
@@ -154,6 +162,9 @@ class GCW_WC_Integration extends WC_Integration {
         update_option( 'gcw-settings-export-orders',        $this->settings['gcw-settings-export-orders'] );
         update_option( 'gcw-settings-export-trasportadora', $this->settings['gcw-settings-export-trasportadora'] );
         update_option( 'gcw-settings-export-situacao',      $this->settings['gcw-settings-export-situacao'] );
+
+        update_option('gcw-settings-quote-enabler',         $this->settings['gcw-settings-quote-enabler']);
+        update_option('gcw-settings-quote-minimum',         $this->settings['gcw-settings-quote-minimum']);
 
         echo '<div id="gcw_settings">';
         echo '<h2 class="gcw-integration-title">' . esc_html( $this->get_method_title() ) . '</h2>';

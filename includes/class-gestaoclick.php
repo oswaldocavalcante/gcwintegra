@@ -92,7 +92,6 @@ class Gestaoclick
 		$plugin_public = new GCW_Public();
 		
 		add_action('woocommerce_init', 							array($plugin_public, 'session_start'), 1);
-		add_action('woocommerce_after_add_to_cart_button', 		array($plugin_public, 'add_to_quote_button'));
 		add_filter('query_vars', 								array($plugin_public, 'add_quote_query_vars'));
 		add_filter('woocommerce_account_menu_items', 			array($plugin_public, 'add_orcamentos_to_account_menu'));
 		add_action('woocommerce_account_orcamentos_endpoint', 	array($plugin_public, 'orcamentos_endpoint_content'));
@@ -101,5 +100,11 @@ class Gestaoclick
 		add_shortcode('gestaoclick_orcamento', 					array($plugin_public, 'shortcode_quote'));
 		add_shortcode('gestaoclick_finalizar_orcamento', 		array($plugin_public, 'shortcode_checkout'));
 		add_action('wp_ajax_gcw_spec_sheet', 					array($plugin_public, 'ajax_create_spec_sheet'));
+
+		if(get_option('gcw-settings-quote-enabler') == 'yes') {
+			add_action('woocommerce_after_add_to_cart_button', 		array($plugin_public, 'add_to_quote_button'));
+		} else {
+			remove_action('woocommerce_after_add_to_cart_button', 		array($plugin_public, 'add_to_quote_button'));
+		}
 	}
 }
