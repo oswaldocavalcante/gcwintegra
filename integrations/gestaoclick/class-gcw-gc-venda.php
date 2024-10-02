@@ -12,7 +12,7 @@ class GCW_GC_Venda extends GCW_GC_Api
     private $data;
     private $valor_frete;
     private $transportadora;
-    private $desconto_percentual;
+    private $desconto_valor;
     private $produtos = array();
 
     public function __construct($wc_order_id)
@@ -22,10 +22,10 @@ class GCW_GC_Venda extends GCW_GC_Api
         $this->api_endpoint = parent::get_endpoint_sales();
 
         $order = wc_get_order($wc_order_id);
-        $this->desconto_percentual  = $order->get_total() > 0 ? ($order->get_discount_total() / $order->get_total()) * 100 : 0;
-        $this->data                 = $order->get_date_created()->date('Y-m-d');
-        $this->valor_frete          = $order->get_shipping_total();
-        $this->transportadora       = $this->valor_frete == 0 ? '' : get_option('gcw-settings-export-trasportadora');
+        $this->desconto_valor = $order->get_total_fees() < 0 ? abs($order->get_total_fees()) : '0';
+        $this->data           = $order->get_date_created()->date('Y-m-d');
+        $this->valor_frete    = $order->get_shipping_total();
+        $this->transportadora = $this->valor_frete == 0 ? '' : get_option('gcw-settings-export-trasportadora');
 
         foreach ($order->get_items() as $order_item) 
         {
@@ -48,8 +48,6 @@ class GCW_GC_Venda extends GCW_GC_Api
                         'variacao_id'           => $gc_variation_id,
                         'quantidade'            => $order_item->get_quantity(),
                         'valor_venda'           => $wc_product->get_price(),
-                        'tipo_desconto'         => '%',
-                        'desconto_porcentagem'  => $this->desconto_percentual,
                     )
                 );
             } 
@@ -62,8 +60,6 @@ class GCW_GC_Venda extends GCW_GC_Api
                         'produto_id'            => $gc_product_id,
                         'quantidade'            => $order_item->get_quantity(),
                         'valor_venda'           => $wc_product->get_price(),
-                        'tipo_desconto'         => '%',
-                        'desconto_porcentagem'  => $this->desconto_percentual,
                     )
                 );
             }
@@ -97,6 +93,7 @@ class GCW_GC_Venda extends GCW_GC_Api
             'valor_frete'       => $this->valor_frete,
             'nome_canal_venda'  => 'Internet',
             'produtos'          => $this->produtos,
+            'desconto_valor'    => $this->desconto_valor,
         );
 
         $response = wp_remote_post

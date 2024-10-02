@@ -108,13 +108,8 @@ class GCW_WC_Products extends GCW_GC_Api {
         $product_exists = wc_get_product_id_by_sku($product_data['codigo_barra']);
         $product = null;
 
-        if ($product_exists) 
-        {
+        if ($product_exists) {
             $product = wc_get_product($product_exists);
-
-            if ($product->get_meta('gestaoclick_last_update') == $product_data['modificado_em']) {
-                return;
-            }
         } 
         else 
         {
