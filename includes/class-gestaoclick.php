@@ -101,10 +101,23 @@ class Gestaoclick
 		add_shortcode('gestaoclick_finalizar_orcamento', 		array($plugin_public, 'shortcode_checkout'));
 		add_action('wp_ajax_gcw_spec_sheet', 					array($plugin_public, 'ajax_create_spec_sheet'));
 
+		if(get_option('gcw-settings-shipping-calculator') == 'yes')
+		{
+			add_action('woocommerce_single_product_summary', 		array($plugin_public, 'shipping_calculator'), 41);
+			add_action('wp_ajax_gcw_calculate_shipping', 			array($plugin_public, 'ajax_calculate_shipping'));
+			add_action('wp_ajax_nopriv_gcw_calculate_shipping', 	array($plugin_public, 'ajax_calculate_shipping'));
+		}
+		else
+		{
+			remove_action('woocommerce_single_product_summary', 	array($plugin_public, 'shipping_calculator'));
+			remove_action('wp_ajax_gcw_calculate_shipping', 		array($plugin_public, 'ajax_calculate_shipping'));
+			remove_action('wp_ajax_nopriv_gcw_calculate_shipping', 	array($plugin_public, 'ajax_calculate_shipping'));
+		}
+
 		if(get_option('gcw-settings-quote-enabler') == 'yes') {
 			add_action('woocommerce_after_add_to_cart_button', 		array($plugin_public, 'add_to_quote_button'));
 		} else {
-			remove_action('woocommerce_after_add_to_cart_button', 		array($plugin_public, 'add_to_quote_button'));
+			remove_action('woocommerce_after_add_to_cart_button', 	array($plugin_public, 'add_to_quote_button'));
 		}
 	}
 }

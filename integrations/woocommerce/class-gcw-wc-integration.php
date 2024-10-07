@@ -125,6 +125,14 @@ class GCW_WC_Integration extends WC_Integration {
                 'description'   => __( 'A transportadora padrão para ser usada em novas vendas pagas exportadas ao GestaoClick.', 'gestaoclick' ),
                 'options'       => $this->gc_transportadoras_options,
             ),
+            'gcw-settings-shipping-calculator' => array
+            (
+                'title'         => __('Calculadora de frete', 'gestaoclick'),
+                'type'          => 'checkbox',
+                'label'         => __('Habilitar calculadora de frete.', 'gestaoclick'),
+                'default'       => 'no',
+                'description'   => __('A calculadora de frete aparece na página individual para produtos e orçamento.', 'gestaoclick'),
+            ),
             'gcw-settings-quote-section' => array
             (
                 'title'         => __('Orçamentos', 'gestaoclick'),
@@ -152,16 +160,17 @@ class GCW_WC_Integration extends WC_Integration {
 
     public function admin_options() 
     {
-        update_option( 'gcw-api-access-token',              $this->settings['gcw-api-access-token'] );
-        update_option( 'gcw-api-secret-access-token',       $this->settings['gcw-api-secret-access-token'] );
+        update_option('gcw-api-access-token',               $this->settings['gcw-api-access-token']);
+        update_option('gcw-api-secret-access-token',        $this->settings['gcw-api-secret-access-token']);
 
-        update_option( 'gcw-settings-auto-imports',         $this->settings['gcw-settings-auto-imports'] );
-        update_option( 'gcw-settings-categories-selection', $this->settings['gcw-settings-categories-selection'] );
-        update_option( 'gcw-settings-products-blacklist',   explode(PHP_EOL, $this->settings['gcw-settings-products-blacklist'] ) );
+        update_option('gcw-settings-auto-imports',          $this->settings['gcw-settings-auto-imports']);
+        update_option('gcw-settings-categories-selection',  $this->settings['gcw-settings-categories-selection']);
+        update_option('gcw-settings-products-blacklist',    explode(PHP_EOL, $this->settings['gcw-settings-products-blacklist']));
 
-        update_option( 'gcw-settings-export-orders',        $this->settings['gcw-settings-export-orders'] );
-        update_option( 'gcw-settings-export-trasportadora', $this->settings['gcw-settings-export-trasportadora'] );
-        update_option( 'gcw-settings-export-situacao',      $this->settings['gcw-settings-export-situacao'] );
+        update_option('gcw-settings-export-orders',         $this->settings['gcw-settings-export-orders']);
+        update_option('gcw-settings-export-trasportadora',  $this->settings['gcw-settings-export-trasportadora']);
+        update_option('gcw-settings-export-situacao',       $this->settings['gcw-settings-export-situacao']);
+        update_option('gcw-settings-shipping-calculator',   $this->settings['gcw-settings-shipping-calculator']);
 
         update_option('gcw-settings-quote-enabler',         $this->settings['gcw-settings-quote-enabler']);
         update_option('gcw-settings-quote-minimum',         $this->settings['gcw-settings-quote-minimum']);
