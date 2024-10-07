@@ -178,7 +178,7 @@ class GCW_Shortcode_Quote
                     </form>
                 </div>
 
-                <div id="gcw-quote-totals-container">
+                <div id="gcw-quote-totals-container" class="woocommerce">
 
                     <h2>Total do orçamento</h2>
                     <div id="gcw_quote_totals_subtotal" class="gcw_quote_totals_section gcw_quote_space_between">

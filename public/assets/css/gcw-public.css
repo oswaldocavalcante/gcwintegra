@@ -22,6 +22,10 @@ button.gcw_button
     opacity: 0.5;
 }
 
+.blockUI.blockOverlay {
+    position: relative;
+}
+
 .gcw_button_wrapper
 {
     padding: 20px;
