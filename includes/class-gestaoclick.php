@@ -95,7 +95,7 @@ class Gestaoclick
 		add_filter('query_vars', 								array($plugin_public, 'add_quote_query_vars'));
 		add_filter('woocommerce_account_menu_items', 			array($plugin_public, 'add_orcamentos_to_account_menu'));
 		add_action('woocommerce_account_orcamentos_endpoint', 	array($plugin_public, 'orcamentos_endpoint_content'));
-		add_action('template_include', 							array($plugin_public, 'include_template_quote'));
+		add_action('template_include',							array($plugin_public, 'include_template_quote'));
 
 		add_shortcode('gestaoclick_orcamento', 					array($plugin_public, 'shortcode_quote'));
 		add_shortcode('gestaoclick_finalizar_orcamento', 		array($plugin_public, 'shortcode_checkout'));

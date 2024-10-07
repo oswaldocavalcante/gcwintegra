@@ -39,7 +39,7 @@ if (have_posts()) :
             $tracking       = get_post_meta($quote_id, 'tracking', true);
             $gc_codigo      = get_post_meta($quote_id, 'gc_codigo', true);
             $gc_url         = get_post_meta($quote_id, 'gc_url', true);
-?>
+        ?>
 
             <div id="gcw-quote-container">
 
@@ -165,7 +165,7 @@ if (have_posts()) :
                 
             </div>
 
-<?php
+        <?php
         else :
             echo '<p>Nenhum item encontrado neste orçamento.</p>';
         endif;

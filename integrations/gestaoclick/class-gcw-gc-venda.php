@@ -75,7 +75,7 @@ class GCW_GC_Venda extends GCW_GC_Api
         } 
         else
         {
-            $gc_cliente = new GCW_GC_Cliente($wc_customer, 'order');
+            $gc_cliente = new GCW_GC_Cliente($wc_customer);
             $this->cliente_id = $gc_cliente->export();
             $wc_customer->add_meta_data('gestaoclick_gc_cliente_id', $this->cliente_id, true);
         }

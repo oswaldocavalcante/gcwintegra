@@ -248,7 +248,7 @@ class GCW_Shortcode_Checkout
         // Conecta o usuário
         wp_set_auth_cookie($user_id);
 
-        $gc_cliente = new GCW_GC_Cliente($customer, 'quote');
+        $gc_cliente = new GCW_GC_Cliente($customer);
         $gc_cliente_id = $gc_cliente->export();
         if (!$gc_cliente_id)
         {
