@@ -32,6 +32,8 @@ class GCW_WC_Integration extends WC_Integration {
 
     public function init_form_fields() 
     {
+        $button_import_html = '';
+
         if( GCW_GC_Api::test_connection() ) 
         {
             $gc_transportadoras = new GCW_GC_Transportadoras();
@@ -42,118 +44,127 @@ class GCW_WC_Integration extends WC_Integration {
 
             $gc_categorias = new GCW_WC_Categories();
             $this->gc_categorias_options = $gc_categorias->get_options_for_settings();
+
+            $button_import_html = '
+                <br>
+                <div id="gcw-import-area">
+                    <a id="gcw-btn-import" class="button gcw-btn-settings">Importar agora</a>
+                    <span id="gcw-last-import" style="color: #888">(Última importação: ' . get_option('gcw_gestaoclick_last_import') . ')</span>
+                </div>
+            ';
         }
 
         $this->form_fields = array
         (
             'gcw-api-credentials-section' => array
             (
-                'title'         => __( 'Credenciais de acesso da API', 'gestaoclick' ),
                 'type'          => 'title',
+                'title'         => __( 'Credenciais de acesso da API', 'gestaoclick' ),
                 'description'   => sprintf(__('Veja como obter suas credenciais em <a href="https://gestaoclick.com/integracao_api/configuracoes/gerar_token" target="blank">%s</a>', 'gestaoclick'), 'https://gestaoclick.com/integracao_api/configuracoes/gerar_token'),
             ),
             'gcw-api-access-token' => array
             (
-                'title'       	=> __( 'Access Token', 'gestaoclick' ),
                 'type'        	=> 'text',
-                'description' 	=> __( 'Seu Access Token das configurações de API do GestãoClick.', 'gestaoclick' ),
                 'default'     	=> '',
+                'title'       	=> __( 'Access Token', 'gestaoclick' ),
+                'description' 	=> __( 'Seu Access Token das configurações de API do GestãoClick.', 'gestaoclick' ),
             ),
             'gcw-api-secret-access-token' => array
             (
-                'title'       	=> __( 'Secret Access Token', 'gestaoclick' ),
                 'type'        	=> 'text',
-                'description' 	=> __('Seu Secret Access Token das configurações de API do GestãoClick.', 'gestaoclick' ),
                 'default'     	=> '',
+                'title'       	=> __( 'Secret Access Token', 'gestaoclick' ),
+                'description' 	=> __('Seu Secret Access Token das configurações de API do GestãoClick.', 'gestaoclick' ),
             ),
             'gcw-settings-imports-section' => array
             (
-                'title'         => __( 'Importações', 'gestaoclick' ),
                 'type'          => 'title',
-                'description'   => __( 'Configure como realizar importações para o WooCommerce.' ),
+                'title'         => __( 'Importações', 'gestaoclick' ),
+                'description'   => __( 'Configure como realizar importações para o WooCommerce.' ) . $button_import_html,
             ),
             'gcw-settings-auto-imports' => array
             (
-                'title'         => __( 'Auto-importar', 'gestaoclick' ),
                 'type'          => 'checkbox',
-                'label'         => __( 'Habilitar auto-importação', 'gestaoclick' ),
                 'default'       => 'no',
+                'title'         => __( 'Auto-importar', 'gestaoclick' ),
+                'label'         => __( 'Habilitar auto-importação', 'gestaoclick' ),
                 'description'   => __( 'Habilite para sincronizar periodicamente (a cada 15 minutos) o WooCommerce com o GestãoClick.', 'gestaoclick' ),
             ),
             'gcw-settings-categories-selection' => array
             (
-                'title'         => __( 'Seleção de Categorias', 'gestaoclick' ),
                 'type'          => 'multiselect',
+                'title'         => __( 'Seleção de Categorias', 'gestaoclick' ),
                 'description'   => __( 'Selecione as categorias para importar seus produtos do GestãoClick.', 'gestaoclick' ),
-                'options'       => $this->gc_categorias_options,
                 'css'           => 'height: 300px;',
+                'options'       => $this->gc_categorias_options,
             ),
             'gcw-settings-products-blacklist' => array
             (
-                'title'         => __( 'Produtos proibidos', 'gestaoclick' ),
                 'type'          => 'textarea',
                 'placeholder'   => '2012254018005...',
+                'title'         => __( 'Produtos proibidos', 'gestaoclick' ),
                 'description'   => __( 'Lista de códigos de produtos para não importar do GestãoClick (um código de produto por linha).', 'gestaoclick' ),
             ),
             'gcw-settings-exports-section' => array
             (
-                'title'         => __( 'Exportações', 'gestaoclick' ),
                 'type'          => 'title',
+                'title'         => __( 'Exportações', 'gestaoclick' ),
                 'description'   => __('Configure como realizar exportações para o GestãoClick.' ),
             ),
             'gcw-settings-export-orders' => array
             (
-                'title'         => __( 'Auto-exportar vendas', 'gestaoclick' ),
                 'type'          => 'checkbox',
-                'label'         => __( 'Habilitar auto-exportar vendas', 'gestaoclick' ),
                 'default'       => 'no',
+                'title'         => __( 'Auto-exportar vendas', 'gestaoclick' ),
+                'label'         => __( 'Habilitar auto-exportar vendas', 'gestaoclick' ),
                 'description'   => __( 'Sempre exportar novas vendas pagas e seus respectivos clientes ao GestãoClick.', 'gestaoclick' ),
             ),
             'gcw-settings-export-situacao' => array
             (
-                'title'         => __('Situação padrão ao exportar vendas ao GestãoClick', 'gestaoclick'),
                 'type'          => 'select',
+                'title'         => __('Situação padrão ao exportar vendas ao GestãoClick', 'gestaoclick'),
                 'label'         => __('Selecione a situação padrão para novas vendas exportadas', 'gestaoclick'),
                 'description'   => __('A situação padrão para ser usada em novas vendas pagas exportadas para o GestaoClick.', 'gestaoclick'),
                 'options'       => $this->gc_situacoes_options,
             ),
             'gcw-settings-export-trasportadora' => array
             (
-                'title'         => __( 'Transportadora padrão ao exportar vendas ao GestãoClick', 'gestaoclick' ),
                 'type'          => 'select',
+                'title'         => __( 'Transportadora padrão ao exportar vendas ao GestãoClick', 'gestaoclick' ),
                 'label'         => __( 'Selecione a transportadora padrão para novas vendas exportadas', 'gestaoclick' ),
                 'description'   => __( 'A transportadora padrão para ser usada em novas vendas pagas exportadas ao GestaoClick.', 'gestaoclick' ),
                 'options'       => $this->gc_transportadoras_options,
             ),
             'gcw-settings-shipping-calculator' => array
             (
-                'title'         => __('Calculadora de frete', 'gestaoclick'),
                 'type'          => 'checkbox',
-                'label'         => __('Habilitar calculadora de frete.', 'gestaoclick'),
                 'default'       => 'no',
+                'title'         => __('Calculadora de frete', 'gestaoclick'),
+                'label'         => __('Habilitar calculadora de frete', 'gestaoclick'),
                 'description'   => __('A calculadora de frete aparece na página individual para produtos e orçamento.', 'gestaoclick'),
             ),
             'gcw-settings-quote-section' => array
             (
-                'title'         => __('Orçamentos', 'gestaoclick'),
                 'type'          => 'title',
+                'title'         => __('Orçamentos', 'gestaoclick'),
                 'description'   => __('Configure o funcionamento de orçamentos que serão enviados para o GestãoClick.'),
             ),
             'gcw-settings-quote-enabler' => array
             (
-                'title'         => __('Habilitar orçamentos', 'gestaoclick'),
                 'type'          => 'checkbox',
-                'label'         => __('Habilitar o módulo de orçamentos.', 'gestaoclick'),
                 'default'       => 'no',
+                'title'         => __('Habilitar orçamentos', 'gestaoclick'),
+                'label'         => __('Habilitar o módulo de orçamentos', 'gestaoclick'),
                 'description'   => __('Produtos configurados para não ter controle de estoque no GestãoClick e importados para o WooCommerce, serão tratados como produtos para orçamentos.', 'gestaoclick'),
             ),
-            'gcw-settings-quote-minimum' => array(
-                'title'         => __('Quantidade mínima', 'gestaoclick'),
-                'label'         => __('Configura uma quantidade mínima de todos os itens para um orçamento.', 'gestaoclick'),
-                'description'   => __('Se um orçamento não atingir a quantidade mínima de produtos, ele não será enviado ao GestãoClick e o cliente será notificado. Insira 0 para não impor uma quantidade mínima.', 'gestaoclick'),
+            'gcw-settings-quote-minimum' => array
+            (
                 'type'          => 'number',
                 'default'       => '0',
                 'placeholder'   => '0',
+                'title'         => __('Quantidade mínima', 'gestaoclick'),
+                'label'         => __('Configura uma quantidade mínima de todos os itens para um orçamento', 'gestaoclick'),
+                'description'   => __('Se um orçamento não atingir a quantidade mínima de produtos, ele não será enviado ao GestãoClick e o cliente será notificado. Insira 0 para não impor uma quantidade mínima.', 'gestaoclick'),
             ),
         );
     }
@@ -176,19 +187,19 @@ class GCW_WC_Integration extends WC_Integration {
         update_option('gcw-settings-quote-minimum',         $this->settings['gcw-settings-quote-minimum']);
 
         echo '<div id="gcw_settings">';
-        echo '<h2 class="gcw-integration-title">' . esc_html( $this->get_method_title() ) . '</h2>';
+            echo '<h2 class="gcw-integration-title">' . esc_html( $this->get_method_title() ) . '</h2>';
 
-        if( GCW_GC_Api::test_connection() ) {
-            echo '<span class="gcw-integration-connection dashicons-before dashicons-yes-alt">' . esc_html( __('Conectado', 'gestaoclick') ) . '</span>';
-        } else {
-            wp_admin_notice(__( 'GestaoClick: Preencha corretamente suas credenciais de acesso.', 'gestaoclick' ), array( 'error' ) );
-        }
+            if( GCW_GC_Api::test_connection() ) {
+                echo '<span class="gcw-integration-connection dashicons-before dashicons-yes-alt">' . esc_html( __('Conectado', 'gestaoclick') ) . '</span>';
+            } else {
+                wp_admin_notice(__( 'GestaoClick: Preencha corretamente suas credenciais de acesso.', 'gestaoclick' ), array( 'error' ) );
+            }
 
-        $this->set_auto_imports( get_option( 'gcw-settings-auto-imports') );
+            $this->set_auto_imports( get_option( 'gcw-settings-auto-imports') );
 
-        echo wp_kses_post( wpautop( $this->get_method_description() ) );
-        echo '<div><input type="hidden" name="section" value="' . esc_attr( $this->id ) . '" /></div>';
-        echo '<table class="form-table">' . $this->generate_settings_html( $this->get_form_fields(), false ) . '</table>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+            echo wp_kses_post( wpautop( $this->get_method_description() ) );
+            echo '<div><input type="hidden" name="section" value="' . esc_attr( $this->id ) . '" /></div>';
+            echo '<table class="form-table">' . $this->generate_settings_html( $this->get_form_fields(), false ) . '</table>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
         echo '</div>';
     }
 

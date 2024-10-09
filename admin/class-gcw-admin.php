@@ -38,7 +38,10 @@ class GCW_Admin
 	public function enqueue_scripts()
 	{
 		wp_enqueue_style('gcw-admin', plugin_dir_url(__FILE__) . 'assets/css/gestaoclick-admin.css', array(), GCW_VERSION, 'all');
-		wp_enqueue_script( 'gcw-admin', plugin_dir_url( __FILE__ ) . 'assets/js/gestaoclick-admin.js', array( 'jquery' ), GCW_VERSION, false );
+		wp_enqueue_script('gcw-admin', plugin_dir_url( __FILE__ ) . 'assets/js/gestaoclick-admin.js', array( 'jquery' ), GCW_VERSION, false );
+		wp_localize_script('gcw-admin', 'gcw_admin_ajax_object', array(
+			'ajaxurl' => admin_url('admin-ajax.php')
+		));
 	}
 	
 	/**
@@ -248,6 +251,8 @@ class GCW_Admin
 
 		$this->products = new GCW_WC_Products();
 		$this->products->import('all');
+
+		update_option('gcw_gestaoclick_last_import', current_time('d/m/Y, H:i'));
     }
 
 	public function export_order($order_id) 

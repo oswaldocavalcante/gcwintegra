@@ -1,31 +1,42 @@
-(function( $ ) {
+jQuery(document).ready(function ($)
+{
+	$(document).on('click', '#gcw-btn-import', function ()
+	{
+		var loaderContainer = $('#gcw-import-area');
+		var loaderProps =
+		{
+			message: null,
+			overlayCSS:
+			{
+				background: '#fff',
+				opacity: 0.6
+			}
+		};
 
-	/**
-	 * All of the code for your admin-facing JavaScript source
-	 * should reside in this file.
-	 *
-	 * Note: It has been assumed you will write jQuery code here, so the
-	 * $ function reference has been prepared for usage within the scope
-	 * of this function.
-	 *
-	 * This enables you to define handlers, for when the DOM is ready:
-	 *
-	 * $(function() {
-	 *
-	 * });
-	 *
-	 * When the window is loaded:
-	 *
-	 * $( window ).load(function() {
-	 *
-	 * });
-	 *
-	 * ...and/or other possibilities.
-	 *
-	 * Ideally, it is not considered best practise to attach more than a
-	 * single DOM-ready or window-load handler for a particular page.
-	 * Although scripts in the WordPress core, Plugins and Themes may be
-	 * practising this, we should strive to set a better example in our own work.
-	 */
-
-})( jQuery );
+		$.ajax
+		({
+			url: gcw_admin_ajax_object.ajaxurl, // URL do AJAX do WordPress
+			method: 'POST',
+			data: {
+				action: 'gestaoclick_update'
+			},
+			beforeSend: function () 
+			{
+				$('#gcw-btn-import').html('Importando...');
+				loaderContainer.block(loaderProps);
+			},
+			complete: function () 
+			{
+				loaderContainer.unblock(); // Desbloqueia a interface do usuário quando a solicitação é concluída
+				$('#gcw-btn-import').html('Importar agora');
+			},
+			success: function (response) {
+				$('#gcw-last-import').html('Última importação: há 1 minuto');
+				loaderContainer.prepend(response);
+			},
+			error: function (xhr, status, error) {
+				console.error('Erro na requisição AJAX:', error);
+			}
+		});
+	});
+});

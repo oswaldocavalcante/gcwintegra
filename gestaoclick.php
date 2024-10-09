@@ -54,7 +54,8 @@ define('GCW_URL', plugins_url('/', __FILE__));
  * The code that runs during plugin activation.
  * This action is documented in includes/class-gestaoclick-activator.php
  */
-function activate_gestaoclick() {
+function activate_gestaoclick() 
+{
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-gestaoclick-activator.php';
 	Gestaoclick_Activator::activate();
 }
@@ -63,7 +64,8 @@ function activate_gestaoclick() {
  * The code that runs during plugin deactivation.
  * This action is documented in includes/class-gestaoclick-deactivator.php
  */
-function deactivate_gestaoclick() {
+function deactivate_gestaoclick() 
+{
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-gestaoclick-deactivator.php';
 	Gestaoclick_Deactivator::deactivate();
 }
@@ -87,7 +89,6 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-gestaoclick.php';
  * @since    1.0.0
  */
 function run_gestaoclick() {
-
 	$plugin = new Gestaoclick();
 }
 run_gestaoclick();

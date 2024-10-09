@@ -3,21 +3,36 @@
  * included in this file.
  */
 
-#gcw_settings {
+#gcw_settings
+{
     margin-top: 16px;
 }
 
-.gcw-integration-title {
+.gcw-integration-title
+{
     display: inline;
     padding-top: 20px;
 }
 
-.gcw-integration-connection {
+.gcw-integration-connection
+{
     font-size: 10px;
     color: darkslategray;
 }
 
-.gcw-integration-connection:before {
+.gcw-integration-connection:before
+{
     color: green;
     margin: 0 5px;
- }
+}
+
+#gcw-import-area
+{
+    width: fit-content;
+}
+
+#gcw-import-area span
+{
+    display: inline-block;
+    padding: 5px;
+}
