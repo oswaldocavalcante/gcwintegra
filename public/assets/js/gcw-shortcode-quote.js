@@ -1,6 +1,7 @@
 jQuery(document).ready(function($) 
 {
-    var loaderProps = {
+    var loaderProps = 
+    {
         message: null,
         overlayCSS:
         {
