@@ -76,9 +76,9 @@ jQuery(document).ready(function ($)
 				},
 				success: function (response) {
 					if (response.success) {
-						console.log(response.data);
 						window.open(response.data, '_blank');
 					} else {
+						alert(response.message);
 						console.error(response.data);
 					}
 				},

@@ -277,15 +277,26 @@ class GCW_Admin
 			{
 				$nota_fiscal_id = $order->get_meta('gcw_gc_venda_nfe_id');
 				$redirect_url .= 'index?id=' . $nota_fiscal_id;
-
-				wp_send_json_success($redirect_url);
 			}
 			else
 			{
 				$gc_venda = new GCW_GC_Venda($order_id);
-				$nota_fiscal_id = $gc_venda->get()['nota_fiscal_id'];
+				$gc_venda_data = $gc_venda->get();
 
-				if($nota_fiscal_id) 
+				if(is_wp_error($gc_venda_data))
+				{
+					wp_send_json( array
+						(
+							'success' => false,
+							'data' => $gc_venda_data,
+							'message' => 'Nenhuma venda encontrada para este pedido.'
+						)
+					);
+				}
+
+				$nota_fiscal_id = $gc_venda_data['nota_fiscal_id'];
+
+				if($nota_fiscal_id)
 				{
 					$order->add_meta_data('gcw_gc_venda_nfe_id', $nota_fiscal_id);
 					$redirect_url .= 'index?id=' . $nota_fiscal_id;
@@ -294,10 +305,10 @@ class GCW_Admin
 				{
 					$gc_venda_hash = $order->get_meta('gcw_gc_venda_hash');
 					$redirect_url .= 'adicionar/venda:' . $gc_venda_hash;
-				}
-				
-				wp_send_json_success($redirect_url);
+				}	
 			}
+
+			wp_send_json_success($redirect_url);
 		}
 	}
 }

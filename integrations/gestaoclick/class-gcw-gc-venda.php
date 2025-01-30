@@ -94,11 +94,18 @@ class GCW_GC_Venda extends GCW_GC_Api
 
         $body = json_decode($body, true);
 
-        if ($body['code'] == 200) {
-            return $body['data'][0];
+        if ($body['code'] == 200) 
+        {
+            if (is_array($body['data'])) {
+                return $body['data'][0];
+            }
+            else {
+                return new WP_Error($body['code'], $body['data']);
+            }
         }
-        else {
-            return false;
+        else 
+        {
+            return new WP_Error($body['code'], $body['data']);
         }
     }
 
