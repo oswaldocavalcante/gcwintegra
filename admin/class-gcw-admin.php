@@ -39,9 +39,13 @@ class GCW_Admin
 	{
 		wp_enqueue_style('gcw-admin', plugin_dir_url(__FILE__) . 'assets/css/gestaoclick-admin.css', array(), GCW_VERSION, 'all');
 		wp_enqueue_script('gcw-admin', plugin_dir_url( __FILE__ ) . 'assets/js/gestaoclick-admin.js', array( 'jquery' ), GCW_VERSION, false );
-		wp_localize_script('gcw-admin', 'gcw_admin_ajax_object', array(
-			'ajaxurl' => admin_url('admin-ajax.php')
-		));
+		wp_localize_script('gcw-admin', 'gcw_admin_ajax_object', 
+			array
+			(
+				'url' => admin_url('admin-ajax.php'),
+				'nonce' => wp_create_nonce('gcw_nonce')
+			)
+		);
 	}
 	
 	/**
@@ -259,5 +263,41 @@ class GCW_Admin
 	{
 		$gc_venda = new GCW_GC_Venda($order_id);
 		$gc_venda->export();
+	}
+
+	public function ajax_gcw_nfe($order_id)
+	{
+		if (isset($_POST['security']) && check_ajax_referer('gcw_nonce', 'security'))
+		{
+			$order_id = $_POST['order_id'];
+			$order = wc_get_order($order_id);
+			$redirect_url = 'https://gestaoclick.com/notas_fiscais/';
+
+			if ($order->meta_exists('gcw_gc_venda_nfe_id'))
+			{
+				$nota_fiscal_id = $order->get_meta('gcw_gc_venda_nfe_id');
+				$redirect_url .= 'index?id=' . $nota_fiscal_id;
+
+				wp_send_json_success($redirect_url);
+			}
+			else
+			{
+				$gc_venda = new GCW_GC_Venda($order_id);
+				$nota_fiscal_id = $gc_venda->get()['nota_fiscal_id'];
+
+				if($nota_fiscal_id) 
+				{
+					$order->add_meta_data('gcw_gc_venda_nfe_id', $nota_fiscal_id);
+					$redirect_url .= 'index?id=' . $nota_fiscal_id;
+				}
+				else 
+				{
+					$gc_venda_hash = $order->get_meta('gcw_gc_venda_hash');
+					$redirect_url .= 'adicionar/venda:' . $gc_venda_hash;
+				}
+				
+				wp_send_json_success($redirect_url);
+			}
+		}
 	}
 }

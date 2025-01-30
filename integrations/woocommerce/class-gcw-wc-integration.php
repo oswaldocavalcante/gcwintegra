@@ -25,16 +25,22 @@ class GCW_WC_Integration extends WC_Integration {
 
         $this->init_form_fields();
         $this->init_settings();
+        $this->define_woocommerce_hooks();
+    }
 
-        add_action('woocommerce_update_options_integration_' . $this->id, array($this, 'process_admin_options'));
-        add_filter('cron_schedules', array($this, 'add_cron_interval'));
+    private function define_woocommerce_hooks()
+    {
+        add_action('woocommerce_update_options_integration_' . $this->id,   array($this, 'process_admin_options'));
+        add_filter('cron_schedules',                                        array($this, 'add_cron_interval'));
+        add_filter('manage_edit-shop_order_columns',                        array($this, 'add_order_list_column'), 20);
+        add_action('manage_shop_order_posts_custom_column',                 array($this, 'add_order_list_column_actions'), 20, 2);
     }
 
     public function init_form_fields() 
     {
         $button_import_html = '';
 
-        if( GCW_GC_Api::test_connection() ) 
+        if(GCW_GC_Api::test_connection()) 
         {
             $gc_transportadoras = new GCW_GC_Transportadoras();
             $this->gc_transportadoras_options = $gc_transportadoras->get_options_for_settings();
@@ -228,4 +234,70 @@ class GCW_WC_Integration extends WC_Integration {
 			wp_unschedule_event( $timestamp, 'gestaoclick_update' );
 		}
 	}
+
+    function add_order_list_column($columns)
+    {
+        if (!GCW_GC_Api::test_connection())
+        {
+            wp_admin_notice(__('GestãoClick: Configura suas credenciais de acesso da API.', 'gestaoclick'), array('type' => 'error'));
+        }
+
+        $reordered_columns = array();
+
+        foreach ($columns as $key => $column)
+        {
+            $reordered_columns[$key] = $column;
+            if ($key == 'order_status')
+            {
+                // Inserting after "Status" column
+                $reordered_columns['gcw-actions'] = __('GestãoClick', 'gestaoclick');
+            }
+        }
+
+        return $reordered_columns;
+    }
+
+    function add_order_list_column_actions($column, $order_id)
+    {
+        if ($column === 'gcw-actions')
+        {
+            $order = wc_get_order($order_id);
+
+            if (!$order) return;
+
+            if($order->meta_exists('gcw_gc_venda_id')) // Checks if the order has been exported
+            {
+                $button_label = __('NFe', 'gestaoclick');
+                $button_props = '';
+                $css_classes = 'button button-large dashicons-before dashicons-external ';
+
+                if ($order->meta_exists('gcw_gc_venda_nota_fiscal_id')) 
+                { 
+                    $button_label = __('Acessar NFe', 'uberdirect');
+                }
+                else
+                {
+                    $button_label = __('Emitir NFe', 'gestaoclick');
+                    $css_classes .= 'button-primary ';
+                }
+
+                if ($order->get_status() != 'processing') {
+                    $css_classes .= 'disabled ';
+                } 
+
+                $button_props .= sprintf
+                (
+                    '
+                        id="gcw-button-nfe"
+                        data-order-id="%s"
+                        class="%s"
+                    ',
+                    esc_attr($order_id),
+                    esc_attr($css_classes)
+                );
+
+                echo sprintf('<a %s> %s </a>', $button_props, $button_label);
+            }
+        }
+    }
 }

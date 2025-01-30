@@ -8,6 +8,7 @@ class GCW_GC_Venda extends GCW_GC_Api
     private $api_headers;
     private $api_endpoint;
 
+    private $wc_order_id;
     private $cliente_id;
     private $data;
     private $valor_frete;
@@ -19,9 +20,10 @@ class GCW_GC_Venda extends GCW_GC_Api
     {
         parent::__construct();
         $this->api_headers  = parent::get_headers();
-        $this->api_endpoint = parent::get_endpoint_sales();
+        $this->api_endpoint = parent::get_endpoint_vendas();
 
-        $order = wc_get_order($wc_order_id);
+        $this->wc_order_id = $wc_order_id;
+        $order = wc_get_order($this->wc_order_id);
         $this->desconto_valor = $order->get_total_fees() < 0 ? abs($order->get_total_fees()) : '0';
         $this->data           = $order->get_date_created()->date('Y-m-d');
         $this->valor_frete    = $order->get_shipping_total();
@@ -81,6 +83,25 @@ class GCW_GC_Venda extends GCW_GC_Api
         }
     }
 
+    public function get()
+    {
+        $order = wc_get_order($this->wc_order_id);
+        $id = $order->get_meta('gcw_gc_venda_id');
+
+        $body = wp_remote_retrieve_body(
+            wp_remote_get($this->api_endpoint . '?id=' . $id, $this->api_headers)
+        );
+
+        $body = json_decode($body, true);
+
+        if ($body['code'] == 200) {
+            return $body['data'][0];
+        }
+        else {
+            return false;
+        }
+    }
+
     public function export()
     {
         $body = array
@@ -102,10 +123,20 @@ class GCW_GC_Venda extends GCW_GC_Api
             array_merge
             (
                 $this->api_headers,
-                array( 'body' => wp_json_encode($body) ),
+                array('body' => wp_json_encode($body)),
             ) 
         );
 
-        return $response;
+        // Associates WC Order with GC Order through metadata
+        $this->add_wc_order_metadata(json_decode($response['body']));
+    }
+
+    public function add_wc_order_metadata($gc_data)
+    {
+        $wc_order = wc_get_order($this->wc_order_id);
+        $wc_order->add_meta_data('gcw_gc_venda_id',             $gc_data->data->id, true);
+        $wc_order->add_meta_data('gcw_gc_venda_codigo',         $gc_data->data->codigo, true);
+        $wc_order->add_meta_data('gcw_gc_venda_hash',           $gc_data->data->hash, true);
+        $wc_order->save();
     }
 }

@@ -15,7 +15,7 @@ jQuery(document).ready(function ($)
 
 		$.ajax
 		({
-			url: gcw_admin_ajax_object.ajaxurl, // URL do AJAX do WordPress
+			url: gcw_admin_ajax_object.url, // URL do AJAX do WordPress
 			method: 'POST',
 			data: {
 				action: 'gestaoclick_update'
@@ -38,5 +38,53 @@ jQuery(document).ready(function ($)
 				console.error('Erro na requisição AJAX:', error);
 			}
 		});
+	});
+
+	$(document).on('click', '#gcw-button-nfe:not(.disabled)', function () 
+	{
+		var $button = $(this);
+		var $order_id = $button.data('order-id');
+
+		var loaderContainer = $button;
+		var loaderProperties =
+		{
+			message: null,
+			overlayCSS:
+			{
+				background: '#fff',
+				opacity: 0.6
+			}
+		};
+
+		$.ajax
+			({
+				url: gcw_admin_ajax_object.url,
+				method: 'POST',
+				data:
+				{
+					order_id: $order_id,
+					action: 'gcw_nfe',
+					security: gcw_admin_ajax_object.nonce,
+				},
+				beforeSend: function () {
+					loaderContainer.addClass('disabled');
+					loaderContainer.block(loaderProperties);
+				},
+				complete: function () {
+					loaderContainer.unblock();
+					loaderContainer.removeClass('disabled');
+				},
+				success: function (response) {
+					if (response.success) {
+						console.log(response.data);
+						window.open(response.data, '_blank');
+					} else {
+						console.error(response.data);
+					}
+				},
+				error: function (xhr, status, error) {
+					console.error(error);
+				}
+			});
 	});
 });

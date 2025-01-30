@@ -76,6 +76,7 @@ class Gestaoclick
 		add_filter('woocommerce_integrations', 		array($plugin_admin, 'add_woocommerce_integration'));
 		add_action('gestaoclick_update', 			array($plugin_admin, 'import_all'));
 		add_action('wp_ajax_gestaoclick_update', 	array($plugin_admin, 'import_all'));
+		add_action('wp_ajax_gcw_nfe', 				array($plugin_admin, 'ajax_gcw_nfe'));
 		
 		add_action('init', 							array($plugin_admin, 'register_quote_endpoint'));
 		add_action('init', 							array($plugin_admin, 'create_quote_post_type'));

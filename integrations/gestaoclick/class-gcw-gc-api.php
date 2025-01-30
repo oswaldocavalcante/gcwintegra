@@ -9,7 +9,7 @@ class GCW_GC_Api
     private $endpoint_items;
     private $endpoint_categories;
     private $endpoint_attributes;
-    private $endpoint_sales;
+    private $endpoint_vendas;
     private $endpoint_clients;
     private $endpoint_transportadoras;
     private $endpoint_situacoes;
@@ -30,7 +30,7 @@ class GCW_GC_Api
         $this->endpoint_items =             'https://api.gestaoclick.com/api/produtos';
         $this->endpoint_categories =        'https://api.gestaoclick.com/api/grupos_produtos';
         $this->endpoint_attributes =        'https://api.gestaoclick.com/api/grades';
-        $this->endpoint_sales =             'https://api.gestaoclick.com/api/vendas';
+        $this->endpoint_vendas =            'https://api.gestaoclick.com/api/vendas';
         $this->endpoint_clients =           'https://api.gestaoclick.com/api/clientes';
         $this->endpoint_transportadoras =   'https://api.gestaoclick.com/api/transportadoras';
         $this->endpoint_situacoes =         'https://api.gestaoclick.com/api/situacoes_vendas';
@@ -114,9 +114,9 @@ class GCW_GC_Api
         return $this->endpoint_attributes;
     }
 
-    public function get_endpoint_sales()
+    public function get_endpoint_vendas()
     {
-        return $this->endpoint_sales;
+        return $this->endpoint_vendas;
     }
 
     public function get_endpoint_clients()
