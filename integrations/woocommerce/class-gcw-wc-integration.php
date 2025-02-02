@@ -271,7 +271,7 @@ class GCW_WC_Integration extends WC_Integration {
                 $button_props = '';
                 $css_classes = 'button button-large dashicons-before dashicons-external ';
 
-                if ($order->meta_exists('gcw_gc_venda_nota_fiscal_id')) 
+                if ($order->meta_exists('gcw_gc_venda_nfe_id'))
                 { 
                     $button_label = __('Acessar NFe', 'uberdirect');
                 }
