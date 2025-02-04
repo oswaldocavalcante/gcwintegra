@@ -85,7 +85,8 @@ class GCW_Public
 	{
 		wp_enqueue_style('gcw-shortcode-quote', GCW_URL . 'public/assets/css/gcw-public.css', array(), GCW_VERSION, 'all');
 		wp_enqueue_script('gcw-shipping-calculator', GCW_URL . 'public/assets/js/gcw-shipping-calculator.js', array('jquery'), GCW_VERSION, false);
-		wp_localize_script('gcw-shipping-calculator', 'gcw_quote_ajax_object', array(
+		wp_localize_script('gcw-shipping-calculator', 'gcw_quote_ajax_object', array
+		(
 			'url'   => admin_url('admin-ajax.php'),
 			'nonce' => wp_create_nonce('gcw_quote_nonce'),
 		));
@@ -144,7 +145,25 @@ class GCW_Public
 				$html = '<form><ul>';
 				foreach ($rates as $rate)
 				{
-					$html .= '<li>'	. esc_html($rate->label) . ': ' . wc_price($rate->cost) . '</li>';
+					$dropoff_html = '';
+
+					$dropoff_deadline = $rate->meta_data['dropoff_deadline'];
+					if($dropoff_deadline)
+					{
+						if($dropoff_deadline->format('Y-m-d') == current_datetime()->format('Y-m-d')) {
+							$dropoff_html = 'hoje';
+						}
+						else if($dropoff_deadline->format('Y-m-d') == current_datetime()->modify('+1 day')->format('Y-m-d')) {
+							$dropoff_html = 'amanhã';
+						}
+						else {
+							$dropoff_html = date_i18n('l', strtotime($dropoff_deadline));
+						}
+
+						$dropoff_html = sprintf('(chegará %s)', $dropoff_html);
+					}
+
+					$html .= sprintf('<li> %s: %s %s </li>', esc_html($rate->label), wc_price($rate->cost), $dropoff_html);
 				}
 				$html .= '</ul></form>';
 

@@ -273,7 +273,7 @@ class GCW_WC_Integration extends WC_Integration {
 
                 if ($order->meta_exists('gcw_gc_venda_nfe_id'))
                 { 
-                    $button_label = __('Acessar NFe', 'gestaoclick');
+                    $button_label = __('Ver NFe', 'gestaoclick');
                 }
                 else
                 {
