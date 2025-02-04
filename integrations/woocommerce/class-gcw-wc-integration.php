@@ -273,7 +273,7 @@ class GCW_WC_Integration extends WC_Integration {
 
                 if ($order->meta_exists('gcw_gc_venda_nfe_id'))
                 { 
-                    $button_label = __('Acessar NFe', 'uberdirect');
+                    $button_label = __('Acessar NFe', 'gestaoclick');
                 }
                 else
                 {
@@ -281,7 +281,7 @@ class GCW_WC_Integration extends WC_Integration {
                     $css_classes .= 'button-primary ';
                 }
 
-                if ($order->get_status() != 'processing') {
+                if (!$order->is_paid()) {
                     $css_classes .= 'disabled ';
                 } 
 
