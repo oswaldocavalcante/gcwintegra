@@ -300,6 +300,7 @@ class GCW_Admin
 				{
 					$order->add_meta_data('gcw_gc_venda_nfe_id', $nota_fiscal_id);
 					$redirect_url .= 'index?id=' . $nota_fiscal_id;
+					$order->save();
 				}
 				else 
 				{
