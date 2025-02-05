@@ -157,7 +157,8 @@ class GCW_Public
 							$dropoff_html = 'amanhã';
 						}
 						else {
-							$dropoff_html = date_i18n('l', strtotime($dropoff_deadline));
+							$formatter = new IntlDateFormatter('pt_BR', IntlDateFormatter::FULL, IntlDateFormatter::NONE, wp_timezone(), IntlDateFormatter::GREGORIAN, 'EEEE');
+							$dropoff_html = $formatter->format($dropoff_deadline);
 						}
 
 						$dropoff_html = sprintf('(chegará %s)', $dropoff_html);
