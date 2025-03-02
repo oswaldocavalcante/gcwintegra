@@ -82,6 +82,7 @@ class GCW_WC_Integration extends WC_Integration {
                 'title'       	=> __( 'Secret Access Token', 'gestaoclick' ),
                 'description' 	=> __('Seu Secret Access Token das configurações de API do GestãoClick.', 'gestaoclick' ),
             ),
+
             'gcw-settings-imports-section' => array
             (
                 'type'          => 'title',
@@ -111,6 +112,7 @@ class GCW_WC_Integration extends WC_Integration {
                 'title'         => __( 'Produtos proibidos', 'gestaoclick' ),
                 'description'   => __( 'Lista de códigos de produtos para não importar do GestãoClick (um código de produto por linha).', 'gestaoclick' ),
             ),
+
             'gcw-settings-exports-section' => array
             (
                 'type'          => 'title',
@@ -149,6 +151,7 @@ class GCW_WC_Integration extends WC_Integration {
                 'label'         => __('Habilitar calculadora de frete', 'gestaoclick'),
                 'description'   => __('A calculadora de frete aparece na página individual para produtos e orçamento.', 'gestaoclick'),
             ),
+
             'gcw-settings-quote-section' => array
             (
                 'type'          => 'title',

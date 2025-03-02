@@ -41,14 +41,16 @@ class GCW_GC_Api
     {
         $http_code = null;
 
-        $access_token =         get_option('gcw-api-access-token');
-        $secret_access_token =  get_option('gcw-api-secret-access-token');
+        $access_token           = get_option('gcw-api-access-token');
+        $secret_access_token    = get_option('gcw-api-secret-access-token');
 
-        if (($access_token && $secret_access_token) != '') {
-
+        if (($access_token && $secret_access_token) != '')
+        {
             $url = 'https://api.gestaoclick.com/produtos';
-            $args = array(
-                'headers' => array(
+            $args = array
+            (
+                'headers' => array
+                (
                     'Content-Type' => 'application/json',
                     'access-token' => $access_token,
                     'secret-access-token' => $secret_access_token,
@@ -57,7 +59,8 @@ class GCW_GC_Api
 
             $response = wp_remote_get($url, $args);
             $http_code = wp_remote_retrieve_response_code($response);
-        } else {
+        } 
+        else {
             return false;
         }
 
