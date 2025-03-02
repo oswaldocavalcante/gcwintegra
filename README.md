@@ -1,4 +1,4 @@
-# GestãoClick
+# GestãoClick para WooCommerce
 
 GestãoClick é um plugin para WordPress que integra o ERP GestãoClick ao WooCommerce.
 

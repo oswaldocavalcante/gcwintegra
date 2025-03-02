@@ -13,9 +13,9 @@
  * @package           GestaoClick
  *
  * @wordpress-plugin
- * Plugin Name:       GestãoClick for WooCommerce
+ * Plugin Name:       GestãoClick para WooCommerce
  * Plugin URI:        https://github.com/oswaldocavalcante/gestaoclick
- * Description:       Integrates GestãoClick ERP for WooCommerce.
+ * Description:       Integra o ERP GestãoClick ao WooCommerce para Wordpress.
  * Version:           3.5.1
  * Author:            Oswaldo Cavalcante
  * Author URI:        https://oswaldocavalcante.com/
@@ -32,21 +32,9 @@
  */
 
 // If this file is called directly, abort.
-if ( ! defined( 'WPINC' ) ) {
-	die;
-}
-
-/**
- * Currently plugin version.
- * Start at version 1.0.0 and use SemVer - https://semver.org
- * Rename this for your plugin and update it as you release new versions.
- */
-define( 'GCW_VERSION', '3.5.1' );
-
-if (!defined('GCW_PLUGIN_FILE')) {
-	define('GCW_PLUGIN_FILE', __FILE__);
-}
-
+if (!defined( 'WPINC' )) { die; }
+if (!defined('GCW_PLUGIN_FILE')) { define('GCW_PLUGIN_FILE', __FILE__); }
+define('GCW_VERSION', '3.5.1');
 define('GCW_ABSPATH', dirname(GCW_PLUGIN_FILE) . '/');
 define('GCW_URL', plugins_url('/', __FILE__));
 
@@ -88,7 +76,9 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-gestaoclick.php';
  *
  * @since    1.0.0
  */
-function run_gestaoclick() {
+function run_gestaoclick() 
+{
 	$plugin = new Gestaoclick();
 }
+
 run_gestaoclick();
