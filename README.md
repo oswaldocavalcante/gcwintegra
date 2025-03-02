@@ -52,4 +52,4 @@ Desenvolvido por [Oswaldo Cavalcante](https://oswaldocavalcante.com/).
 
 ## Licença
 
-Este projeto está licenciado sob a licença GPLv2 ou posterior. Leia a licença [LICENSE](http://www.gnu.org/licenses/gpl-2.0.html) para mais detalhes.
+Este projeto está licenciado sob a licença GPLv2 ou posterior. Leia a [licença](http://www.gnu.org/licenses/gpl-2.0.html) para mais detalhes.
