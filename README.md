@@ -2,13 +2,6 @@
 
 GestãoClick é um plugin para WordPress que integra o ERP GestãoClick ao WooCommerce.
 
-## Instalação
-
-1. Faça o download do plugin.
-2. Extraia o conteúdo do arquivo zip.
-3. Faça o upload da pasta `gestaoclick` para o diretório `wp-content/plugins/` do seu WordPress.
-4. Ative o plugin através do menu 'Plugins' no WordPress.
-
 ## Funcionalidades
 
 ### Integração com API do GestãoClick
@@ -35,6 +28,18 @@ Habilite a calculadora de frete para aparecer na página individual de produtos 
 
 - **Habilitar Orçamentos**: Ative o módulo de orçamentos para produtos sem controle de estoque no GestãoClick.
 - **Quantidade Mínima**: Configure uma quantidade mínima de itens para um orçamento ser enviado ao GestãoClick.
+
+## Instalação
+
+1. Faça o download do plugin.
+2. Extraia o conteúdo do arquivo zip.
+3. Faça o upload da pasta `gestaoclick` para o diretório `wp-content/plugins/` do seu WordPress.
+4. Ative o plugin através do menu 'Plugins' no WordPress.
+
+## Configuração básica
+
+1. Vá em WooCommerce -> Configurações -> Integração -> GestãoClick e insira suas credenciais de acesso à API obtidas em [https://gestaoclick.com/integracao_api/configuracoes/gerar_token](https://gestaoclick.com/integracao_api/configuracoes/gerar_token).
+2. Selecione as categorias que deseja importar, e habilite a auto importação ou faça uma importação manual.
 
 ## Contribuição
 

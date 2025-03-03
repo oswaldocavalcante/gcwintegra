@@ -73,6 +73,7 @@ class Gestaoclick
 		add_action('admin_init', 					array($plugin_admin, 'register_settings'));
 		add_action('admin_menu', 					array($plugin_admin, 'add_admin_menu'));
 		add_action('admin_enqueue_scripts', 		array($plugin_admin, 'enqueue_scripts'));
+		add_action('before_woocommerce_init',       array($plugin_admin, 'declare_wc_compatibility'));
 		add_filter('woocommerce_integrations', 		array($plugin_admin, 'add_woocommerce_integration'));
 		add_action('gestaoclick_update', 			array($plugin_admin, 'import_all'));
 		add_action('wp_ajax_gestaoclick_update', 	array($plugin_admin, 'import_all'));

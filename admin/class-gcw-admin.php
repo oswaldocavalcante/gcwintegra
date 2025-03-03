@@ -22,6 +22,14 @@ class GCW_Admin
 	private $categories;
 	private $attributes;
 
+	public function declare_wc_compatibility()
+	{
+		if (class_exists(\Automattic\WooCommerce\Utilities\FeaturesUtil::class))
+		{
+			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', GCW_PLUGIN_FILE, true);
+		}
+	}
+
 	public function add_woocommerce_integration($integrations)
 	{
 		require_once plugin_dir_path(dirname(__FILE__)) . 'integrations/woocommerce/class-gcw-wc-integration.php';
