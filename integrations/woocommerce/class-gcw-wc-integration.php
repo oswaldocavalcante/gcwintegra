@@ -33,7 +33,10 @@ class GCW_WC_Integration extends WC_Integration {
         add_action('woocommerce_update_options_integration_' . $this->id,   array($this, 'process_admin_options'));
         add_filter('cron_schedules',                                        array($this, 'add_cron_interval'));
         add_filter('manage_edit-shop_order_columns',                        array($this, 'add_order_list_column'), 20);
-        add_action('manage_shop_order_posts_custom_column',                 array($this, 'add_order_list_column_actions'), 20, 2);
+        add_action('manage_shop_order_posts_custom_column',                 array($this, 'add_order_list_column_actions_legacy'), 20, 2);
+        add_filter('woocommerce_shop_order_list_table_columns',             array($this, 'add_order_list_column'));                            // HPOS orders page.
+        add_action('woocommerce_shop_order_list_table_custom_column',       array($this, 'add_order_list_column_actions_hpos'),  10, 2);    // HPOS orders page.
+
     }
 
     public function init_form_fields() 
@@ -260,7 +263,7 @@ class GCW_WC_Integration extends WC_Integration {
         return $reordered_columns;
     }
 
-    function add_order_list_column_actions($column, $order_id)
+    function add_order_list_column_actions_legacy($column, $order_id)
     {
         if ($column === 'gcw-actions')
         {
@@ -296,6 +299,51 @@ class GCW_WC_Integration extends WC_Integration {
                         class="%s"
                     ',
                     esc_attr($order_id),
+                    esc_attr($css_classes)
+                );
+
+                echo sprintf('<a %s> %s </a>', $button_props, $button_label);
+            }
+        }
+    }
+
+    function add_order_list_column_actions_hpos($column, $post_or_order_object)
+    {
+        if ($column === 'gcw-actions')
+        {
+            $order = ($post_or_order_object instanceof WP_Post) ? wc_get_order($post_or_order_object->ID) : $post_or_order_object;
+            // Note: $post_or_order_object should not be used directly below this point.
+
+            if (!$order) return;
+
+            if ($order->meta_exists('gcw_gc_venda_id')) // Checks if the order has been exported
+            {
+                $button_label = __('NFe', 'gestaoclick');
+                $button_props = '';
+                $css_classes = 'button button-large dashicons-before dashicons-external ';
+
+                if ($order->meta_exists('gcw_gc_venda_nfe_id'))
+                {
+                    $button_label = __('Ver NFe', 'gestaoclick');
+                }
+                else
+                {
+                    $button_label = __('Emitir NFe', 'gestaoclick');
+                    $css_classes .= 'button-primary ';
+                }
+
+                if (!$order->is_paid())
+                {
+                    $css_classes .= 'disabled ';
+                }
+
+                $button_props .= sprintf(
+                    '
+                        id="gcw-button-nfe"
+                        data-order-id="%s"
+                        class="%s"
+                    ',
+                    esc_attr($order->get_id()),
                     esc_attr($css_classes)
                 );
 

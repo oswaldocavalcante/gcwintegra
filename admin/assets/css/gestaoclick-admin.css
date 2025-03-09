@@ -39,6 +39,8 @@
 
 #gcw-button-nfe.dashicons-before:before
 {
-    line-height: 26px;
-    font-weight: normal;
+    line-height: 29px;
+    float: right;
+    margin-left: 5px;
+    margin-right: -4px;
 }
