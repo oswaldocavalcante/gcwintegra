@@ -10,5 +10,13 @@
         {
             "composer/installers": true
         }
+    },
+    "scripts": 
+    {
+      "build": 
+      [
+        "rm -f gestaoclick.zip",
+        "zip -r gestaoclick.zip . -x \"*.git*\" -x \".vscode/*\" -x \".DS_Store\" -x \"*.code-workspace\" "
+      ]
     }
 }

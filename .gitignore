@@ -1,4 +1,4 @@
+.vscode/
 *.DS_Store
-wp-content/
-.vscode/launch.json
-gestaoclick.code-workspace
+*.code-workspace
+gestaoclick.zip
