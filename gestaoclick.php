@@ -9,7 +9,7 @@
  * Plugin Name:       GestãoClick para WooCommerce
  * Plugin URI:        https://github.com/oswaldocavalcante/gestaoclick
  * Description:       Integra o ERP GestãoClick ao WooCommerce para Wordpress.
- * Version:           3.5.3
+ * Version:           3.5.4
  * Author:            Oswaldo Cavalcante
  * Author URI:        https://oswaldocavalcante.com/
  * License:           GPL-2.0+
@@ -26,7 +26,7 @@
 // If this file is called directly, abort.
 if (!defined( 'WPINC' )) { die; }
 if (!defined('GCW_PLUGIN_FILE')) { define('GCW_PLUGIN_FILE', __FILE__); }
-define('GCW_VERSION', '3.5.3');
+define('GCW_VERSION', '3.5.4');
 define('GCW_ABSPATH', dirname(GCW_PLUGIN_FILE) . '/');
 define('GCW_URL', plugins_url('/', __FILE__));
 
