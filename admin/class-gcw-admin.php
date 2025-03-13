@@ -133,7 +133,8 @@ class GCW_Admin
 			'Configurações', 
 			'manage_options',
 			'gestaoclick-settings',
-			function() {
+			function() 
+			{
 				$url = admin_url('admin.php?page=wc-settings&tab=integration&section=gestaoclick');
 				wp_redirect($url);
 				exit;
@@ -190,10 +191,12 @@ class GCW_Admin
 		$orcamento_page = get_page_by_path('orcamento');
 		$finalizar_orcamento_page = get_page_by_path('finalizar-orcamento');
 
-		if ($orcamento_page && $orcamento_page->ID == $post->ID) {
+		if ($orcamento_page && $orcamento_page->ID == $post->ID) 
+		{
 			$post_states[] = __('Página do orçamento', 'gestaoclick');
 		}
-		if ($finalizar_orcamento_page && $finalizar_orcamento_page->ID == $post->ID) {
+		if ($finalizar_orcamento_page && $finalizar_orcamento_page->ID == $post->ID) 
+		{
 			$post_states[] = __('Página de finalização do orçamento', 'gestaoclick');
 		}
 
@@ -209,10 +212,12 @@ class GCW_Admin
 	{
 		$this->products = new GCW_WC_Products();
 
-		if($this->products::test_connection()) {
+		if($this->products::test_connection()) 
+		{
 			require_once plugin_dir_path(dirname(__FILE__)) . 'admin/views/gcw-admin-page-products.php';
 		} 
-		else {
+		else 
+		{
 			wp_admin_notice(__('GestãoClick: configure suas credenciais de acesso.', 'gestaoclick'), array('type' => 'error', 'dismissible' => true));
 		}
 	}
@@ -226,10 +231,12 @@ class GCW_Admin
 	{
 		$this->categories = new GCW_WC_Categories();
 
-		if($this->categories::test_connection()) {
+		if($this->categories::test_connection()) 
+		{
 			require_once plugin_dir_path(dirname(__FILE__)) . 'admin/views/gcw-admin-page-categories.php';
 		} 
-		else {
+		else 
+		{
 			wp_admin_notice(__('GestãoClick: configure suas credenciais de acesso.', 'gestaoclick'), array('type' => 'error', 'dismissible' => true));
 		}
 	}
@@ -243,10 +250,12 @@ class GCW_Admin
 	{
 		$this->attributes = new GCW_WC_Attributes();
 		
-		if($this->attributes::test_connection()) {
+		if($this->attributes::test_connection()) 
+		{
 			require_once plugin_dir_path(dirname(__FILE__)) . 'admin/views/gcw-admin-page-attributes.php';
 		} 
-		else {
+		else 
+		{
 			wp_admin_notice(__('GestãoClick: configure suas credenciais de acesso.', 'gestaoclick'), array('type' => 'error', 'dismissible' => true));
 		}
 	}

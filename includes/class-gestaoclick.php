@@ -83,9 +83,12 @@ class Gestaoclick
 		add_action('init', 							array($plugin_admin, 'create_quote_post_type'));
 		add_action('display_post_states', 			array($plugin_admin, 'add_display_post_states'), 10, 2);
 
-		if (get_option('gcw-settings-export-orders') == 'yes') {
+		if (get_option('gcw-settings-export-orders') == 'yes') 
+		{
 			add_action('woocommerce_order_status_processing', array($plugin_admin, 'export_order'));
-		} else {
+		} 
+		else 
+		{
 			remove_action('woocommerce_order_status_processing', array($plugin_admin, 'export_order'));
 		}
 	}

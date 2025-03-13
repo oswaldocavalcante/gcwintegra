@@ -72,7 +72,8 @@ class GCW_GC_Venda extends GCW_GC_Api
         $this->cliente_id   = null;
         
         // If a GestaoClick cliente_id exists, get it. Otherwise, export the new client and return his id from GestaoClick.
-        if ($wc_customer->get_meta('gestaoclick_gc_cliente_id')){
+        if ($wc_customer->get_meta('gestaoclick_gc_cliente_id'))
+        {
             $this->cliente_id = $wc_customer->get_meta('gestaoclick_gc_cliente_id');
         } 
         else
@@ -88,7 +89,8 @@ class GCW_GC_Venda extends GCW_GC_Api
         $order = wc_get_order($this->wc_order_id);
         $id = $order->get_meta('gcw_gc_venda_id');
 
-        $body = wp_remote_retrieve_body(
+        $body = wp_remote_retrieve_body
+        (
             wp_remote_get($this->api_endpoint . '?id=' . $id, $this->api_headers)
         );
 
@@ -96,10 +98,12 @@ class GCW_GC_Venda extends GCW_GC_Api
 
         if ($body['code'] == 200) 
         {
-            if (is_array($body['data'])) {
+            if (is_array($body['data'])) 
+            {
                 return $body['data'][0];
             }
-            else {
+            else 
+            {
                 return new WP_Error($body['code'], $body['data']);
             }
         }

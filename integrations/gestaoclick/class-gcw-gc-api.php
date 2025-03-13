@@ -17,24 +17,26 @@ class GCW_GC_Api
 
     public function __construct()
     {
-        $this->access_token =           get_option('gcw-api-access-token');
-        $this->secret_access_token =    get_option('gcw-api-secret-access-token');
-        $this->headers = array(
-            'headers' => array(
+        $this->access_token         = get_option('gcw-api-access-token');
+        $this->secret_access_token  = get_option('gcw-api-secret-access-token');
+        $this->headers = array
+        (
+            'headers' => array
+            (
                 'Content-Type' =>           'application/json',
                 'access-token' =>           $this->access_token,
                 'secret-access-token' =>    $this->secret_access_token,
             ),
         );
 
-        $this->endpoint_items =             'https://api.gestaoclick.com/api/produtos';
-        $this->endpoint_categories =        'https://api.gestaoclick.com/api/grupos_produtos';
-        $this->endpoint_attributes =        'https://api.gestaoclick.com/api/grades';
-        $this->endpoint_vendas =            'https://api.gestaoclick.com/api/vendas';
-        $this->endpoint_clients =           'https://api.gestaoclick.com/api/clientes';
-        $this->endpoint_transportadoras =   'https://api.gestaoclick.com/api/transportadoras';
-        $this->endpoint_situacoes =         'https://api.gestaoclick.com/api/situacoes_vendas';
-        $this->endpoint_orcamentos =        'https://api.gestaoclick.com/api/orcamentos';
+        $this->endpoint_items =             'https://api.gestaoclick.com/produtos';
+        $this->endpoint_categories =        'https://api.gestaoclick.com/grupos_produtos';
+        $this->endpoint_attributes =        'https://api.gestaoclick.com/grades';
+        $this->endpoint_vendas =            'https://api.gestaoclick.com/vendas';
+        $this->endpoint_clients =           'https://api.gestaoclick.com/clientes';
+        $this->endpoint_transportadoras =   'https://api.gestaoclick.com/transportadoras';
+        $this->endpoint_situacoes =         'https://api.gestaoclick.com/situacoes_vendas';
+        $this->endpoint_orcamentos =        'https://api.gestaoclick.com/orcamentos';
     }
 
     public static function test_connection()
@@ -51,16 +53,17 @@ class GCW_GC_Api
             (
                 'headers' => array
                 (
-                    'Content-Type' => 'application/json',
-                    'access-token' => $access_token,
-                    'secret-access-token' => $secret_access_token,
+                    'Content-Type'          => 'application/json',
+                    'access-token'          => $access_token,
+                    'secret-access-token'   => $secret_access_token,
                 ),
             );
 
             $response = wp_remote_get($url, $args);
             $http_code = wp_remote_retrieve_response_code($response);
         } 
-        else {
+        else 
+        {
             return false;
         }
 
@@ -73,8 +76,10 @@ class GCW_GC_Api
         $items = [];
         $proxima_pagina = 1;
 
-        do {
-            $body = wp_remote_retrieve_body(
+        do 
+        {
+            $body = wp_remote_retrieve_body
+            (
                 wp_remote_get($endpoint . '?pagina=' . $proxima_pagina, $this->headers)
             );
 
@@ -82,7 +87,8 @@ class GCW_GC_Api
             $proxima_pagina = $body_array['meta']['proxima_pagina'];
 
             $items = array_merge($items, $body_array['data']);
-        } while ($proxima_pagina != null);
+        }
+        while ($proxima_pagina != null);
 
         return $items;
     }

@@ -36,7 +36,6 @@ class GCW_WC_Integration extends WC_Integration {
         add_action('manage_shop_order_posts_custom_column',                 array($this, 'add_order_list_column_actions_legacy'), 20, 2);
         add_filter('woocommerce_shop_order_list_table_columns',             array($this, 'add_order_list_column'));                            // HPOS orders page.
         add_action('woocommerce_shop_order_list_table_custom_column',       array($this, 'add_order_list_column_actions_hpos'),  10, 2);    // HPOS orders page.
-
     }
 
     public function init_form_fields() 
@@ -46,15 +45,16 @@ class GCW_WC_Integration extends WC_Integration {
         if(GCW_GC_Api::test_connection()) 
         {
             $gc_transportadoras = new GCW_GC_Transportadoras();
-            $this->gc_transportadoras_options = $gc_transportadoras->get_options_for_settings();
+            $this->gc_transportadoras_options = $gc_transportadoras->get_options_for_settings() ?? [];
 
             $gc_situacoes = new GCW_GC_Situacoes();
-            $this->gc_situacoes_options = $gc_situacoes->get_options_for_settings();
+            $this->gc_situacoes_options = $gc_situacoes->get_options_for_settings() ?? [];
 
             $gc_categorias = new GCW_WC_Categories();
-            $this->gc_categorias_options = $gc_categorias->get_options_for_settings();
+            $this->gc_categorias_options = $gc_categorias->get_options_for_settings() ?? [];
 
-            $button_import_html = '
+            $button_import_html = 
+            '
                 <br>
                 <div id="gcw-import-area">
                     <a id="gcw-btn-import" class="button gcw-btn-settings">Importar agora</a>
@@ -201,9 +201,12 @@ class GCW_WC_Integration extends WC_Integration {
         echo '<div id="gcw_settings">';
             echo '<h2 class="gcw-integration-title">' . esc_html( $this->get_method_title() ) . '</h2>';
 
-            if( GCW_GC_Api::test_connection() ) {
+            if(GCW_GC_Api::test_connection()) 
+            {
                 echo '<span class="gcw-integration-connection dashicons-before dashicons-yes-alt">' . esc_html( __('Conectado', 'gestaoclick') ) . '</span>';
-            } else {
+            } 
+            else
+            {
                 wp_admin_notice(__( 'GestaoClick: Preencha corretamente suas credenciais de acesso.', 'gestaoclick' ), array( 'error' ) );
             }
 
@@ -226,12 +229,13 @@ class GCW_WC_Integration extends WC_Integration {
         return $schedules;
     }
 
-	public function set_auto_imports( $auto_updates = 'no' ) 
+	public function set_auto_imports($auto_updates = 'no') 
     {
 		if( $auto_updates == 'yes' )
         {
-			if ( ! wp_next_scheduled( 'gestaoclick_update' ) ) {
-				wp_schedule_event( time(), 'fifteen_minutes', 'gestaoclick_update' );
+			if (!wp_next_scheduled('gestaoclick_update')) 
+            {
+				wp_schedule_event(time(), 'fifteen_minutes', 'gestaoclick_update');
 			}
 		} 
         elseif ( wp_next_scheduled( 'gestaoclick_update' ) ) 
