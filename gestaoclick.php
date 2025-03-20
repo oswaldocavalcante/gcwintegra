@@ -24,28 +24,20 @@
  */
 
 // If this file is called directly, abort.
-if (!defined( 'WPINC' )) { die; }
-if (!defined('GCW_PLUGIN_FILE')) { define('GCW_PLUGIN_FILE', __FILE__); }
-define('GCW_VERSION', '3.5.4');
+if (!defined('WPINC')) die;
+if (!defined('GCW_PLUGIN_FILE')) define('GCW_PLUGIN_FILE', __FILE__);
 define('GCW_ABSPATH', dirname(GCW_PLUGIN_FILE) . '/');
 define('GCW_URL', plugins_url('/', __FILE__));
-
-function activate_gestaoclick() 
-{
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-gestaoclick-activator.php';
-	Gestaoclick_Activator::activate();
-}
+define('GCW_VERSION', '3.5.4');
 
 function deactivate_gestaoclick() 
 {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-gestaoclick-deactivator.php';
+	require_once plugin_dir_path(__FILE__) . 'includes/class-gestaoclick-deactivator.php';
 	Gestaoclick_Deactivator::deactivate();
 }
+register_deactivation_hook(__FILE__, 'deactivate_gestaoclick');
 
-register_activation_hook( __FILE__, 'activate_gestaoclick' );
-register_deactivation_hook( __FILE__, 'deactivate_gestaoclick' );
-
-require plugin_dir_path( __FILE__ ) . 'includes/class-gestaoclick.php';
+require plugin_dir_path(__FILE__) . 'includes/class-gestaoclick.php';
 
 function run_gestaoclick() 
 {

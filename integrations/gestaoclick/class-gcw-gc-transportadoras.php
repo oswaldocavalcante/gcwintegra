@@ -23,14 +23,14 @@ class GCW_GC_Transportadoras extends GCW_GC_Api
         {
             $body = wp_remote_retrieve_body
             ( 
-                wp_remote_get( $this->api_endpoint . '?pagina=' . $proxima_pagina, $this->api_headers )
+                wp_remote_get($this->api_endpoint . '?pagina=' . $proxima_pagina, $this->api_headers)
             );
 
             $body_array = json_decode($body, true);
             if(!is_array($body_array)) return false;
 
             $proxima_pagina = $body_array['meta']['proxima_pagina'];
-            $transportadoras = array_merge( $transportadoras, $body_array['data'] );
+            $transportadoras = array_merge($transportadoras, $body_array['data']);
         }
         while ($proxima_pagina != null);
 

@@ -1,16 +1,4 @@
 {
-    "require": 
-    {
-        "dompdf/dompdf": "^3.0",
-        "endroid/qr-code": "^5.0"
-    },
-    "config": 
-    {
-        "allow-plugins": 
-        {
-            "composer/installers": true
-        }
-    },
     "scripts": 
     {
       "build": 

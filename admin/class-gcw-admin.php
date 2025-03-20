@@ -143,66 +143,6 @@ class GCW_Admin
 		);
 	}
 
-	function register_quote_endpoint()
-	{
-		add_rewrite_endpoint('orcamentos', EP_PAGES);
-	}
-
-	public function create_quote_post_type()
-	{
-		$labels = array
-		(
-			'name' 				=> 'Orçamentos',
-			'singular_name' 	=> 'Orçamento',
-			'add_new' 			=> 'Adicionar novo',
-			'add_new_item' 		=> 'Adicionar novo Orçamento',
-			'edit_item' 		=> 'Editar Orçamento',
-			'new_item' 			=> 'Novo Orçamento',
-			'all_items' 		=> 'Orçamentos',
-			'view_item' 		=> 'Ver Orçamento',
-			'search_items' 		=> 'Buscar Orçamentos',
-			'not_found' 		=> 'Nenhum Orçamento encontrado',
-			'not_found_in_trash' => 'Nenhum Orçamento encontrado na Lixeira',
-			'menu_name' 		=> 'Orçamentos',
-		);
-
-		$args = array
-		(
-			'labels' 		=> $labels,
-			'public' 		=> true,
-			'has_archive' 	=> true,
-			'show_in_menu' 	=> 'gestaoclick',
-			'rewrite' 		=> array('slug' => 'orcamentos'),
-			'supports' 		=> array('title', 'editor'),
-			'menu_position' => 4,
-		);
-
-		register_post_type('orcamento', $args);
-	}
-
-	/**
-	 * Add a post display state for special WC pages in the page list table.
-	 *
-	 * @param array   $post_states An array of post display states.
-	 * @param WP_Post $post        The current post object.
-	 */
-	public function add_display_post_states($post_states, $post)
-	{
-		$orcamento_page = get_page_by_path('orcamento');
-		$finalizar_orcamento_page = get_page_by_path('finalizar-orcamento');
-
-		if ($orcamento_page && $orcamento_page->ID == $post->ID) 
-		{
-			$post_states[] = __('Página do orçamento', 'gestaoclick');
-		}
-		if ($finalizar_orcamento_page && $finalizar_orcamento_page->ID == $post->ID) 
-		{
-			$post_states[] = __('Página de finalização do orçamento', 'gestaoclick');
-		}
-
-		return $post_states;
-	}
-
 	/**
 	 * Return the products page.
 	 *

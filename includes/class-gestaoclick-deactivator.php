@@ -1,16 +1,6 @@
 <?php
 
 /**
- * Fired during plugin deactivation
- *
- * @link       https://oswaldocavalcante.com
- * @since      1.0.0
- *
- * @package    Gestaoclick
- * @subpackage Gestaoclick/includes
- */
-
-/**
  * Fired during plugin deactivation.
  *
  * This class defines all code necessary to run during the plugin's deactivation.
@@ -19,12 +9,12 @@
  * @package    Gestaoclick
  * @subpackage Gestaoclick/includes
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
+ * @link       https://oswaldocavalcante.com
  */
 class Gestaoclick_Deactivator {
 
 	/**
 	 * Deactivates the cron hook.
-	 *
 	 *
 	 * @since    1.0.0
 	 */

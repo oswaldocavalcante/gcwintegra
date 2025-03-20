@@ -48,15 +48,8 @@ class Gestaoclick
 	 */
 	private function load_dependencies()
 	{
-		/**
-		 * The class responsible for defining all actions that occur in the admin area.
-		 */
-		require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-gcw-admin.php';
-
-		/**
-		 * The class responsible for defining all actions that occur in the public area.
-		 */
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/class-gcw-public.php';
+		require_once GCW_ABSPATH . 'admin/class-gcw-admin.php';
+		require_once GCW_ABSPATH . 'public/class-gcw-public.php';
 	}
 
 	/**
@@ -78,10 +71,6 @@ class Gestaoclick
 		add_action('gestaoclick_update', 			array($plugin_admin, 'import_all'));
 		add_action('wp_ajax_gestaoclick_update', 	array($plugin_admin, 'import_all'));
 		add_action('wp_ajax_gcw_nfe', 				array($plugin_admin, 'ajax_gcw_nfe'));
-		
-		add_action('init', 							array($plugin_admin, 'register_quote_endpoint'));
-		add_action('init', 							array($plugin_admin, 'create_quote_post_type'));
-		add_action('display_post_states', 			array($plugin_admin, 'add_display_post_states'), 10, 2);
 
 		if (get_option('gcw-settings-export-orders') == 'yes') 
 		{
@@ -96,16 +85,6 @@ class Gestaoclick
 	private function define_public_hooks()
 	{
 		$plugin_public = new GCW_Public();
-		
-		add_action('woocommerce_init', 							array($plugin_public, 'session_start'), 1);
-		add_filter('query_vars', 								array($plugin_public, 'add_quote_query_vars'));
-		add_filter('woocommerce_account_menu_items', 			array($plugin_public, 'add_orcamentos_to_account_menu'));
-		add_action('woocommerce_account_orcamentos_endpoint', 	array($plugin_public, 'orcamentos_endpoint_content'));
-		add_action('template_include',							array($plugin_public, 'include_template_quote'));
-
-		add_shortcode('gestaoclick_orcamento', 					array($plugin_public, 'shortcode_quote'));
-		add_shortcode('gestaoclick_finalizar_orcamento', 		array($plugin_public, 'shortcode_checkout'));
-		add_action('wp_ajax_gcw_spec_sheet', 					array($plugin_public, 'ajax_create_spec_sheet'));
 
 		if(get_option('gcw-settings-shipping-calculator') == 'yes')
 		{
@@ -118,12 +97,6 @@ class Gestaoclick
 			remove_action('woocommerce_single_product_summary', 	array($plugin_public, 'shipping_calculator'));
 			remove_action('wp_ajax_gcw_calculate_shipping', 		array($plugin_public, 'ajax_calculate_shipping'));
 			remove_action('wp_ajax_nopriv_gcw_calculate_shipping', 	array($plugin_public, 'ajax_calculate_shipping'));
-		}
-
-		if(get_option('gcw-settings-quote-enabler') == 'yes') {
-			add_action('woocommerce_after_add_to_cart_button', 		array($plugin_public, 'add_to_quote_button'));
-		} else {
-			remove_action('woocommerce_after_add_to_cart_button', 	array($plugin_public, 'add_to_quote_button'));
 		}
 	}
 }
