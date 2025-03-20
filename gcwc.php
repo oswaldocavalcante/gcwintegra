@@ -3,18 +3,18 @@
 /**
  * @link              https://oswaldocavalcante.com
  * @since             1.0.0
- * @package           GestaoClick
+ * @package           GCWC
  *
  * @wordpress-plugin
  * Plugin Name:       GestãoClick para WooCommerce
- * Plugin URI:        https://github.com/oswaldocavalcante/gestaoclick
+ * Plugin URI:        https://github.com/oswaldocavalcante/gcwc
  * Description:       Integra o ERP GestãoClick ao WooCommerce para Wordpress.
  * Version:           3.5.4
  * Author:            Oswaldo Cavalcante
  * Author URI:        https://oswaldocavalcante.com/
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain:       gestaoclick
+ * Text Domain:       gcwc
  * Domain Path:       /languages
  * Requires Plugins:  woocommerce, woocommerce-extra-checkout-fields-for-brazil
  * Tested up to: 6.6.2
@@ -25,23 +25,23 @@
 
 // If this file is called directly, abort.
 if (!defined('WPINC')) die;
-if (!defined('GCW_PLUGIN_FILE')) define('GCW_PLUGIN_FILE', __FILE__);
-define('GCW_ABSPATH', dirname(GCW_PLUGIN_FILE) . '/');
-define('GCW_URL', plugins_url('/', __FILE__));
-define('GCW_VERSION', '3.5.4');
+if (!defined('GCWC_PLUGIN_FILE')) define('GCWC_PLUGIN_FILE', __FILE__);
+define('GCWC_ABSPATH', dirname(GCWC_PLUGIN_FILE) . '/');
+define('GCWC_URL', plugins_url('/', __FILE__));
+define('GCWC_VERSION', '3.5.4');
 
-function deactivate_gestaoclick() 
+function deactivate_gcwc() 
 {
-	require_once plugin_dir_path(__FILE__) . 'includes/class-gestaoclick-deactivator.php';
-	Gestaoclick_Deactivator::deactivate();
+	require_once plugin_dir_path(__FILE__) . 'includes/class-gcwc-deactivator.php';
+	GCWC_Deactivator::deactivate();
 }
-register_deactivation_hook(__FILE__, 'deactivate_gestaoclick');
+register_deactivation_hook(__FILE__, 'deactivate_gcwc');
 
-require plugin_dir_path(__FILE__) . 'includes/class-gestaoclick.php';
+require plugin_dir_path(__FILE__) . 'includes/class-gcwc.php';
 
-function run_gestaoclick() 
+function run_gcwc() 
 {
-	$plugin = new Gestaoclick();
+	$plugin = new GCWC();
 }
 
-run_gestaoclick();
+run_gcwc();

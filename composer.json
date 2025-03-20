@@ -3,8 +3,8 @@
     {
       "build": 
       [
-        "rm -f gestaoclick.zip",
-        "zip -r gestaoclick.zip . -x \"*.git*\" -x \".vscode/*\" -x \".DS_Store\" -x \"*.code-workspace\" "
+        "rm -f gcwc.zip",
+        "zip -r gcwc.zip . -x \"*.git*\" -x \".vscode/*\" -x \".DS_Store\" -x \"*.code-workspace\" "
       ]
     }
 }

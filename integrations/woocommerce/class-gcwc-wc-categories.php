@@ -10,9 +10,9 @@
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  */
 
-require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-api.php';
+require_once GCWC_ABSPATH . 'integrations/gestaoclick/class-gcwc-gc-api.php';
 
-class GCW_WC_Categories extends GCW_GC_Api {
+class GCWC_WC_Categories extends GCWC_GC_Api {
 
     private $api_endpoint;
     private $api_headers;
@@ -56,7 +56,7 @@ class GCW_WC_Categories extends GCW_GC_Api {
     public function import($categories_ids)
     {
         $categories             = $this->fetch_api();
-        $categories_selection   = get_option('gcw-settings-categories-selection');
+        $categories_selection   = get_option('gcwc-settings-categories-selection');
 
         if( $categories_selection ) 
         {

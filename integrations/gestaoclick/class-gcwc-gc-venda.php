@@ -1,9 +1,9 @@
 <?php
 
-require_once 'class-gcw-gc-api.php';
-require_once 'class-gcw-gc-cliente.php';
+require_once 'class-gcwc-gc-api.php';
+require_once 'class-gcwc-gc-cliente.php';
 
-class GCW_GC_Venda extends GCW_GC_Api 
+class GCWC_GC_Venda extends GCWC_GC_Api 
 {
     private $api_headers;
     private $api_endpoint;
@@ -27,20 +27,20 @@ class GCW_GC_Venda extends GCW_GC_Api
         $this->desconto_valor = $order->get_total_fees() < 0 ? abs($order->get_total_fees()) : '0';
         $this->data           = $order->get_date_created()->date('Y-m-d');
         $this->valor_frete    = $order->get_shipping_total();
-        $this->transportadora = $this->valor_frete == 0 ? '' : get_option('gcw-settings-export-trasportadora');
+        $this->transportadora = $this->valor_frete == 0 ? '' : get_option('gcwc-settings-export-trasportadora');
 
         foreach ($order->get_items() as $order_item) 
         {
             $order_item_data    = $order_item->get_data();
             $wc_product_id      = $order_item_data['product_id'];
             $wc_product         = wc_get_product($wc_product_id);
-            $gc_product_id      = $wc_product->get_meta('gestaoclick_gc_product_id');
+            $gc_product_id      = $wc_product->get_meta('gcwc_gc_product_id');
 
             $wc_variation_id = $order_item_data['variation_id'];
             if ($wc_variation_id) 
             {
                 $wc_variation       = wc_get_product($wc_variation_id);
-                $gc_variation_id    = $wc_variation->get_meta('gestaoclick_gc_variation_id');
+                $gc_variation_id    = $wc_variation->get_meta('gcwc_gc_variation_id');
 
                 $this->produtos[] = array
                 (
@@ -72,22 +72,22 @@ class GCW_GC_Venda extends GCW_GC_Api
         $this->cliente_id   = null;
         
         // If a GestaoClick cliente_id exists, get it. Otherwise, export the new client and return his id from GestaoClick.
-        if ($wc_customer->get_meta('gestaoclick_gc_cliente_id'))
+        if ($wc_customer->get_meta('gcwc_gc_cliente_id'))
         {
-            $this->cliente_id = $wc_customer->get_meta('gestaoclick_gc_cliente_id');
+            $this->cliente_id = $wc_customer->get_meta('gcwc_gc_cliente_id');
         } 
         else
         {
-            $gc_cliente = new GCW_GC_Cliente($wc_customer);
+            $gc_cliente = new GCWC_GC_Cliente($wc_customer);
             $this->cliente_id = $gc_cliente->export();
-            $wc_customer->add_meta_data('gestaoclick_gc_cliente_id', $this->cliente_id, true);
+            $wc_customer->add_meta_data('gcwc_gc_cliente_id', $this->cliente_id, true);
         }
     }
 
     public function get()
     {
         $order = wc_get_order($this->wc_order_id);
-        $id = $order->get_meta('gcw_gc_venda_id');
+        $id = $order->get_meta('gcwc_gc_venda_id');
 
         $body = wp_remote_retrieve_body
         (
@@ -120,7 +120,7 @@ class GCW_GC_Venda extends GCW_GC_Api
             'tipo'              => 'produto',
             'cliente_id'        => $this->cliente_id,
             'data'              => $this->data,
-            'situacao_id'       => get_option('gcw-settings-export-situacao'),
+            'situacao_id'       => get_option('gcwc-settings-export-situacao'),
             'transportadora_id' => $this->transportadora,
             'valor_frete'       => $this->valor_frete,
             'nome_canal_venda'  => 'Internet',
@@ -145,9 +145,9 @@ class GCW_GC_Venda extends GCW_GC_Api
     public function add_wc_order_metadata($gc_data)
     {
         $wc_order = wc_get_order($this->wc_order_id);
-        $wc_order->add_meta_data('gcw_gc_venda_id',             $gc_data->data->id, true);
-        $wc_order->add_meta_data('gcw_gc_venda_codigo',         $gc_data->data->codigo, true);
-        $wc_order->add_meta_data('gcw_gc_venda_hash',           $gc_data->data->hash, true);
+        $wc_order->add_meta_data('gcwc_gc_venda_id',     $gc_data->data->id, true);
+        $wc_order->add_meta_data('gcwc_gc_venda_codigo', $gc_data->data->codigo, true);
+        $wc_order->add_meta_data('gcwc_gc_venda_hash',   $gc_data->data->hash, true);
         $wc_order->save();
     }
 }

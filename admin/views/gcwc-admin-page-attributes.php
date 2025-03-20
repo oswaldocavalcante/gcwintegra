@@ -12,19 +12,19 @@
  * @subpackage Wooclick/admin/partials
  */
 
-require_once GCW_ABSPATH . 'admin/list-tables/class-gcw-list-table-attributes.php';
+require_once GCWC_ABSPATH . 'admin/list-tables/class-gcwc-list-table-attributes.php';
 
-$attributes_table = new GCW_List_Table_Attributes();
+$attributes_table = new GCWC_List_Table_Attributes();
 $attributes_table->prepare_items();
 
 ?>
 
 <div class="wrap">
-    <h2><?php echo esc_html(__('GestãoClick - Importar Atributos', 'gestaoclick')); ?></h2>
+    <h2><?php echo esc_html(__('GestãoClick - Importar Atributos', 'gcwc')); ?></h2>
     <form id="events-filter" method="post">
         <?php 
         $attributes_table->display();
-        wp_nonce_field('gcw_form_attributes', 'gcw_nonce_attributes');
+        wp_nonce_field('gcwc_form_attributes', 'gcwc_nonce_attributes');
         ?>
     </form>
 </div>

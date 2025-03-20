@@ -1,27 +1,27 @@
 <?php
 
-class GCW_Public
+class GCWC_Public
 {
 
 	public function shipping_calculator()
 	{
-		wp_enqueue_style('gcw-shortcode-quote', GCW_URL . 'public/assets/css/gcw-public.css', array(), GCW_VERSION, 'all');
-		wp_enqueue_script('gcw-shipping-calculator', GCW_URL . 'public/assets/js/gcw-shipping-calculator.js', array('jquery'), GCW_VERSION, false);
-		wp_localize_script('gcw-shipping-calculator', 'gcw_quote_ajax_object', array
+		wp_enqueue_style('gcwc-shortcode-quote', GCWC_URL . 'public/assets/css/gcwc-public.css', array(), GCWC_VERSION, 'all');
+		wp_enqueue_script('gcwc-shipping-calculator', GCWC_URL . 'public/assets/js/gcwc-shipping-calculator.js', array('jquery'), GCWC_VERSION, false);
+		wp_localize_script('gcwc-shipping-calculator', 'gcwc_quote_ajax_object', array
 		(
 			'url'   => admin_url('admin-ajax.php'),
-			'nonce' => wp_create_nonce('gcw_quote_nonce'),
+			'nonce' => wp_create_nonce('gcwc_quote_nonce'),
 		));
 
 		?>
-		<div id="gcw_quote_totals_shipping" class="gcw_quote_totals_section">
-			<p><?php echo esc_html_e('Cálculo da entrega', 'gestaoclick'); ?></p>
-			<div id="gcw_quote_shipping_address"></div>
-			<form method="POST" id="gcw_quote_shipping_form">
+		<div id="gcwc_quote_totals_shipping" class="gcwc_quote_totals_section">
+			<p><?php echo esc_html_e('Cálculo da entrega', 'gcwc'); ?></p>
+			<div id="gcwc_quote_shipping_address"></div>
+			<form method="POST" id="gcwc_quote_shipping_form">
 				<input type="text" id="shipping_postcode" name="shipping_postcode" placeholder="Digite seu CEP" />
-				<button id="gcw-update-shipping-button" type="button" class="button">Calcular</button>
+				<button id="gcwc-update-shipping-button" type="button" class="button">Calcular</button>
 			</form>
-			<div id="gcw_quote_shipping_options"></div>
+			<div id="gcwc_quote_shipping_options"></div>
 		</div>
 		<?php
 	}

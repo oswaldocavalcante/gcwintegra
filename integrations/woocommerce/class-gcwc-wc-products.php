@@ -3,14 +3,14 @@
 /**
  * Reference for Products Variables: https://stackoverflow.com/questions/47518280/create-programmatically-a-woocommerce-product-variation-with-new-attribute-value
  *
- * @package    Gestaoclick
- * @subpackage Gestaoclick/integrations
+ * @package    GCWC
+ * @subpackage GCWC/integrations
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  */
 
-require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-api.php';
+require_once GCWC_ABSPATH . 'integrations/gestaoclick/class-gcwc-gc-api.php';
 
-class GCW_WC_Products extends GCW_GC_Api {
+class GCWC_WC_Products extends GCWC_GC_Api {
 
     private $api_endpoint;
     private $api_headers;
@@ -50,8 +50,8 @@ class GCW_WC_Products extends GCW_GC_Api {
     public function import($products_codes) 
     {
         $products               = $this->fetch_api();
-        $products_blacklist     = get_option( 'gcw-settings-products-blacklist' );
-        $categories_selection   = get_option( 'gcw-settings-categories-selection' );
+        $products_blacklist     = get_option( 'gcwc-settings-products-blacklist' );
+        $categories_selection   = get_option( 'gcwc-settings-categories-selection' );
         $products_selection     = array();
 
         if( $categories_selection ) 
@@ -120,7 +120,7 @@ class GCW_WC_Products extends GCW_GC_Api {
                 $product = new WC_Product_Simple();
             }
 
-            $product->add_meta_data('gestaoclick_gc_product_id', (int) $product_data['id'], true);
+            $product->add_meta_data('gcwc_gc_product_id', (int) $product_data['id'], true);
         }
 
         if($product instanceof WC_Product_Variable)
@@ -153,7 +153,7 @@ class GCW_WC_Products extends GCW_GC_Api {
 
         $product->set_props($product_props);
         $product->set_attributes(array_merge($product->get_attributes(), $this->get_filters_attributes($product->get_name())));
-        $product->add_meta_data('gestaoclick_last_update', $product_data['modificado_em'], true);
+        $product->add_meta_data('gcwc_last_update', $product_data['modificado_em'], true);
         
         return $product->save();
     }
@@ -193,7 +193,7 @@ class GCW_WC_Products extends GCW_GC_Api {
             {
                 $variation = new WC_Product_Variation();
                 $variation->set_sku($variation_data['variacao']['codigo']);
-                $variation->add_meta_data( 'gestaoclick_gc_variation_id', (int) $variation_data['variacao']['id'], true );
+                $variation->add_meta_data( 'gcwc_gc_variation_id', (int) $variation_data['variacao']['id'], true );
             }
             
             $variation->set_parent_id($parent_product_id);

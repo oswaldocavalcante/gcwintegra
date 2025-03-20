@@ -12,19 +12,19 @@
  * @subpackage Wooclick/admin/partials
  */
 
-require_once GCW_ABSPATH . 'admin/list-tables/class-gcw-list-table-products.php';
+require_once GCWC_ABSPATH . 'admin/list-tables/class-gcwc-list-table-categories.php';
 
-$products_table = new GCW_List_Table_Products();
-$products_table->prepare_items();
+$categories_table = new GCWC_List_Table_Categories();
+$categories_table->prepare_items();
 
 ?>
 
 <div class="wrap">
-    <h2><?php echo esc_html(__('GestãoClick - Importar Produtos', 'gestaoclick')); ?></h2>
+    <h2><?php echo esc_html(__('GestãoClick - Importar Categorias', 'gcwc')); ?></h2>
     <form id="events-filter" method="post">
         <?php 
-        $products_table->display();
-        wp_nonce_field('gcw_form_products', 'gcw_nonce_products');
+        $categories_table->display();
+        wp_nonce_field('gcwc_form_categories', 'gcwc_nonce_categories');
         ?>
     </form>
 </div>

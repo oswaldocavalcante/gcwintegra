@@ -1,8 +1,8 @@
 jQuery(document).ready(function ($)
 {
-	$(document).on('click', '#gcw-btn-import', function ()
+	$(document).on('click', '#gcwc-btn-import', function ()
 	{
-		var loaderContainer = $('#gcw-import-area');
+		var loaderContainer = $('#gcwc-import-area');
 		var loaderProps =
 		{
 			message: null,
@@ -15,23 +15,23 @@ jQuery(document).ready(function ($)
 
 		$.ajax
 		({
-			url: gcw_admin_ajax_object.url, // URL do AJAX do WordPress
+			url: gcwc_admin_ajax_object.url, // URL do AJAX do WordPress
 			method: 'POST',
 			data: {
-				action: 'gestaoclick_update'
+				action: 'gcwc_update'
 			},
 			beforeSend: function () 
 			{
-				$('#gcw-btn-import').html('Importando...');
+				$('#gcwc-btn-import').html('Importando...');
 				loaderContainer.block(loaderProps);
 			},
 			complete: function () 
 			{
 				loaderContainer.unblock(); // Desbloqueia a interface do usuário quando a solicitação é concluída
-				$('#gcw-btn-import').html('Importar agora');
+				$('#gcwc-btn-import').html('Importar agora');
 			},
 			success: function (response) {
-				$('#gcw-last-import').html('Última importação: há 1 minuto');
+				$('#gcwc-last-import').html('Última importação: há 1 minuto');
 				loaderContainer.prepend(response);
 			},
 			error: function (xhr, status, error) {
@@ -40,7 +40,7 @@ jQuery(document).ready(function ($)
 		});
 	});
 
-	$(document).on('click', '#gcw-button-nfe:not(.disabled)', function () 
+	$(document).on('click', '#gcwc-button-nfe:not(.disabled)', function () 
 	{
 		var $button = $(this);
 		var $order_id = $button.data('order-id');
@@ -58,13 +58,13 @@ jQuery(document).ready(function ($)
 
 		$.ajax
 			({
-				url: gcw_admin_ajax_object.url,
+				url: gcwc_admin_ajax_object.url,
 				method: 'POST',
 				data:
 				{
 					order_id: $order_id,
-					action: 'gcw_nfe',
-					security: gcw_admin_ajax_object.nonce,
+					action: 'gcwc_nfe',
+					security: gcwc_admin_ajax_object.nonce,
 				},
 				beforeSend: function () {
 					loaderContainer.addClass('disabled');

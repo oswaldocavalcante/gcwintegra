@@ -6,9 +6,9 @@ if (!class_exists('WP_List_Table')) {
     require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
 
-require_once GCW_ABSPATH . 'integrations/woocommerce/class-gcw-wc-products.php';
+require_once GCWC_ABSPATH . 'integrations/woocommerce/class-gcwc-wc-attributes.php';
 
-class GCW_List_Table_Products extends WP_List_Table {
+class GCWC_List_Table_Attributes extends WP_List_Table {
 
     private $table_data;
 
@@ -16,22 +16,20 @@ class GCW_List_Table_Products extends WP_List_Table {
     {
         global $status, $page;
 
-        parent::__construct( array
-        (
-          'singular' => 'product',
-          'plural' => 'products',
+        parent::__construct( array(
+          'singular' => 'attribute',
+          'plural' => 'attributes',
           'ajax' => false
-        )); 
+        ) ); 
     }
 
    function column_default($item, $column_name) 
    {
         switch ($column_name) 
         {
-            case 'codigo_barra':
+            case 'id':
             case 'nome':
-            case 'estoque':
-            case 'valor_venda':
+            case 'cadastrado_em':
                 return $item[$column_name];
             default:
                 return print_r($item,true);
@@ -40,18 +38,17 @@ class GCW_List_Table_Products extends WP_List_Table {
 
     function column_cb($item) 
     {
-        return sprintf('<input type="checkbox" name="bulk-action[]" value="%1$s" />', $item['codigo_barra']);
+        return sprintf('<input type="checkbox" name="bulk-action[]" value="%1$s" />', $item['id']);
     }    
 
-    function get_columns()
+    function get_columns() 
     {
         $columns = array
         (
-            'cb'            => '<input type="checkbox" />',
-            'codigo_barra'  => __('Código', 'gestaoclick'),
-            'nome'          => __('Nome', 'gestaoclick'),
-            'estoque'       => __('Estoque', 'gestaoclick'),
-            'valor_venda'   => __('Preço', 'gestaoclick')
+            'cb'                => '<input type="checkbox" />',
+            'id'                => __('ID', 'gcwc-attributes'),
+            'nome'              => __('Nome', 'gcwc-attributes'),
+            'cadastrado_em'    => __('Criação', 'gcwc-attributes'),
         );
 
         return $columns;
@@ -63,37 +60,31 @@ class GCW_List_Table_Products extends WP_List_Table {
         (
             'id'            => array('id', false),
             'nome'          => array('nome', false),
-            'grupo_pai_id'  => array('estoque', false),
-            'grupo_pai_id'  => array('valor_venda', false)
+            'cadastrado_em'  => array('cadastrado_em', false)
         );
 
         return $sortable_columns;
     }
 
-    function get_bulk_actions() 
-    {
-        $actions = array
-        (
+    function get_bulk_actions() {
+        $actions = array(
             'import' => 'Importar selecionados',
             'import_all' => 'Importar todos'
         );
-
         return $actions;
     }
 
-    function process_bulk_action(GCW_WC_Products $products) 
+    function process_bulk_action()
     {
-        if('import' === $this->current_action()) 
+        if('import' === $this->current_action())
         {
-            if(isset($_POST['gcw_nonce_products']) && wp_verify_nonce($_POST['gcw_nonce_products'], 'gcw_form_products'))
-            {
+            if (isset($_POST['gcwc_nonce_attributes']) && wp_verify_nonce($_POST['gcwc_nonce_attributes'], 'gcwc_form_attributes')) {
                 $selected_items = isset($_POST['bulk-action']) ? $_POST['bulk-action'] : array();
-                $products->import($selected_items);
+                apply_filters( 'gcwc_import_attributes', $selected_items );
             }
         }
-
-        if( 'import_all' === $this->current_action() ) {
-            $products->import('all');
+        if('import_all' === $this->current_action()) {
+            apply_filters( 'gcwc_import_attributes', 'all' );
         }
     }
 
@@ -113,24 +104,24 @@ class GCW_List_Table_Products extends WP_List_Table {
         return ($order === 'asc') ? $result : -$result;
     }
 
-    public function prepare_items()
+    public function prepare_items() 
     {
-        $products = new GCW_WC_Products();
-        $this->table_data = $products->fetch_api();
+        $attributes = new GCWC_WC_Attributes();
+        $this->table_data = $attributes->fetch_api();
         
         $columns = $this->get_columns();
         $hidden = array();
         $sortable = $this->get_sortable_columns();
-        $primary  = 'name';
+        $primary  = 'nome';
         $this->_column_headers = array($columns, $hidden, $sortable, $primary);
-        $this->process_bulk_action($products);
+        $this->process_bulk_action();
         
         /* pagination */
         $total_items = count($this->table_data);
         $per_page = 100;
         $current_page = $this->get_pagenum();
         $this->table_data = array_slice($this->table_data, (($current_page - 1) * $per_page), $per_page);
-        $this->set_pagination_args(array
+        $this->set_pagination_args( array
         (
             'total_items' => $total_items, // total number of items
             'per_page'    => $per_page, // items to show on a page

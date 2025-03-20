@@ -10,9 +10,9 @@
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  */
 
-require_once GCW_ABSPATH . 'integrations/gestaoclick/class-gcw-gc-api.php';
+require_once GCWC_ABSPATH . 'integrations/gestaoclick/class-gcwc-gc-api.php';
  
-class GCW_WC_Attributes extends GCW_GC_Api {
+class GCWC_WC_Attributes extends GCWC_GC_Api {
 
     private $api_endpoint;
     private $api_headers;
@@ -23,7 +23,7 @@ class GCW_WC_Attributes extends GCW_GC_Api {
         $this->api_endpoint = parent::get_endpoint_attributes();
         $this->api_headers =  parent::get_headers();
         
-        add_filter( 'gestaoclick_import_attributes', array( $this, 'import' ) );
+        add_filter( 'gcwc_import_attributes', array( $this, 'import' ) );
     }
 
     public function fetch_api() 
@@ -51,7 +51,7 @@ class GCW_WC_Attributes extends GCW_GC_Api {
     }
 
     // public function import( $attributes_ids ) {
-    //     $attributes = get_option('gestaoclick-attributes');
+    //     $attributes = get_option('gcwc-attributes');
     //     $selected_attributes = array();
 
     //     // Filtering selected attributes

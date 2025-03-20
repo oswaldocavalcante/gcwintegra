@@ -1,8 +1,8 @@
 <?php
 
-require_once 'class-gcw-gc-api.php';
+require_once 'class-gcwc-gc-api.php';
 
-class GCW_GC_Transportadoras extends GCW_GC_Api 
+class GCWC_GC_Transportadoras extends GCWC_GC_Api 
 {
     private $api_headers;
     private $api_endpoint;

@@ -1,5 +1,5 @@
-button.gcw_button
-,.gcw_button
+button.gcwc_button
+,.gcwc_button
 {
     font-family: unset;
     cursor: pointer;
@@ -16,7 +16,7 @@ button.gcw_button
 }
 
 .disabled 
-,.gcw_button.disabled
+,.gcwc_button.disabled
 {
     cursor: not-allowed;
     opacity: 0.5;
@@ -26,7 +26,7 @@ button.gcw_button
     position: relative;
 }
 
-.gcw_button_wrapper
+.gcwc_button_wrapper
 {
     padding: 20px;
 }

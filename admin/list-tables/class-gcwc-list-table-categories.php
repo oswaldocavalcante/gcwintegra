@@ -6,9 +6,9 @@ if (!class_exists('WP_List_Table')) {
     require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
 
-require_once GCW_ABSPATH . 'integrations/woocommerce/class-gcw-wc-attributes.php';
+require_once GCWC_ABSPATH . 'integrations/woocommerce/class-gcwc-wc-categories.php';
 
-class GCW_List_Table_Attributes extends WP_List_Table {
+class GCWC_List_Table_Categories extends WP_List_Table {
 
     private $table_data;
 
@@ -16,20 +16,22 @@ class GCW_List_Table_Attributes extends WP_List_Table {
     {
         global $status, $page;
 
-        parent::__construct( array(
-          'singular' => 'attribute',
-          'plural' => 'attributes',
+        parent::__construct( array
+        (
+          'singular' => 'category',
+          'plural' => 'categories',
           'ajax' => false
-        ) ); 
+        )); 
     }
 
-   function column_default($item, $column_name) 
+   function column_default($item, $column_name)
    {
         switch ($column_name) 
         {
             case 'id':
             case 'nome':
-            case 'cadastrado_em':
+            case 'meta_descricao':
+            case 'grupo_pai_id':
                 return $item[$column_name];
             default:
                 return print_r($item,true);
@@ -46,11 +48,12 @@ class GCW_List_Table_Attributes extends WP_List_Table {
         $columns = array
         (
             'cb'                => '<input type="checkbox" />',
-            'id'                => __('ID', 'gestaoclick-attributes'),
-            'nome'              => __('Nome', 'gestaoclick-attributes'),
-            'cadastrado_em'    => __('Criação', 'gestaoclick-attributes'),
+            'id'                => __('ID', 'gcwc'),
+            'nome'              => __('Nome', 'gcwc'),
+            'meta_descricao'    => __('Descrição', 'gcwc'),
+            'grupo_pai_id'      => __('Pai ID', 'gcwc')
         );
-
+        
         return $columns;
     }
 
@@ -60,31 +63,35 @@ class GCW_List_Table_Attributes extends WP_List_Table {
         (
             'id'            => array('id', false),
             'nome'          => array('nome', false),
-            'cadastrado_em'  => array('cadastrado_em', false)
+            'grupo_pai_id'  => array('grupo_pai_id', false)
         );
 
         return $sortable_columns;
     }
 
-    function get_bulk_actions() {
-        $actions = array(
+    function get_bulk_actions() 
+    {
+        $actions = array
+        (
             'import' => 'Importar selecionados',
             'import_all' => 'Importar todos'
         );
+
         return $actions;
     }
 
-    function process_bulk_action()
+    function process_bulk_action(GCWC_WC_Categories $categories)
     {
-        if('import' === $this->current_action())
+        if('import' === $this->current_action()) 
         {
-            if (isset($_POST['gcw_nonce_attributes']) && wp_verify_nonce($_POST['gcw_nonce_attributes'], 'gcw_form_attributes')) {
+            if (isset($_POST['gcwc_nonce_categories']) && wp_verify_nonce($_POST['gcwc_nonce_categories'], 'gcwc_form_categories')) {
                 $selected_items = isset($_POST['bulk-action']) ? $_POST['bulk-action'] : array();
-                apply_filters( 'gestaoclick_import_attributes', $selected_items );
+                $categories->import($selected_items);
             }
         }
+
         if('import_all' === $this->current_action()) {
-            apply_filters( 'gestaoclick_import_attributes', 'all' );
+            $categories->import('all');
         }
     }
 
@@ -106,22 +113,22 @@ class GCW_List_Table_Attributes extends WP_List_Table {
 
     public function prepare_items() 
     {
-        $attributes = new GCW_WC_Attributes();
-        $this->table_data = $attributes->fetch_api();
+        $categories = new GCWC_WC_Categories();
+        $this->table_data = $categories->fetch_api();
         
         $columns = $this->get_columns();
         $hidden = array();
         $sortable = $this->get_sortable_columns();
-        $primary  = 'nome';
+        $primary  = 'name';
         $this->_column_headers = array($columns, $hidden, $sortable, $primary);
-        $this->process_bulk_action();
+        $this->process_bulk_action($categories);
         
         /* pagination */
         $total_items = count($this->table_data);
         $per_page = 100;
         $current_page = $this->get_pagenum();
         $this->table_data = array_slice($this->table_data, (($current_page - 1) * $per_page), $per_page);
-        $this->set_pagination_args( array
+        $this->set_pagination_args(array
         (
             'total_items' => $total_items, // total number of items
             'per_page'    => $per_page, // items to show on a page
