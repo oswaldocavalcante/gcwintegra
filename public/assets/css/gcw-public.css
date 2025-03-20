@@ -1,0 +1,32 @@
+button.gcw_button
+,.gcw_button
+{
+    font-family: unset;
+    cursor: pointer;
+    padding: 15px;
+    background-color: #5d707a;
+    opacity: 1;
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 7px;
+    color: #fff;
+    width: 100%;
+    line-height: 1.5em;
+}
+
+.disabled 
+,.gcw_button.disabled
+{
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.blockUI.blockOverlay {
+    position: relative;
+}
+
+.gcw_button_wrapper
+{
+    padding: 20px;
+}
