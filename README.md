@@ -4,7 +4,7 @@ GCWC é um plugin para WordPress que integra o ERP GestãoClick ao WooCommerce.
 
 - Author: [Oswaldo Cavalcante](https://oswaldocavalcante.com/)
 - Doação: https://oswaldocavalcante.com/donation
-- License: [GPL-2.0+](http://www.gnu.org/licenses/gpl-2.0.html)
+- Licença: [GPL-2.0+](http://www.gnu.org/licenses/gpl-2.0.html)
 
 ## Funcionalidades
 
