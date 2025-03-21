@@ -20,7 +20,7 @@ class GCWC_WC_Integration extends WC_Integration
     public function __construct() 
     {
         $this->id = 'gcwc';
-        $this->method_title = __('GestãoClick');
+        $this->method_title = __('GestãoClick', 'gcwc');
         $this->method_description = __('Integre o GestãoClick ao Woocommerce.', 'gcwc');
 
         $this->init_form_fields();
@@ -68,29 +68,29 @@ class GCWC_WC_Integration extends WC_Integration
             'gcwc-api-credentials-section' => array
             (
                 'type'          => 'title',
-                'title'         => __( 'Credenciais de acesso da API', 'gcwc' ),
-                'description'   => sprintf(__('Veja como obter suas credenciais em <a href="https://gestaoclick.com/integracao_api/configuracoes/gerar_token" target="blank">%s</a>', 'gcwc'), 'https://gestaoclick.com/integracao_api/configuracoes/gerar_token'),
+                'title'         => __('Credenciais de acesso da API', 'gcwc'),
+                'description'   => __('Veja como obter suas credenciais em <a href="https://gestaoclick.com/integracao_api/configuracoes/gerar_token" target="blank">https://gestaoclick.com/integracao_api/configuracoes/gerar_token</a>', 'gcwc'),
             ),
             'gcwc-api-access-token' => array
             (
                 'type'        	=> 'text',
                 'default'     	=> '',
-                'title'       	=> __( 'Access Token', 'gcwc' ),
-                'description' 	=> __( 'Seu Access Token das configurações de API do GestãoClick.', 'gcwc' ),
+                'title'       	=> __('Access Token', 'gcwc'),
+                'description' 	=> __('Seu Access Token das configurações de API do GestãoClick.', 'gcwc'),
             ),
             'gcwc-api-secret-access-token' => array
             (
                 'type'        	=> 'text',
                 'default'     	=> '',
-                'title'       	=> __( 'Secret Access Token', 'gcwc' ),
-                'description' 	=> __('Seu Secret Access Token das configurações de API do GestãoClick.', 'gcwc' ),
+                'title'       	=> __('Secret Access Token', 'gcwc'),
+                'description' 	=> __('Seu Secret Access Token das configurações de API do GestãoClick.', 'gcwc'),
             ),
 
             'gcwc-settings-imports-section' => array
             (
                 'type'          => 'title',
-                'title'         => __( 'Importações', 'gcwc' ),
-                'description'   => __( 'Configure como realizar importações para o WooCommerce.' ) . $button_import_html,
+                'title'         => __('Importações', 'gcwc' ),
+                'description'   => __('Configure como realizar importações para o WooCommerce.', 'gcwc') . $button_import_html,
             ),
             'gcwc-settings-auto-imports' => array
             (
@@ -98,13 +98,13 @@ class GCWC_WC_Integration extends WC_Integration
                 'default'       => 'no',
                 'title'         => __( 'Auto-importar', 'gcwc' ),
                 'label'         => __( 'Habilitar auto-importação', 'gcwc' ),
-                'description'   => __( 'Habilite para sincronizar periodicamente (a cada 15 minutos) o WooCommerce com o GestãoClick.', 'gcwc' ),
+                'description'   => __( 'Habilite para sincronizar periodicamente (a cada 15 minutos) o WooCommerce com o GestãoClick.', 'gcwc'),
             ),
             'gcwc-settings-categories-selection' => array
             (
                 'type'          => 'multiselect',
-                'title'         => __( 'Seleção de Categorias', 'gcwc' ),
-                'description'   => __( 'Selecione as categorias para importar seus produtos do GestãoClick.', 'gcwc' ),
+                'title'         => __('Seleção de Categorias', 'gcwc'),
+                'description'   => __('Selecione as categorias para importar seus produtos do GestãoClick.', 'gcwc'),
                 'css'           => 'height: 300px;',
                 'options'       => $this->gc_categorias_options,
             ),
@@ -112,23 +112,23 @@ class GCWC_WC_Integration extends WC_Integration
             (
                 'type'          => 'textarea',
                 'placeholder'   => '2012254018005...',
-                'title'         => __( 'Produtos proibidos', 'gcwc' ),
-                'description'   => __( 'Lista de códigos de produtos para não importar do GestãoClick (um código de produto por linha).', 'gcwc' ),
+                'title'         => __('Produtos proibidos', 'gcwc'),
+                'description'   => __('Lista de códigos de produtos para não importar do GestãoClick (um código de produto por linha).', 'gcwc'),
             ),
 
             'gcwc-settings-exports-section' => array
             (
                 'type'          => 'title',
-                'title'         => __( 'Exportações', 'gcwc' ),
-                'description'   => __('Configure como realizar exportações para o GestãoClick.' ),
+                'title'         => __('Exportações', 'gcwc'),
+                'description'   => __('Configure como realizar exportações para o GestãoClick.', 'gcwc'),
             ),
             'gcwc-settings-export-orders' => array
             (
                 'type'          => 'checkbox',
                 'default'       => 'no',
-                'title'         => __( 'Auto-exportar vendas', 'gcwc' ),
-                'label'         => __( 'Habilitar auto-exportar vendas', 'gcwc' ),
-                'description'   => __( 'Sempre exportar novas vendas pagas e seus respectivos clientes ao GestãoClick.', 'gcwc' ),
+                'title'         => __('Auto-exportar vendas', 'gcwc'),
+                'label'         => __('Habilitar auto-exportar vendas', 'gcwc'),
+                'description'   => __('Sempre exportar novas vendas pagas e seus respectivos clientes ao GestãoClick.', 'gcwc'),
             ),
             'gcwc-settings-export-situacao' => array
             (
@@ -141,9 +141,9 @@ class GCWC_WC_Integration extends WC_Integration
             'gcwc-settings-export-trasportadora' => array
             (
                 'type'          => 'select',
-                'title'         => __( 'Transportadora padrão ao exportar vendas ao GestãoClick', 'gcwc' ),
-                'label'         => __( 'Selecione a transportadora padrão para novas vendas exportadas', 'gcwc' ),
-                'description'   => __( 'A transportadora padrão para ser usada em novas vendas pagas exportadas ao GestaoClick.', 'gcwc' ),
+                'title'         => __('Transportadora padrão ao exportar vendas ao GestãoClick', 'gcwc'),
+                'label'         => __('Selecione a transportadora padrão para novas vendas exportadas', 'gcwc'),
+                'description'   => __('A transportadora padrão para ser usada em novas vendas pagas exportadas ao GestaoClick.', 'gcwc'),
                 'options'       => $this->gc_transportadoras_options,
             ),
             'gcwc-settings-shipping-calculator' => array
@@ -242,92 +242,52 @@ class GCWC_WC_Integration extends WC_Integration
 
     function add_order_list_column_actions_legacy($column, $order_id)
     {
-        if ($column === 'gcwc-actions')
-        {
-            $order = wc_get_order($order_id);
+        if ($column !== 'gcwc-actions') return;
+        
+        $order = wc_get_order($order_id);
 
-            if (!$order) return;
+        if (!$order || !$order->meta_exists('gcwc_gc_venda_id')) return;
 
-            if($order->meta_exists('gcwc_gc_venda_id')) // Checks if the order has been exported
-            {
-                $button_label = __('NFe', 'gcwc');
-                $button_props = '';
-                $css_classes = 'button button-large dashicons-before dashicons-external ';
-
-                if ($order->meta_exists('gcwc_gc_venda_nfe_id'))
-                { 
-                    $button_label = __('Ver NFe', 'gcwc');
-                }
-                else
-                {
-                    $button_label = __('Emitir NFe', 'gcwc');
-                    $css_classes .= 'button-primary ';
-                }
-
-                if (!$order->is_paid()) {
-                    $css_classes .= 'disabled ';
-                } 
-
-                $button_props .= sprintf
-                (
-                    '
-                        id="gcwc-button-nfe"
-                        data-order-id="%s"
-                        class="%s"
-                    ',
-                    esc_attr($order_id),
-                    esc_attr($css_classes)
-                );
-
-                echo sprintf('<a %s> %s </a>', $button_props, $button_label);
-            }
-        }
+        echo wp_kses_post($this->generate_nfe_button($order));
     }
 
     function add_order_list_column_actions_hpos($column, $post_or_order_object)
     {
-        if ($column === 'gcwc-actions')
+        if ($column !== 'gcwc-actions') return;
+        
+        /**  @var WC_Order $order  */
+        $order = ($post_or_order_object instanceof WP_Post) 
+            ? wc_get_order($post_or_order_object->ID) 
+            : $post_or_order_object; // Note: $post_or_order_object should not be used directly below this point.
+
+        if (!$order || !$order->meta_exists('gcwc_gc_venda_id')) return;
+
+        echo wp_kses_post($this->generate_nfe_button($order));
+    }
+
+    private function generate_nfe_button(WC_Order $order)
+    {
+        $button_label = '';
+        $css_classes  = ['button', 'button-large', 'dashicons-before', 'dashicons-external'];
+        if (!$order->is_paid()) $css_classes[] = 'disabled';
+
+        if ($order->meta_exists('gcwc_gc_venda_nfe_id'))
         {
-            /**
-             * @var WC_Order $order 
-             */
-            $order = ($post_or_order_object instanceof WP_Post) ? wc_get_order($post_or_order_object->ID) : $post_or_order_object; // Note: $post_or_order_object should not be used directly below this point.
-
-            if (!$order) return;
-
-            if ($order->meta_exists('gcwc_gc_venda_id')) // Checks if the order has been exported
-            {
-                $button_label = __('NFe', 'gcwc');
-                $button_props = '';
-                $css_classes = 'button button-large dashicons-before dashicons-external ';
-
-                if ($order->meta_exists('gcwc_gc_venda_nfe_id'))
-                {
-                    $button_label = __('Ver NFe', 'gcwc');
-                }
-                else
-                {
-                    $button_label = __('Emitir NFe', 'gcwc');
-                    $css_classes .= 'button-primary ';
-                }
-
-                if (!$order->is_paid())
-                {
-                    $css_classes .= 'disabled ';
-                }
-
-                $button_props .= sprintf(
-                    '
-                        id="gcwc-button-nfe"
-                        data-order-id="%s"
-                        class="%s"
-                    ',
-                    esc_attr($order->get_id()),
-                    esc_attr($css_classes)
-                );
-
-                echo sprintf('<a %s> %s </a>', $button_props, $button_label);
-            }
+            $button_label = __('Ver NFe', 'gcwc');
         }
+        else
+        {
+            $button_label = __('Emitir NFe', 'gcwc');
+            $css_classes[] = 'button-primary';
+        }
+
+        return sprintf
+        (
+            '<a id="%s" data-order-id="%s" class="%s"> %s </a>',
+            esc_attr('gcwc-button-nfe'),
+            esc_attr($order->get_id()),
+            esc_attr(implode(' ', $css_classes)),
+            esc_html($button_label)
+        );
     }
 }

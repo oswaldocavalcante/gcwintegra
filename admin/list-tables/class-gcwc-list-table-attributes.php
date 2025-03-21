@@ -46,9 +46,9 @@ class GCWC_List_Table_Attributes extends WP_List_Table {
         $columns = array
         (
             'cb'                => '<input type="checkbox" />',
-            'id'                => __('ID', 'gcwc-attributes'),
-            'nome'              => __('Nome', 'gcwc-attributes'),
-            'cadastrado_em'    => __('Criação', 'gcwc-attributes'),
+            'id'                => __('ID', 'gcwc'),
+            'nome'              => __('Nome', 'gcwc'),
+            'cadastrado_em'    => __('Criação', 'gcwc'),
         );
 
         return $columns;

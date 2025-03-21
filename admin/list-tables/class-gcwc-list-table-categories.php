@@ -8,8 +8,8 @@ if (!class_exists('WP_List_Table')) {
 
 require_once GCWC_ABSPATH . 'integrations/woocommerce/class-gcwc-wc-categories.php';
 
-class GCWC_List_Table_Categories extends WP_List_Table {
-
+class GCWC_List_Table_Categories extends WP_List_Table 
+{
     private $table_data;
 
     function __construct() 

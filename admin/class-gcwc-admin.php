@@ -224,9 +224,9 @@ class GCWC_Admin
 
 	public function ajax_gcwc_nfe($order_id)
 	{
-		if (isset($_POST['security']) && check_ajax_referer('gcwc_nonce', 'security'))
+		if (isset($_POST['order_id']) && isset($_POST['security']) && check_ajax_referer('gcwc_nonce', 'security'))
 		{
-			$order_id = $_POST['order_id'];
+			$order_id = absint(wp_unslash($_POST['order_id']));
 			$order = wc_get_order($order_id);
 			$redirect_url = 'https://gestaoclick.com/notas_fiscais/';
 
