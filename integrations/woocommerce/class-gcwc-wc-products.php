@@ -174,7 +174,8 @@ class GCWC_WC_Products extends GCWC_GC_Api
         $attribute->set_variation(true);
 
         $options = array();
-        foreach( $variations as $variation ) {
+        foreach( $variations as $variation )
+        {
             array_push( $options, $variation['variacao']['nome'] );
         }
 
@@ -187,13 +188,14 @@ class GCWC_WC_Products extends GCWC_GC_Api
     {
         $parent_product = wc_get_product($parent_product_id);
 
-        foreach ($variations as $variation_data) 
+        foreach($variations as $variation_data) 
         {
             $sku = $variation_data['variacao']['codigo'];
             $variation_id_exists = wc_get_product_id_by_sku($sku);
             $variation = null;
 
-            if ($variation_id_exists) {
+            if ($variation_id_exists) 
+            {
                 $variation = wc_get_product($variation_id_exists);
             } 
             else 
@@ -223,7 +225,7 @@ class GCWC_WC_Products extends GCWC_GC_Api
         $taxonomies = wc_get_attribute_taxonomies();
         $attributes_selection = array();
 
-        if ($taxonomies) 
+        if($taxonomies) 
         {
             foreach ($taxonomies as $taxonomy) 
             {
@@ -261,7 +263,8 @@ class GCWC_WC_Products extends GCWC_GC_Api
             $attributes_candidates = explode('/', $name_part);
             foreach ($attributes_candidates as $attribute_candidate) 
             {
-                if (in_array($attribute_candidate, $attributes_selection)) {
+                if (in_array($attribute_candidate, $attributes_selection))
+                {
                     $attributes_names[] = $attribute_candidate;
                 }
             }
@@ -276,9 +279,9 @@ class GCWC_WC_Products extends GCWC_GC_Api
 
                 if ($taxonomies) 
                 {
-                    foreach ($taxonomies as $taxonomy) 
+                    foreach($taxonomies as $taxonomy) 
                     {
-                        if (taxonomy_exists(wc_attribute_taxonomy_name($taxonomy->attribute_name))) 
+                        if(taxonomy_exists(wc_attribute_taxonomy_name($taxonomy->attribute_name))) 
                         {
                             $attribute = new WC_Product_Attribute();
                             $attribute->set_id(sizeof($attributes) + 1);
@@ -295,7 +298,8 @@ class GCWC_WC_Products extends GCWC_GC_Api
 
                             foreach ($terms as $term) 
                             {
-                                if (in_array($term->name, $attributes_names)) {
+                                if (in_array($term->name, $attributes_names))
+                                {
                                     array_push($options, $term->term_id);
                                 }
                             }

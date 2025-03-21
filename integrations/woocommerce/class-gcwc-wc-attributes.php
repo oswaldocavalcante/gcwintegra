@@ -26,7 +26,7 @@ class GCWC_WC_Attributes extends GCWC_GC_Api
         $this->api_endpoint = parent::get_endpoint_attributes();
         $this->api_headers =  parent::get_headers();
         
-        add_filter( 'gcwc_import_attributes', array( $this, 'import' ) );
+        add_filter('gcwc_import_attributes', array( $this, 'import'));
     }
 
     public function fetch_api() 

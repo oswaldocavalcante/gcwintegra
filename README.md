@@ -1,4 +1,4 @@
-# GCWC - GestãoClick para WooCommerce
+# GCWC - GestãoClick for WooCommerce
 
 GCWC é um plugin para WordPress que integra o ERP GestãoClick ao WooCommerce.
 

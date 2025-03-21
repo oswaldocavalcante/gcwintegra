@@ -61,7 +61,7 @@ class GCWC_WC_Categories extends GCWC_GC_Api
         $categories             = $this->fetch_api();
         $categories_selection   = get_option('gcwc-settings-categories-selection');
 
-        if( $categories_selection ) 
+        if($categories_selection) 
         {
             $filtered_categories = array_filter($categories, function ($item) use ($categories_selection)
             {
@@ -80,7 +80,8 @@ class GCWC_WC_Categories extends GCWC_GC_Api
                 return in_array($item['id'], $categories_ids);
             });
         } 
-        elseif ($categories_ids == 'all') {
+        elseif($categories_ids == 'all') 
+        {
             $selected_categories = $categories;
         }
 
@@ -106,15 +107,12 @@ class GCWC_WC_Categories extends GCWC_GC_Api
         $category_term = get_terms(array
         (
             'taxonomy' => $taxonomy,
-            'meta_query' => array
+            'meta_query' => array(array
             (
-                array
-                (
-                    'key' => 'gc_category_id',
-                    'value' => $category['id'],
-                    'compare' => '='
-                )
-            ),
+                'key' => 'gc_category_id',
+                'value' => $category['id'],
+                'compare' => '='
+            )),
             'hide_empty' => false,
         ));
 
@@ -124,7 +122,8 @@ class GCWC_WC_Categories extends GCWC_GC_Api
             $category_term = $category_term[0];
             $parent_term_id = 0;
 
-            if ($category['grupo_pai_id']) {
+            if ($category['grupo_pai_id'])
+            {
                 $parent_term_id = $this->get_category_parent_id($this->fetched_categories, $category, $taxonomy);
             }
 
@@ -133,7 +132,8 @@ class GCWC_WC_Categories extends GCWC_GC_Api
             (
                 $category_term->term_id,
                 $taxonomy,
-                array(
+                array
+                (
                     'name' => $category['nome'],
                     'slug' => sanitize_title($category['nome']),
                     'description' => $category['meta_descricao'],
@@ -148,16 +148,17 @@ class GCWC_WC_Categories extends GCWC_GC_Api
             (
                 $category['nome'],
                 $taxonomy,
-                array(
+                array
+                (
                     'slug' => sanitize_title($category['nome']),
                     'description' => $category['meta_descricao'],
                     'parent' => $this->get_category_parent_id($this->fetched_categories, $category, $taxonomy),
                 )
             );
 
-            if (!is_wp_error($new_category)) {
-                // Adicionar o meta dado 'gc_category_id' à nova categoria
-                add_term_meta($new_category['term_id'], 'gc_category_id', $category['id'], true);
+            if (!is_wp_error($new_category))
+            {
+                add_term_meta($new_category['term_id'], 'gc_category_id', $category['id'], true); // Adicionar o meta dado 'gc_category_id' à nova categoria
             }
         }
     }
@@ -170,15 +171,12 @@ class GCWC_WC_Categories extends GCWC_GC_Api
             {
                 $parent_terms = get_terms(array(
                     'taxonomy' => $taxonomy,
-                    'meta_query' => array
+                    'meta_query' => array(array
                     (
-                        array
-                        (
-                            'key' => 'gc_category_id',
-                            'value' => $parent_candidate['id'],
-                            'compare' => '='
-                        )
-                    ),
+                        'key' => 'gc_category_id',
+                        'value' => $parent_candidate['id'],
+                        'compare' => '='
+                    )),
                     'hide_empty' => false,
                 ));
                 

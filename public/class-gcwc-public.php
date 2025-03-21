@@ -1,8 +1,9 @@
 <?php
 
+if(!defined('ABSPATH')) exit; // Exit if accessed directly
+
 class GCWC_Public
 {
-
 	public function shipping_calculator()
 	{
 		wp_enqueue_style('gcwc-shortcode-quote', GCWC_URL . 'public/assets/css/gcwc-public.css', array(), GCWC_VERSION, 'all');
@@ -26,40 +27,37 @@ class GCWC_Public
 		<?php
 	}
 
-	/**
-	 * 
-	 */
 	public function ajax_calculate_shipping()
 	{
-		if (isset($_POST['shipping_postcode']) && isset($_POST['product_id']) && isset($_POST['quantity']))
+		if (isset($_POST['shipping_postcode']) && isset($_POST['product_id']) && isset($_POST['quantity']) && check_ajax_referer('gcwc_quote_nonce', 'security'))
 		{
 			// Desfaz a seleção do método de envio
 			WC()->session->set('has_selected_shipping_method', null);
 
-			$shipping_postcode = sanitize_text_field($_POST['shipping_postcode']);
-			$product_id = sanitize_text_field($_POST['product_id']);
-			$quantity = sanitize_text_field($_POST['quantity']);
+			$postcode 	= sanitize_text_field(wp_unslash($_POST['shipping_postcode']));
+			$product_id = sanitize_text_field(wp_unslash($_POST['product_id']));
+			$quantity 	= sanitize_text_field(wp_unslash($_POST['quantity']));
 
 			// Criar um pacote para o cálculo do frete
 			$package = array
 			(
-				'contents' => array(),
+				'contents' 		=> array(),
 				'contents_cost' => 0,
-				'destination' => array
+				'destination' 	=> array
 				(
-					'country' => 'BR',
-					'postcode' => $shipping_postcode,
+					'country' 	=> 'BR',
+					'postcode' 	=> $postcode,
 				)
 			);
 
 			$_product = wc_get_product($product_id);
 			$package['contents'][$product_id] = array
 			(
-				'data' => $_product,
-				'quantity' => $quantity,
-				'line_total' => $_product->get_price() * $quantity,
-				'line_tax' => 0,
-				'line_subtotal' => $_product->get_price() * $quantity,
+				'data' 				=> $_product,
+				'quantity' 			=> $quantity,
+				'line_total' 		=> $_product->get_price() * $quantity,
+				'line_tax' 			=> 0,
+				'line_subtotal' 	=> $_product->get_price() * $quantity,
 				'line_subtotal_tax' => 0,
 			);
 			$package['contents_cost'] += $_product->get_price() * $quantity;
@@ -67,7 +65,7 @@ class GCWC_Public
 			// Calcular frete para o pacote
 			$rates = $this->calculate_shipping_for_package($package);
 
-			if ($rates)
+			if($rates)
 			{
 				$html = '<form><ul>';
 				foreach ($rates as $rate)

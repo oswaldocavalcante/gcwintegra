@@ -6,7 +6,7 @@
  * @package           GCWC
  *
  * @wordpress-plugin
- * Plugin Name:       GCWC - GestãoClick para WooCommerce
+ * Plugin Name:       GCWC - GestãoClick for WooCommerce
  * Plugin URI:        https://github.com/oswaldocavalcante/gcwc
  * Description:       Integra o ERP GestãoClick ao WooCommerce.
  * Version:           3.5.4
