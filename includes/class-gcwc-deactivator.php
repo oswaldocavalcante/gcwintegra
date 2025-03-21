@@ -1,5 +1,7 @@
 <?php
 
+if(!defined('ABSPATH')) exit; // Exit if accessed directly
+
 /**
  * Fired during plugin deactivation.
  *
@@ -18,8 +20,10 @@ class GCWC_Deactivator {
 	 *
 	 * @since    1.0.0
 	 */
-	public static function deactivate() {
-		if ( wp_next_scheduled( 'gcwc_update' ) ) {
+	public static function deactivate() 
+	{
+		if (wp_next_scheduled('gcwc_update'))
+		{
 			$timestamp = wp_next_scheduled( 'gcwc_update' );
 			wp_unschedule_event( $timestamp, 'gcwc_update' );
 		}

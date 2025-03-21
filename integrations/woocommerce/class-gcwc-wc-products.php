@@ -8,10 +8,12 @@
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  */
 
+if(!defined('ABSPATH')) exit; // Exit if accessed directly
+
 require_once GCWC_ABSPATH . 'integrations/gestaoclick/class-gcwc-gc-api.php';
 
-class GCWC_WC_Products extends GCWC_GC_Api {
-
+class GCWC_WC_Products extends GCWC_GC_Api 
+{
     private $api_endpoint;
     private $api_headers;
 
@@ -30,7 +32,8 @@ class GCWC_WC_Products extends GCWC_GC_Api {
 
         do 
         {
-            $response = wp_remote_retrieve_body( 
+            $response = wp_remote_retrieve_body
+            ( 
                 wp_remote_get( $this->api_endpoint . '?pagina=' . $proxima_pagina, $this->api_headers )
             );
 
@@ -54,31 +57,35 @@ class GCWC_WC_Products extends GCWC_GC_Api {
         $categories_selection   = get_option( 'gcwc-settings-categories-selection' );
         $products_selection     = array();
 
-        if( $categories_selection ) 
+        if($categories_selection) 
         {
-            $filtered_categories = array_filter($products, function ($item) use ($categories_selection) {
+            $filtered_categories = array_filter($products, function ($item) use ($categories_selection) 
+            {
                 return (in_array($item['grupo_id'], $categories_selection));
             });
 
             $products = $filtered_categories;
         }
 
-        if( $products_blacklist ) 
+        if($products_blacklist) 
         {
-            $filtered_products = array_filter($products, function ($item) use ($products_blacklist) {
+            $filtered_products = array_filter($products, function ($item) use ($products_blacklist) 
+            {
                 return (!in_array($item['codigo_barra'], $products_blacklist));
             });
 
             $products = $filtered_products;
         }
 
-        if( is_array($products_codes) ) 
+        if(is_array($products_codes)) 
         {
-            $products_selection = array_filter($products, function ($item) use ($products_codes) {
+            $products_selection = array_filter($products, function ($item) use ($products_codes) 
+            {
                 return (in_array($item['codigo_barra'], $products_codes));
             });
         } 
-        elseif( $products_codes == 'all' ) {
+        elseif($products_codes == 'all') 
+        {
             $products_selection = $products;
         }
 
@@ -98,9 +105,7 @@ class GCWC_WC_Products extends GCWC_GC_Api {
             $category_id = $category_object->term_id;
             return $category_id;
         } 
-        else {
-            return false;
-        }
+        else return false;
     }
 
     private function save($product_data)
@@ -113,10 +118,12 @@ class GCWC_WC_Products extends GCWC_GC_Api {
         } 
         else 
         {
-            if((int) $product_data['possui_variacao']) {
+            if((int) $product_data['possui_variacao']) 
+            {
                 $product = new WC_Product_Variable();
             }
-            else {
+            else 
+            {
                 $product = new WC_Product_Simple();
             }
 
@@ -228,7 +235,8 @@ class GCWC_WC_Products extends GCWC_GC_Api {
                         'hide_empty' => false,
                     ));
 
-                    foreach ($terms as $term) {
+                    foreach ($terms as $term) 
+                    {
                         $attributes_selection[] = $term->name;
                     }
                 }

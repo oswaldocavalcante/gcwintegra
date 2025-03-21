@@ -1,5 +1,7 @@
 <?php
 
+if(!defined('ABSPATH')) exit; // Exit if accessed directly
+
 require_once 'class-gcwc-gc-api.php';
 
 class GCWC_GC_Transportadoras extends GCWC_GC_Api 

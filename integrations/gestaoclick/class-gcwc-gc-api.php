@@ -1,5 +1,7 @@
 <?php
 
+if(!defined('ABSPATH')) exit; // Exit if accessed directly
+
 class GCWC_GC_Api
 {
     private $access_token;
@@ -46,7 +48,7 @@ class GCWC_GC_Api
         $access_token           = get_option('gcwc-api-access-token');
         $secret_access_token    = get_option('gcwc-api-secret-access-token');
 
-        if (($access_token && $secret_access_token) != '')
+        if(($access_token && $secret_access_token) != '')
         {
             $url = 'https://api.gestaoclick.com/produtos';
             $args = array
@@ -67,7 +69,7 @@ class GCWC_GC_Api
             return false;
         }
 
-        if ($http_code == 200) return true;
+        if($http_code == 200) return true;
         else return false;
     }
 
@@ -88,7 +90,7 @@ class GCWC_GC_Api
 
             $items = array_merge($items, $body_array['data']);
         }
-        while ($proxima_pagina != null);
+        while($proxima_pagina != null);
 
         return $items;
     }

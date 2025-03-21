@@ -10,9 +10,12 @@
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  */
 
+if(!defined('ABSPATH')) exit; // Exit if accessed directly
+
 require_once GCWC_ABSPATH . 'integrations/gestaoclick/class-gcwc-gc-api.php';
  
-class GCWC_WC_Attributes extends GCWC_GC_Api {
+class GCWC_WC_Attributes extends GCWC_GC_Api
+{
 
     private $api_endpoint;
     private $api_headers;
@@ -33,7 +36,8 @@ class GCWC_WC_Attributes extends GCWC_GC_Api {
 
         do
         {
-            $response = wp_remote_retrieve_body( 
+            $response = wp_remote_retrieve_body
+            ( 
                 wp_remote_get( $this->api_endpoint . '?pagina=' . $proxima_pagina, $this->api_headers )
             );
 

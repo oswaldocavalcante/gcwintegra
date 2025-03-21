@@ -1,5 +1,7 @@
 <?php
 
+if(!defined('ABSPATH')) exit; // Exit if accessed directly
+
 /**
  * The core plugin class.
  *
@@ -63,14 +65,13 @@ class GCWC
 	{
 		$plugin_admin = new GCWC_Admin();
 
-		add_action('admin_init', 					array($plugin_admin, 'register_settings'));
-		add_action('admin_menu', 					array($plugin_admin, 'add_admin_menu'));
-		add_action('admin_enqueue_scripts', 		array($plugin_admin, 'enqueue_scripts'));
-		add_action('before_woocommerce_init',       array($plugin_admin, 'declare_wc_compatibility'));
-		add_filter('woocommerce_integrations', 		array($plugin_admin, 'add_woocommerce_integration'));
-		add_action('gcwc_update', 			array($plugin_admin, 'import_all'));
-		add_action('wp_ajax_gcwc_update', 	array($plugin_admin, 'import_all'));
-		add_action('wp_ajax_gcwc_nfe', 				array($plugin_admin, 'ajax_gcwc_nfe'));
+		add_action('admin_init', 				array($plugin_admin, 'register_settings'));
+		add_filter('cron_schedules',            array($plugin_admin, 'add_cron_interval'));
+		add_action('admin_enqueue_scripts', 	array($plugin_admin, 'enqueue_scripts'));
+		add_action('before_woocommerce_init',   array($plugin_admin, 'declare_wc_compatibility'));
+		add_filter('woocommerce_integrations', 	array($plugin_admin, 'add_woocommerce_integration'));
+		add_action('gcwc_update', 				array($plugin_admin, 'import_all'));
+		add_action('wp_ajax_gcwc_update', 		array($plugin_admin, 'import_all'));
 
 		if (get_option('gcwc-settings-export-orders') == 'yes') 
 		{

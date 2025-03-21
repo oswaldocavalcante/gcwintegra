@@ -3,31 +3,23 @@
  * included in this file.
  */
 
-#gcwc_settings
-{
-    margin-top: 16px;
-}
-
-.gcwc-integration-title
-{
-    display: inline;
-    padding-top: 20px;
-}
-
-.gcwc-integration-connection
+#gcwc-integration-connection
 {
     font-size: 10px;
     color: darkslategray;
+    display: block;
+    margin: 20px 0 -5px 0;
 }
 
-.gcwc-integration-connection:before
+#gcwc-integration-connection:before
 {
     color: green;
-    margin: 0 5px;
+    margin-right: 5px;
 }
 
 #gcwc-import-area
 {
+    display: block;
     width: fit-content;
 }
 

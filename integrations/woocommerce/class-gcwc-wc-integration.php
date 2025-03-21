@@ -1,5 +1,7 @@
 <?php
 
+if(!defined('ABSPATH')) exit; // Exit if accessed directly
+
 require_once GCWC_ABSPATH . 'integrations/gestaoclick/class-gcwc-gc-api.php';
 require_once GCWC_ABSPATH . 'integrations/gestaoclick/class-gcwc-gc-transportadoras.php';
 require_once GCWC_ABSPATH . 'integrations/gestaoclick/class-gcwc-gc-situacoes.php';
@@ -31,11 +33,11 @@ class GCWC_WC_Integration extends WC_Integration
     private function define_woocommerce_hooks()
     {
         add_action('woocommerce_update_options_integration_' . $this->id,   array($this, 'process_admin_options'));
-        add_filter('cron_schedules',                                        array($this, 'add_cron_interval'));
         add_filter('manage_edit-shop_order_columns',                        array($this, 'add_order_list_column'), 20);
         add_action('manage_shop_order_posts_custom_column',                 array($this, 'add_order_list_column_actions_legacy'), 20, 2);
         add_filter('woocommerce_shop_order_list_table_columns',             array($this, 'add_order_list_column'));                            // HPOS orders page.
         add_action('woocommerce_shop_order_list_table_custom_column',       array($this, 'add_order_list_column_actions_hpos'),  10, 2);    // HPOS orders page.
+        add_action('wp_ajax_gcwc_nfe',                                      array($this, 'ajax_gcwc_nfe'));
     }
 
     public function init_form_fields() 
@@ -54,13 +56,10 @@ class GCWC_WC_Integration extends WC_Integration
             $this->gc_categorias_options = $gc_categorias->get_options_for_settings() ?? [];
 
             $button_import_html = 
-            '
-                <br>
-                <div id="gcwc-import-area">
-                    <a id="gcwc-btn-import" class="button gcwc-btn-settings">Importar agora</a>
-                    <span id="gcwc-last-import" style="color: #888">(Última importação: ' . get_option('gcwc_last_import') . ')</span>
-                </div>
-            ';
+            '<div id="gcwc-import-area">
+                <a id="gcwc-btn-import" class="button gcwc-btn-settings">Importar agora</a>
+                <span id="gcwc-last-import" style="color: #888">(Última importação: ' . get_option('gcwc_last_import') . ')</span>
+            </div>';
         }
 
         $this->form_fields = array
@@ -171,35 +170,19 @@ class GCWC_WC_Integration extends WC_Integration
         update_option('gcwc-settings-export-situacao',       $this->settings['gcwc-settings-export-situacao']);
         update_option('gcwc-settings-shipping-calculator',   $this->settings['gcwc-settings-shipping-calculator']);
 
-        echo '<div id="gcwc_settings">';
-            echo '<h2 class="gcwc-integration-title">' . esc_html( $this->get_method_title() ) . '</h2>';
 
-            if(GCWC_GC_Api::test_connection()) 
-            {
-                echo '<span class="gcwc-integration-connection dashicons-before dashicons-yes-alt">' . esc_html( __('Conectado', 'gcwc') ) . '</span>';
-            } 
-            else
-            {
-                wp_admin_notice(__( 'GestaoClick: Preencha corretamente suas credenciais de acesso.', 'gcwc' ), array( 'error' ) );
-            }
+        if(GCWC_GC_Api::test_connection()) 
+        {
+            echo '<span id="gcwc-integration-connection" class="dashicons-before dashicons-yes-alt">' . esc_html( __('Conectado', 'gcwc') ) . '</span>';
+        } 
+        else
+        {
+            wp_admin_notice(__( 'GestaoClick: Preencha corretamente suas credenciais de acesso.', 'gcwc' ), array( 'error' ) );
+        }
 
-            $this->set_auto_imports( get_option( 'gcwc-settings-auto-imports') );
+        $this->set_auto_imports(get_option('gcwc-settings-auto-imports'));
 
-            echo wp_kses_post( wpautop( $this->get_method_description() ) );
-            echo '<div><input type="hidden" name="section" value="' . esc_attr( $this->id ) . '" /></div>';
-            echo '<table class="form-table">' . $this->generate_settings_html( $this->get_form_fields(), false ) . '</table>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-        echo '</div>';
-    }
-
-    public function add_cron_interval( $schedules ) 
-    { 
-        $schedules['fifteen_minutes'] = array
-        (
-            'interval' => 900,
-            'display'  => __( 'Every Fifteen Minutes', 'gcwc' ), 
-        );
-
-        return $schedules;
+        parent::admin_options();
     }
 
 	public function set_auto_imports($auto_updates = 'no') 
@@ -232,8 +215,7 @@ class GCWC_WC_Integration extends WC_Integration
             $reordered_columns[$key] = $column;
             if ($key == 'order_status')
             {
-                // Inserting after "Status" column
-                $reordered_columns['gcwc-actions'] = __('GestãoClick', 'gcwc');
+                $reordered_columns['gcwc-actions'] = __('GestãoClick', 'gcwc'); // Inserting after "Status" column
             }
         }
 
@@ -242,25 +224,25 @@ class GCWC_WC_Integration extends WC_Integration
 
     function add_order_list_column_actions_legacy($column, $order_id)
     {
-        if ($column !== 'gcwc-actions') return;
+        if($column !== 'gcwc-actions') return;
         
         $order = wc_get_order($order_id);
 
-        if (!$order || !$order->meta_exists('gcwc_gc_venda_id')) return;
+        if(!$order || !$order->meta_exists('gcwc_gc_venda_id')) return;
 
         echo wp_kses_post($this->generate_nfe_button($order));
     }
 
     function add_order_list_column_actions_hpos($column, $post_or_order_object)
     {
-        if ($column !== 'gcwc-actions') return;
+        if($column !== 'gcwc-actions') return;
         
         /**  @var WC_Order $order  */
         $order = ($post_or_order_object instanceof WP_Post) 
             ? wc_get_order($post_or_order_object->ID) 
             : $post_or_order_object; // Note: $post_or_order_object should not be used directly below this point.
 
-        if (!$order || !$order->meta_exists('gcwc_gc_venda_id')) return;
+        if(!$order || !$order->meta_exists('gcwc_gc_venda_id')) return;
 
         echo wp_kses_post($this->generate_nfe_button($order));
     }
@@ -269,9 +251,9 @@ class GCWC_WC_Integration extends WC_Integration
     {
         $button_label = '';
         $css_classes  = ['button', 'button-large', 'dashicons-before', 'dashicons-external'];
-        if (!$order->is_paid()) $css_classes[] = 'disabled';
+        if(!$order->is_paid()) $css_classes[] = 'disabled';
 
-        if ($order->meta_exists('gcwc_gc_venda_nfe_id'))
+        if($order->meta_exists('gcwc_gc_venda_nfe_id'))
         {
             $button_label = __('Ver NFe', 'gcwc');
         }
@@ -289,5 +271,51 @@ class GCWC_WC_Integration extends WC_Integration
             esc_attr(implode(' ', $css_classes)),
             esc_html($button_label)
         );
+    }
+
+    public function ajax_gcwc_nfe($order_id)
+    {
+        if(!isset($_POST['order_id']) && !isset($_POST['security']) && !check_ajax_referer('gcwc_nonce', 'security')) return;
+
+        $order_id = absint(wp_unslash($_POST['order_id']));
+        $order = wc_get_order($order_id);
+        $redirect_url = 'https://gestaoclick.com/notas_fiscais/';
+
+        if($order->meta_exists('gcwc_gc_venda_nfe_id'))
+        {
+            $nota_fiscal_id = $order->get_meta('gcwc_gc_venda_nfe_id');
+            $redirect_url .= 'index?id=' . $nota_fiscal_id;
+        }
+        else
+        {
+            $gc_venda = new GCWC_GC_Venda($order_id);
+            $gc_venda_data = $gc_venda->get();
+
+            if (is_wp_error($gc_venda_data))
+            {
+                wp_send_json( array
+                (
+                    'success' => false,
+                    'data' => $gc_venda_data,
+                    'message' => 'Nenhuma venda encontrada para este pedido.'
+                ));
+            }
+
+            $nota_fiscal_id = $gc_venda_data['nota_fiscal_id'];
+
+            if($nota_fiscal_id)
+            {
+                $order->add_meta_data('gcwc_gc_venda_nfe_id', $nota_fiscal_id);
+                $redirect_url .= 'index?id=' . $nota_fiscal_id;
+                $order->save();
+            }
+            else
+            {
+                $gc_venda_hash = $order->get_meta('gcwc_gc_venda_hash');
+                $redirect_url .= 'adicionar/venda:' . $gc_venda_hash;
+            }
+        }
+
+        wp_send_json_success($redirect_url);
     }
 }

@@ -10,10 +10,12 @@
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  */
 
+if(!defined('ABSPATH')) exit; // Exit if accessed directly
+
 require_once GCWC_ABSPATH . 'integrations/gestaoclick/class-gcwc-gc-api.php';
 
-class GCWC_WC_Categories extends GCWC_GC_Api {
-
+class GCWC_WC_Categories extends GCWC_GC_Api
+{
     private $api_endpoint;
     private $api_headers;
 
@@ -34,8 +36,9 @@ class GCWC_WC_Categories extends GCWC_GC_Api {
 
         do 
         {
-            $response = wp_remote_retrieve_body( 
-                wp_remote_get( $this->api_endpoint . '?pagina=' . $proxima_pagina, $this->api_headers )
+            $response = wp_remote_retrieve_body
+            ( 
+                wp_remote_get($this->api_endpoint . '?pagina=' . $proxima_pagina, $this->api_headers)
             );
 
             $response = json_decode($response, true);
@@ -46,7 +49,7 @@ class GCWC_WC_Categories extends GCWC_GC_Api {
                 $categories = array_merge($categories,$response['data']);
             }
         } 
-        while ( $proxima_pagina != null );
+        while($proxima_pagina != null);
 
         $this->fetched_categories = $categories;
 
@@ -60,7 +63,8 @@ class GCWC_WC_Categories extends GCWC_GC_Api {
 
         if( $categories_selection ) 
         {
-            $filtered_categories = array_filter($categories, function ($item) use ($categories_selection) {
+            $filtered_categories = array_filter($categories, function ($item) use ($categories_selection)
+            {
                 return (in_array($item['id'], $categories_selection));
             });
 
@@ -69,9 +73,10 @@ class GCWC_WC_Categories extends GCWC_GC_Api {
 
         // Filtering selected categories
         $selected_categories = array();
-        if (is_array($categories_ids))
+        if(is_array($categories_ids))
         {
-            $selected_categories = array_filter($categories, function ($item) use ($categories_ids) {
+            $selected_categories = array_filter($categories, function ($item) use ($categories_ids)
+            {
                 return in_array($item['id'], $categories_ids);
             });
         } 
@@ -80,11 +85,13 @@ class GCWC_WC_Categories extends GCWC_GC_Api {
         }
 
         // Runs 1x for registry and 2x for set parent categories
-        foreach ($selected_categories as $category ) {
+        foreach ($selected_categories as $category ) 
+        {
             $this->save($category);
         }
 
-        foreach ($selected_categories as $category) {
+        foreach ($selected_categories as $category) 
+        {
             $this->save($category);
         }
 
@@ -96,7 +103,8 @@ class GCWC_WC_Categories extends GCWC_GC_Api {
         $taxonomy = 'product_cat';
         
         // Buscar a categoria pelo meta dado 'gc_category_id'
-        $category_term = get_terms(array(
+        $category_term = get_terms(array
+        (
             'taxonomy' => $taxonomy,
             'meta_query' => array
             (
@@ -186,7 +194,8 @@ class GCWC_WC_Categories extends GCWC_GC_Api {
         $categorias = $this->fetch_api();
         $array_options = [];
 
-        foreach ($categorias as $categoria) {
+        foreach ($categorias as $categoria)
+        {
             $array_options[$categoria['id']] = $categoria['nome'];
         }
 
