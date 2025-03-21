@@ -23,8 +23,8 @@
  */
 
 // If this file is called directly, abort.
-if (!defined('WPINC')) die;
-if (!defined('GCWC_PLUGIN_FILE')) define('GCWC_PLUGIN_FILE', __FILE__);
+if(!defined('WPINC')) die;
+if(!defined('GCWC_PLUGIN_FILE')) define('GCWC_PLUGIN_FILE', __FILE__);
 define('GCWC_ABSPATH', dirname(GCWC_PLUGIN_FILE) . '/');
 define('GCWC_URL', plugins_url('/', __FILE__));
 define('GCWC_VERSION', '3.5.4');
@@ -38,9 +38,9 @@ register_deactivation_hook(__FILE__, 'deactivate_gcwc');
 
 require plugin_dir_path(__FILE__) . 'includes/class-gcwc.php';
 
-function run_gcwc() 
+function gcwc_run() 
 {
 	$plugin = new GCWC();
 }
 
-run_gcwc();
+gcwc_run();
