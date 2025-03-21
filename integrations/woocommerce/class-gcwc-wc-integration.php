@@ -5,8 +5,8 @@ require_once GCWC_ABSPATH . 'integrations/gestaoclick/class-gcwc-gc-transportado
 require_once GCWC_ABSPATH . 'integrations/gestaoclick/class-gcwc-gc-situacoes.php';
 require_once GCWC_ABSPATH . 'integrations/woocommerce/class-gcwc-wc-categories.php';
 
-class GCWC_WC_Integration extends WC_Integration {
-
+class GCWC_WC_Integration extends WC_Integration 
+{
     public $id;
     public $method_title;
     public $method_description;

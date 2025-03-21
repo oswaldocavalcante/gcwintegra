@@ -1,6 +1,9 @@
-# GestãoClick para WooCommerce
+# GCWC - GestãoClick para WooCommerce
 
-GestãoClick é um plugin para WordPress que integra o ERP GestãoClick ao WooCommerce.
+- Author: [Oswaldo Cavalcante](https://oswaldocavalcante.com/)
+- Doação: https://oswaldocavalcante.com/donation
+- License: [GPL-2.0+](http://www.gnu.org/licenses/gpl-2.0.html)
+- GCWC é um plugin para WordPress que integra o ERP GestãoClick ao WooCommerce.
 
 ## Funcionalidades
 
@@ -43,11 +46,3 @@ Se você deseja contribuir com o desenvolvimento do GestãoClick, siga os passos
 3. Faça as alterações necessárias e commit (`git commit -am 'Adiciona nova funcionalidade'`).
 4. Envie para o repositório remoto (`git push origin feature/nova-funcionalidade`).
 5. Abra um Pull Request.
-
-## Autor
-
-Desenvolvido por [Oswaldo Cavalcante](https://oswaldocavalcante.com/).
-
-## Licença
-
-Este projeto está licenciado sob a licença GPLv2 ou posterior. Leia a [licença](http://www.gnu.org/licenses/gpl-2.0.html) para mais detalhes.
