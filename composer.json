@@ -4,7 +4,7 @@
       "build": 
       [
         "rm -f gcwc.zip",
-        "zip -r gcwc.zip . -x \"*.git*\" -x \".vscode/*\" -x \".DS_Store\" -x \"*.code-workspace\" "
+        "zip -r gcwc.zip . -x \"*.git*\" -x \".vscode/*\" -x \".DS_Store\" -x \"*.code-workspace\" -x \"README.md\" "
       ]
     }
 }
