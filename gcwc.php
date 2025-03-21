@@ -9,7 +9,7 @@
  * Plugin Name:       GCWC - GestãoClick for WooCommerce
  * Plugin URI:        https://github.com/oswaldocavalcante/gcwc
  * Description:       Integra o ERP GestãoClick ao WooCommerce.
- * Version:           3.5.4
+ * Version:           3.5.5
  * Author:            Oswaldo Cavalcante
  * Author URI:        https://oswaldocavalcante.com/
  * License:           GPL-2.0+
@@ -27,7 +27,7 @@ if(!defined('WPINC')) die;
 if(!defined('GCWC_PLUGIN_FILE')) define('GCWC_PLUGIN_FILE', __FILE__);
 define('GCWC_ABSPATH', dirname(GCWC_PLUGIN_FILE) . '/');
 define('GCWC_URL', plugins_url('/', __FILE__));
-define('GCWC_VERSION', '3.5.4');
+define('GCWC_VERSION', '3.5.5');
 
 function deactivate_gcwc() 
 {
