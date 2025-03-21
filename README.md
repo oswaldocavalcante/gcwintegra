@@ -30,8 +30,7 @@ Habilite a calculadora de frete para aparecer na página individual de produtos 
 
 ### Orçamentos
 
-- **Habilitar Orçamentos**: Baixe e instale o módulo de orçamentos para produtos sem controle de estoque no GestãoClick.
-- **Quantidade Mínima**: Configure uma quantidade mínima de itens para um orçamento ser enviado ao GestãoClick.
+Módulo adicional de orçamentos para produtos sem controle de estoque no GestãoClick.
 
 ## Instalação
 
