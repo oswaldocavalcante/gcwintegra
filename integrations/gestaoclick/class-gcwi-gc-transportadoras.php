@@ -4,7 +4,7 @@ if(!defined('ABSPATH')) exit; // Exit if accessed directly
 
 require_once 'class-gcwi-gc-api.php';
 
-class GCWI_GC_Transportadoras extends GCWI_GC_Api 
+class GCWI_GC_Transportadoras extends GCWI_GC_API 
 {
     private $api_headers;
     private $api_endpoint;

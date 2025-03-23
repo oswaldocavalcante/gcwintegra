@@ -14,7 +14,7 @@ if(!defined('ABSPATH')) exit; // Exit if accessed directly
 
 require_once GCWI_ABSPATH . 'integrations/gestaoclick/class-gcwi-gc-api.php';
  
-class GCWI_WC_Attributes extends GCWI_GC_Api
+class GCWI_WC_Attributes extends GCWI_GC_API
 {
 
     private $api_endpoint;

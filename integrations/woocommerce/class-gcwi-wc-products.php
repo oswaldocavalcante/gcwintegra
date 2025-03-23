@@ -12,7 +12,7 @@ if(!defined('ABSPATH')) exit; // Exit if accessed directly
 
 require_once GCWI_ABSPATH . 'integrations/gestaoclick/class-gcwi-gc-api.php';
 
-class GCWI_WC_Products extends GCWI_GC_Api 
+class GCWI_WC_Products extends GCWI_GC_API
 {
     private $api_endpoint;
     private $api_headers;
@@ -52,20 +52,22 @@ class GCWI_WC_Products extends GCWI_GC_Api
 
     public function import($products_codes) 
     {
-        $products               = $this->fetch_api();
-        $products_blacklist     = get_option( 'gcwi-settings-products-blacklist' );
-        $categories_selection   = get_option( 'gcwi-settings-categories-selection' );
-        $products_selection     = array();
-
-        if($categories_selection) 
+        $categories_selection = get_option('gcwi-settings-categories-selection');
+        if(empty($categories_selection))
         {
-            $filtered_categories = array_filter($products, function ($item) use ($categories_selection) 
-            {
-                return (in_array($item['grupo_id'], $categories_selection));
-            });
-
-            $products = $filtered_categories;
+            wp_admin_notice('GestãoClick: não há categorias selecionadas para importar produtos.', array('type' => 'warning', 'dismissible' => true));
+            return;
         }
+
+        $products           = $this->fetch_api();
+        $products_blacklist = get_option('gcwi-settings-products-blacklist');
+        $products_selection = array();
+
+        $filtered_categories = array_filter($products, function ($item) use ($categories_selection) 
+        {
+            return (in_array($item['grupo_id'], $categories_selection));
+        });
+        $products = $filtered_categories;
 
         if($products_blacklist) 
         {
@@ -89,7 +91,8 @@ class GCWI_WC_Products extends GCWI_GC_Api
             $products_selection = $products;
         }
 
-        foreach ($products_selection as $product_data) {         
+        foreach ($products_selection as $product_data) 
+        {         
             $this->save($product_data);
         }
 
@@ -113,19 +116,11 @@ class GCWI_WC_Products extends GCWI_GC_Api
         $product_exists = wc_get_product_id_by_sku($product_data['codigo_barra']);
         $product = null;
 
-        if ($product_exists) {
-            $product = wc_get_product($product_exists);
-        } 
+        if($product_exists) $product = wc_get_product($product_exists);
         else 
         {
-            if((int) $product_data['possui_variacao']) 
-            {
-                $product = new WC_Product_Variable();
-            }
-            else 
-            {
-                $product = new WC_Product_Simple();
-            }
+            if((int) $product_data['possui_variacao'])  $product = new WC_Product_Variable();
+            else                                        $product = new WC_Product_Simple();
 
             $product->add_meta_data('gcwi_gc_product_id', (int) $product_data['id'], true);
         }
@@ -174,10 +169,7 @@ class GCWI_WC_Products extends GCWI_GC_Api
         $attribute->set_variation(true);
 
         $options = array();
-        foreach( $variations as $variation )
-        {
-            array_push( $options, $variation['variacao']['nome'] );
-        }
+        foreach($variations as $variation) array_push($options, $variation['variacao']['nome']);
 
         $attribute->set_options($options);
 
@@ -194,10 +186,7 @@ class GCWI_WC_Products extends GCWI_GC_Api
             $variation_id_exists = wc_get_product_id_by_sku($sku);
             $variation = null;
 
-            if ($variation_id_exists) 
-            {
-                $variation = wc_get_product($variation_id_exists);
-            } 
+            if ($variation_id_exists) $variation = wc_get_product($variation_id_exists);
             else 
             {
                 $variation = new WC_Product_Variation();

@@ -44,7 +44,7 @@ class GCWI_WC_Integration extends WC_Integration
     {
         $button_import_html = '';
 
-        if(GCWI_GC_Api::test_connection()) 
+        if(GCWI_GC_API::test_connection()) 
         {
             $gc_transportadoras = new GCWI_GC_Transportadoras();
             $this->gc_transportadoras_options = $gc_transportadoras->get_options_for_settings() ?? [];
@@ -171,7 +171,7 @@ class GCWI_WC_Integration extends WC_Integration
         update_option('gcwi-settings-shipping-calculator',   $this->settings['gcwi-settings-shipping-calculator']);
 
 
-        if(GCWI_GC_Api::test_connection()) 
+        if(GCWI_GC_API::test_connection()) 
         {
             echo '<span id="gcwi-integration-connection" class="dashicons-before dashicons-yes-alt">' . esc_html( __('Conectado', 'gcwintegra') ) . '</span>';
         } 
@@ -203,7 +203,7 @@ class GCWI_WC_Integration extends WC_Integration
 
     function add_order_list_column($columns)
     {
-        if (!GCWI_GC_Api::test_connection())
+        if (!GCWI_GC_API::test_connection())
         {
             wp_admin_notice(__('GestãoClick: Configura suas credenciais de acesso da API.', 'gcwintegra'), array('type' => 'error'));
         }

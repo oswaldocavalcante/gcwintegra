@@ -2,7 +2,7 @@
 
 if(!defined('ABSPATH')) exit; // Exit if accessed directly
 
-class GCWI_GC_Api
+class GCWI_GC_API
 {
     private $access_token;
     private $secret_access_token;

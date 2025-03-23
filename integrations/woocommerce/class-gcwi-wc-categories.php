@@ -14,10 +14,11 @@ if(!defined('ABSPATH')) exit; // Exit if accessed directly
 
 require_once GCWI_ABSPATH . 'integrations/gestaoclick/class-gcwi-gc-api.php';
 
-class GCWI_WC_Categories extends GCWI_GC_Api
+class GCWI_WC_Categories extends GCWI_GC_API
 {
     private $api_endpoint;
     private $api_headers;
+
     private $fetched_categories = array();
 
     public function __construct() 
@@ -25,7 +26,7 @@ class GCWI_WC_Categories extends GCWI_GC_Api
         parent::__construct();
         
         $this->api_endpoint = parent::get_endpoint_categories();
-        $this->api_headers  = parent::get_headers();
+        $this->api_headers =  parent::get_headers();
     }
 
     public function fetch_api()
@@ -57,20 +58,23 @@ class GCWI_WC_Categories extends GCWI_GC_Api
 
     public function import($categories_ids)
     {
-        $categories             = $this->fetch_api();
-        $categories_selection   = get_option('gcwi-settings-categories-selection');
-
-        if($categories_selection) 
+        $categories_selection = get_option('gcwi-settings-categories-selection');
+        if(empty($categories_selection))
         {
-            $filtered_categories = array_filter($categories, function ($item) use ($categories_selection)
-            {
-                return (in_array($item['id'], $categories_selection));
-            });
-
-            $categories = $filtered_categories;
+            wp_admin_notice('GestãoClick: não há categorias selecionadas para importar.', array('type' => 'warning', 'dismissible' => true));
+            return;
         }
 
-        // Filtering selected categories
+        $categories = $this->fetch_api();
+
+        $filtered_categories = array_filter($categories, function ($item) use ($categories_selection)
+        {
+            return (in_array($item['id'], $categories_selection));
+        });
+
+        $categories = $filtered_categories;
+
+        // Filtering specific categories
         $selected_categories = array();
         if(is_array($categories_ids))
         {
@@ -192,7 +196,7 @@ class GCWI_WC_Categories extends GCWI_GC_Api
         $categorias = $this->fetch_api();
         $array_options = [];
 
-        foreach($categorias as $categoria)
+        foreach ($categorias as $categoria)
         {
             $array_options[$categoria['id']] = $categoria['nome'];
         }
