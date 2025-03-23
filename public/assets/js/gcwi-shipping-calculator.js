@@ -10,9 +10,9 @@ jQuery(document).ready(function ($)
         }
     };
 
-    $('#gcwc-update-shipping-button').on('click', function () 
+    $('#gcwi-update-shipping-button').on('click', function () 
     {
-        var loaderContainer = $('#gcwc_quote_totals_shipping');
+        var loaderContainer = $('#gcwi_quote_totals_shipping');
         var shipping_postcode = $('#shipping_postcode').val();
 
         if (shipping_postcode !== "") 
@@ -35,20 +35,20 @@ jQuery(document).ready(function ($)
                         var shipping_city = response.localidade;
                         var shipping_state = response.uf;
 
-                        $('#gcwc_quote_shipping_address').html(
+                        $('#gcwi_quote_shipping_address').html(
                             '<p>' + response.logradouro + ', ' + response.bairro + ', ' + response.localidade + '/' + response.uf + '</p>'
                         );
 
-                        var shipping_address_html = $('#gcwc_quote_shipping_address').html();
+                        var shipping_address_html = $('#gcwi_quote_shipping_address').html();
 
                         $.ajax
                         ({
-                            url: gcwc_quote_ajax_object.url,
+                            url: gcwi_quote_ajax_object.url,
                             type: 'POST',
                             data: 
                             {
-                                action: 'gcwc_calculate_shipping',
-                                nonce: gcwc_quote_ajax_object.nonce,
+                                action: 'gcwi_calculate_shipping',
+                                nonce: gcwi_quote_ajax_object.nonce,
 
                                 product_id: product_id,
                                 quantity: quantity,
@@ -66,7 +66,7 @@ jQuery(document).ready(function ($)
                                 loaderContainer.unblock(); // Desbloqueia a interface do usuário quando a solicitação é concluída
                             },
                             success: function (response) {
-                                $('#gcwc_quote_shipping_options').html(response.data.html);
+                                $('#gcwi_quote_shipping_options').html(response.data.html);
                             },
                             error: function (xhr, status, error) {
                                 console.log('AJAX Error: ' + status + ' - ' + error);

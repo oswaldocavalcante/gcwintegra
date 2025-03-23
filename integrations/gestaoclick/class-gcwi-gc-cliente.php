@@ -2,9 +2,9 @@
 
 if(!defined('ABSPATH')) exit; // Exit if accessed directly
 
-require_once 'class-gcwc-gc-api.php';
+require_once 'class-gcwi-gc-api.php';
 
-class GCWC_GC_Cliente extends GCWC_GC_Api
+class GCWI_GC_Cliente extends GCWI_GC_Api
 {
     private $id = null;
 

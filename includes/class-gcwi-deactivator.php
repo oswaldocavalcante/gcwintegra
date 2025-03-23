@@ -8,12 +8,12 @@ if(!defined('ABSPATH')) exit; // Exit if accessed directly
  * This class defines all code necessary to run during the plugin's deactivation.
  *
  * @since      1.0.0
- * @package    GCWC
- * @subpackage GCWC/includes
+ * @package    GCWI
+ * @subpackage GCWI/includes
  * @author     Oswaldo Cavalcante <contato@oswaldocavalcante.com>
  * @link       https://oswaldocavalcante.com
  */
-class GCWC_Deactivator {
+class GCWI_Deactivator {
 
 	/**
 	 * Deactivates the cron hook.
@@ -22,10 +22,10 @@ class GCWC_Deactivator {
 	 */
 	public static function deactivate() 
 	{
-		if (wp_next_scheduled('gcwc_update'))
+		if (wp_next_scheduled('gcwi_update'))
 		{
-			$timestamp = wp_next_scheduled( 'gcwc_update' );
-			wp_unschedule_event( $timestamp, 'gcwc_update' );
+			$timestamp = wp_next_scheduled( 'gcwi_update' );
+			wp_unschedule_event( $timestamp, 'gcwi_update' );
 		}
 	}
 }

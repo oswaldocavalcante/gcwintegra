@@ -2,22 +2,23 @@
 
 if(!defined('ABSPATH')) exit; // Exit if accessed directly
 
-require_once 'class-gcwc-gc-api.php';
+require_once 'class-gcwi-gc-api.php';
 
-class GCWC_GC_Situacoes extends GCWC_GC_Api {
-
+class GCWI_GC_Transportadoras extends GCWI_GC_Api 
+{
     private $api_headers;
     private $api_endpoint;
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
-        $this->api_headers =    parent::get_headers();
-        $this->api_endpoint =   parent::get_endpoint_situacoes();
+        $this->api_headers  = parent::get_headers();
+        $this->api_endpoint = parent::get_endpoint_transportadoras();
     }
 
     public function fetch_api() 
     {
-        $situacoes = [];
+        $transportadoras = [];
         $proxima_pagina = 1;
 
         do 
@@ -28,27 +29,26 @@ class GCWC_GC_Situacoes extends GCWC_GC_Api {
             );
 
             $body_array = json_decode($body, true);
-            if (!is_array($body_array)) return false;
+            if(!is_array($body_array)) return false;
 
             $proxima_pagina = $body_array['meta']['proxima_pagina'];
-            $situacoes = array_merge($situacoes, $body_array['data']);
-
-        } 
+            $transportadoras = array_merge($transportadoras, $body_array['data']);
+        }
         while ($proxima_pagina != null);
 
-        return $situacoes;
+        return $transportadoras;
     }
 
     public function get_options_for_settings() 
     {
-        $situacoes = $this->fetch_api();
-        if (!$situacoes) return false;
-
+        $transportadoras = $this->fetch_api();
+        if(!$transportadoras) return false;
+        
         $array_options = [];
 
-        foreach ($situacoes as $situacao) 
+        foreach ($transportadoras as $transportadora) 
         {
-            $array_options[$situacao['id']] = $situacao['nome'];
+            $array_options[$transportadora['id']] = $transportadora['nome'];
         }
 
         return $array_options;

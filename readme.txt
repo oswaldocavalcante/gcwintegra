@@ -1,4 +1,4 @@
-=== GCWC - GestãoClick for WooCommerce ===
+=== GCW Integra - GestãoClick for WooCommerce ===
 Contributors: oswaldocavalcante
 Donate link: https://oswaldocavalcante.com/donation
 Tags: woocommerce, gestaoclick, erp
@@ -13,7 +13,7 @@ Integrate the GestãoClick ERP with WooCommerce.
 
 == Description ==
 
-GCWC is a WordPress plugin that integrates the GestãoClick ERP with WooCommerce.
+GCW Integra is a WordPress plugin that integrates the GestãoClick ERP with WooCommerce.
 
 **Features**
 

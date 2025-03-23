@@ -12,9 +12,9 @@
 
 if(!defined('ABSPATH')) exit; // Exit if accessed directly
 
-require_once GCWC_ABSPATH . 'integrations/gestaoclick/class-gcwc-gc-api.php';
+require_once GCWI_ABSPATH . 'integrations/gestaoclick/class-gcwi-gc-api.php';
 
-class GCWC_WC_Categories extends GCWC_GC_Api
+class GCWI_WC_Categories extends GCWI_GC_Api
 {
     private $api_endpoint;
     private $api_headers;
@@ -59,7 +59,7 @@ class GCWC_WC_Categories extends GCWC_GC_Api
     public function import($categories_ids)
     {
         $categories             = $this->fetch_api();
-        $categories_selection   = get_option('gcwc-settings-categories-selection');
+        $categories_selection   = get_option('gcwi-settings-categories-selection');
 
         if($categories_selection) 
         {

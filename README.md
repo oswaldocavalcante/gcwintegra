@@ -1,6 +1,6 @@
-# GCWC - GestãoClick for WooCommerce
+# GCWI - GestãoClick for WooCommerce
 
-GCWC é um plugin para WordPress que integra o ERP GestãoClick ao WooCommerce.
+GCWI é um plugin para WordPress que integra o ERP GestãoClick ao WooCommerce.
 
 - Author: [Oswaldo Cavalcante](https://oswaldocavalcante.com/)
 - Doação: https://oswaldocavalcante.com/donation

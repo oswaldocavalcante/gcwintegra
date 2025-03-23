@@ -2,7 +2,7 @@
 
 if(!defined('ABSPATH')) exit; // Exit if accessed directly
 
-class GCWC_GC_Api
+class GCWI_GC_Api
 {
     private $access_token;
     private $secret_access_token;
@@ -19,8 +19,8 @@ class GCWC_GC_Api
 
     public function __construct()
     {
-        $this->access_token         = get_option('gcwc-api-access-token');
-        $this->secret_access_token  = get_option('gcwc-api-secret-access-token');
+        $this->access_token         = get_option('gcwi-api-access-token');
+        $this->secret_access_token  = get_option('gcwi-api-secret-access-token');
         $this->headers = array
         (
             'headers' => array
@@ -45,8 +45,8 @@ class GCWC_GC_Api
     {
         $http_code = null;
 
-        $access_token           = get_option('gcwc-api-access-token');
-        $secret_access_token    = get_option('gcwc-api-secret-access-token');
+        $access_token           = get_option('gcwi-api-access-token');
+        $secret_access_token    = get_option('gcwi-api-secret-access-token');
 
         if(($access_token && $secret_access_token) != '')
         {

@@ -12,9 +12,9 @@
 
 if(!defined('ABSPATH')) exit; // Exit if accessed directly
 
-require_once GCWC_ABSPATH . 'integrations/gestaoclick/class-gcwc-gc-api.php';
+require_once GCWI_ABSPATH . 'integrations/gestaoclick/class-gcwi-gc-api.php';
  
-class GCWC_WC_Attributes extends GCWC_GC_Api
+class GCWI_WC_Attributes extends GCWI_GC_Api
 {
 
     private $api_endpoint;
@@ -26,7 +26,7 @@ class GCWC_WC_Attributes extends GCWC_GC_Api
         $this->api_endpoint = parent::get_endpoint_attributes();
         $this->api_headers =  parent::get_headers();
         
-        add_filter('gcwc_import_attributes', array( $this, 'import'));
+        add_filter('gcwi_import_attributes', array( $this, 'import'));
     }
 
     public function fetch_api() 
@@ -55,7 +55,7 @@ class GCWC_WC_Attributes extends GCWC_GC_Api
     }
 
     // public function import( $attributes_ids ) {
-    //     $attributes = get_option('gcwc-attributes');
+    //     $attributes = get_option('gcwi-attributes');
     //     $selected_attributes = array();
 
     //     // Filtering selected attributes

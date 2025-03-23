@@ -3,7 +3,7 @@
  * included in this file.
  */
 
-#gcwc-integration-connection
+#gcwi-integration-connection
 {
     font-size: 10px;
     color: darkslategray;
@@ -11,25 +11,25 @@
     margin: 20px 0 -5px 0;
 }
 
-#gcwc-integration-connection:before
+#gcwi-integration-connection:before
 {
     color: green;
     margin-right: 5px;
 }
 
-#gcwc-import-area
+#gcwi-import-area
 {
     display: block;
     width: fit-content;
 }
 
-#gcwc-import-area span
+#gcwi-import-area span
 {
     display: inline-block;
     padding: 5px;
 }
 
-#gcwc-button-nfe.dashicons-before:before
+#gcwi-button-nfe.dashicons-before:before
 {
     line-height: 29px;
     float: right;
