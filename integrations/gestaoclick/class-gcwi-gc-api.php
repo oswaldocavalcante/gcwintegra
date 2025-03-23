@@ -25,20 +25,20 @@ class GCWI_GC_API
         (
             'headers' => array
             (
-                'Content-Type' =>           'application/json',
-                'access-token' =>           $this->access_token,
-                'secret-access-token' =>    $this->secret_access_token,
+                'Content-Type'          => 'application/json',
+                'access-token'          => $this->access_token,
+                'secret-access-token'   => $this->secret_access_token,
             ),
         );
 
-        $this->endpoint_items =             'https://api.gestaoclick.com/produtos';
-        $this->endpoint_categories =        'https://api.gestaoclick.com/grupos_produtos';
-        $this->endpoint_attributes =        'https://api.gestaoclick.com/grades';
-        $this->endpoint_vendas =            'https://api.gestaoclick.com/vendas';
-        $this->endpoint_clients =           'https://api.gestaoclick.com/clientes';
-        $this->endpoint_transportadoras =   'https://api.gestaoclick.com/transportadoras';
-        $this->endpoint_situacoes =         'https://api.gestaoclick.com/situacoes_vendas';
-        $this->endpoint_orcamentos =        'https://api.gestaoclick.com/orcamentos';
+        $this->endpoint_items           = 'https://api.gestaoclick.com/produtos';
+        $this->endpoint_categories      = 'https://api.gestaoclick.com/grupos_produtos';
+        $this->endpoint_attributes      = 'https://api.gestaoclick.com/grades';
+        $this->endpoint_vendas          = 'https://api.gestaoclick.com/vendas';
+        $this->endpoint_clients         = 'https://api.gestaoclick.com/clientes';
+        $this->endpoint_transportadoras = 'https://api.gestaoclick.com/transportadoras';
+        $this->endpoint_situacoes       = 'https://api.gestaoclick.com/situacoes_vendas';
+        $this->endpoint_orcamentos      = 'https://api.gestaoclick.com/orcamentos';
     }
 
     public static function test_connection()
@@ -64,10 +64,7 @@ class GCWI_GC_API
             $response = wp_remote_get($url, $args);
             $http_code = wp_remote_retrieve_response_code($response);
         } 
-        else 
-        {
-            return false;
-        }
+        else return false;
 
         if($http_code == 200) return true;
         else return false;
