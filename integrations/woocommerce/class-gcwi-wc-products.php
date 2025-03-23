@@ -138,7 +138,7 @@ class GCWI_WC_Products extends GCWI_GC_API
         (
             'sku'           => $product_data['codigo_barra'],
             'name'          => $product_data['nome'],
-            'price'         => $product_data['valor_venda'],
+            'regular_price' => $product_data['valor_venda'],
             'description'   => $product_data['descricao'],
             'date_created'  => $product_data['cadastrado_em'],
             'date_modified' => $product_data['modificado_em'],
@@ -198,7 +198,6 @@ class GCWI_WC_Products extends GCWI_GC_API
             $variation->set_status('publish');
             $variation->set_manage_stock($parent_product->get_manage_stock());
             $variation->set_stock_status($parent_product->get_manage_stock() ? '' : 'onbackorder');
-            $variation->set_price($variation_data['variacao']['valores'][0]['valor_venda']);
             $variation->set_regular_price($variation_data['variacao']['valores'][0]['valor_venda']);
             $variation->set_stock_quantity($variation_data['variacao']['estoque']);
             $variation->set_attributes(array('modelo' => $variation_data['variacao']['nome']));

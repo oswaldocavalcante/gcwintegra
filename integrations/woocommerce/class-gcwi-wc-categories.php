@@ -144,7 +144,7 @@ class GCWI_WC_Categories extends GCWI_GC_API
                 )
             );
         } 
-        elseif(empty($category_term)) 
+        elseif(empty($category_term))
         {
             // Criar uma nova categoria
             $new_category = wp_insert_term

@@ -27,15 +27,16 @@ jQuery(document).ready(function ($)
                 {
                     if (!response.erro) 
                     {
-                        var product_id = $('input[name="product_id"]').val();
-                        var quantity = $('input[name="quantity"]').val();
+                        var product_id  = $('input[name="product_id"]').val();
+                        var quantity    = $('input[name="quantity"]').val();
 
-                        var shipping_address_1 = response.logradouro;
-                        var shipping_neighborhood = response.bairro;
-                        var shipping_city = response.localidade;
-                        var shipping_state = response.uf;
+                        var shipping_address_1      = response.logradouro;
+                        var shipping_neighborhood   = response.bairro;
+                        var shipping_city           = response.localidade;
+                        var shipping_state          = response.uf;
 
-                        $('#gcwi_quote_shipping_address').html(
+                        $('#gcwi_quote_shipping_address').html
+                        (
                             '<p>' + response.logradouro + ', ' + response.bairro + ', ' + response.localidade + '/' + response.uf + '</p>'
                         );
 
@@ -73,14 +74,12 @@ jQuery(document).ready(function ($)
                             }
                         });
 
-                    } else {
-                        alert("CEP não encontrado.");
-                    }
+                    } 
+                    else alert("CEP não encontrado.");
                 }
             });
 
-        } else {
-            alert("Informe um CEP.");
-        }
+        } 
+        else alert("Informe um CEP.");
     });
 });
