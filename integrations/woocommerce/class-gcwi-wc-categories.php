@@ -18,7 +18,6 @@ class GCWI_WC_Categories extends GCWI_GC_Api
 {
     private $api_endpoint;
     private $api_headers;
-
     private $fetched_categories = array();
 
     public function __construct() 
@@ -26,7 +25,7 @@ class GCWI_WC_Categories extends GCWI_GC_Api
         parent::__construct();
         
         $this->api_endpoint = parent::get_endpoint_categories();
-        $this->api_headers =  parent::get_headers();
+        $this->api_headers  = parent::get_headers();
     }
 
     public function fetch_api()
@@ -106,14 +105,14 @@ class GCWI_WC_Categories extends GCWI_GC_Api
         // Buscar a categoria pelo meta dado 'gc_category_id'
         $category_term = get_terms(array
         (
-            'taxonomy' => $taxonomy,
-            'meta_query' => array(array
+            'taxonomy'      => $taxonomy,
+            'hide_empty'    => false,
+            'meta_query'    => array(array
             (
-                'key' => 'gc_category_id',
-                'value' => $category['id'],
-                'compare' => '='
+                'key'       => 'gc_category_id',
+                'value'     => $category['id'],
+                'compare'   => '='
             )),
-            'hide_empty' => false,
         ));
 
         // Se a categoria foi encontrada
@@ -134,14 +133,14 @@ class GCWI_WC_Categories extends GCWI_GC_Api
                 $taxonomy,
                 array
                 (
-                    'name' => $category['nome'],
-                    'slug' => sanitize_title($category['nome']),
-                    'description' => $category['meta_descricao'],
-                    'parent' => $parent_term_id,
+                    'name'          => $category['nome'],
+                    'slug'          => sanitize_title($category['nome']),
+                    'parent'        => $parent_term_id,
+                    'description'   => $category['meta_descricao'],
                 )
             );
         } 
-        else 
+        elseif(empty($category_term)) 
         {
             // Criar uma nova categoria
             $new_category = wp_insert_term
@@ -150,9 +149,9 @@ class GCWI_WC_Categories extends GCWI_GC_Api
                 $taxonomy,
                 array
                 (
-                    'slug' => sanitize_title($category['nome']),
-                    'description' => $category['meta_descricao'],
-                    'parent' => $this->get_category_parent_id($this->fetched_categories, $category, $taxonomy),
+                    'slug'          => sanitize_title($category['nome']),
+                    'parent'        => $this->get_category_parent_id($this->fetched_categories, $category, $taxonomy),
+                    'description'   => $category['meta_descricao'],
                 )
             );
 
@@ -165,19 +164,20 @@ class GCWI_WC_Categories extends GCWI_GC_Api
 
     public function get_category_parent_id($gc_categories, $gc_category, $taxonomy)
     {
-        foreach ($gc_categories as $parent_candidate)
+        foreach($gc_categories as $parent_candidate)
         {
             if($gc_category['grupo_pai_id'] == $parent_candidate['id'])
             {
-                $parent_terms = get_terms(array(
-                    'taxonomy' => $taxonomy,
-                    'meta_query' => array(array
+                $parent_terms = get_terms(array
+                (
+                    'taxonomy'      => $taxonomy,
+                    'hide_empty'    => false,
+                    'meta_query'    => array(array
                     (
-                        'key' => 'gc_category_id',
-                        'value' => $parent_candidate['id'],
-                        'compare' => '='
+                        'key'       => 'gc_category_id',
+                        'value'     => $parent_candidate['id'],
+                        'compare'   => '='
                     )),
-                    'hide_empty' => false,
                 ));
                 
                 return $parent_terms[0]->term_id;
@@ -192,7 +192,7 @@ class GCWI_WC_Categories extends GCWI_GC_Api
         $categorias = $this->fetch_api();
         $array_options = [];
 
-        foreach ($categorias as $categoria)
+        foreach($categorias as $categoria)
         {
             $array_options[$categoria['id']] = $categoria['nome'];
         }
