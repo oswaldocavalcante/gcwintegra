@@ -89,15 +89,15 @@ class GCWI
 
 		if(get_option('gcwi-settings-shipping-calculator') == 'yes')
 		{
-			add_action('woocommerce_single_product_summary', 		array($plugin_public, 'shipping_calculator'), 41);
+			add_action('woocommerce_single_product_summary', 		array($plugin_public, 'render_shipping_calculator'), 41);
 			add_action('wp_ajax_gcwi_calculate_shipping', 			array($plugin_public, 'ajax_calculate_shipping'));
 			add_action('wp_ajax_nopriv_gcwi_calculate_shipping', 	array($plugin_public, 'ajax_calculate_shipping'));
 		}
 		else
 		{
-			remove_action('woocommerce_single_product_summary', 	array($plugin_public, 'shipping_calculator'));
+			remove_action('woocommerce_single_product_summary', 	array($plugin_public, 'render_shipping_calculator'));
 			remove_action('wp_ajax_gcwi_calculate_shipping', 		array($plugin_public, 'ajax_calculate_shipping'));
-			remove_action('wp_ajax_nopriv_gcwi_calculate_shipping', 	array($plugin_public, 'ajax_calculate_shipping'));
+			remove_action('wp_ajax_nopriv_gcwi_calculate_shipping', array($plugin_public, 'ajax_calculate_shipping'));
 		}
 	}
 }

@@ -1,0 +1,204 @@
+#gcwi_add_to_quote_button {
+    cursor: pointer;
+}
+
+#gcwi_add_to_quote_button.disabled {
+    cursor: not-allowed;
+}
+
+#gcwi-quote-container {
+    margin: 50px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    font-weight: 500;
+}
+
+/* Table of quote items */
+#gcwi-quote-forms-container {
+    background: #fff;
+    flex: 2.8;
+}
+
+#gcwi-quote-form table {
+    margin-bottom: 0;
+}
+
+table tbody tr:nth-child(odd) {
+    background-color: #F8F8F8;
+}
+
+.product-remove {
+    padding-right: 0 !important;
+}
+
+.product-remove a {
+    text-decoration: none;
+    color: #bfcad0;
+    cursor: pointer;
+}
+
+
+.product-remove a:before {
+    font-family: WooCommerce;
+    content: '\e013';
+    /* margin-left: 10px; */
+}
+
+.product-remove a:hover {
+    color: red;
+}
+
+.product-thumbnail img {
+    max-width: 75px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: 1px solid #ebebeb;
+}
+
+#gcwi-quote-form td.product-name {
+    font-size: 0.9em;
+    line-height: 1.5em;
+}
+
+#gcwi-quote-form .product-name a {
+    color: #5d5d5d;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+#gcwi-quote-form .product-quantity input {
+    width: 80px;
+    border-radius: 7px;
+    padding: 0;
+    text-align: center;
+}
+
+#gcwi-quote-form .actions {
+    text-align: right;
+    padding: 0px !important;
+    background-color: #fff;
+}
+
+#gcwi-quote-form button[type="submit"] {
+    font-family: unset;
+    font-size: 0.9em;
+    padding: 17px 22px;
+    margin: 10px 0 50px;
+    background-color: #5d707a;
+    border-radius: 7px;
+    color: #fff;
+    opacity: 80%;
+    float: right;
+    font-weight: 500;
+}
+
+#gcwi-quote-form button[type="submit"]:hover,
+#gcwi_registration_form input[type="submit"]:hover {
+    opacity: 100%;
+}
+
+/* Total price of quote */
+
+#gcwi-quote-totals-container {
+    flex: 1;
+    min-width: 350px;
+    height: fit-content;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f8f8f8;
+    overflow: hidden;
+}
+
+#gcwi-quote-totals-container h2 {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin: 0;
+    padding: 25px 40px;
+    background-color: #e8ebec;
+    color: #8a959b;
+    /* text-align: center; */
+}
+
+#gcwi_quote_totals_shipping p {
+    font-size: 1em;
+}
+
+.gcwi_quote_totals_section {
+    padding: 20px 40px;
+    border-bottom: 1px solid #ccc;
+}
+
+.gcwi_quote_space_between {
+    display: flex;
+    justify-content: space-between;
+}
+
+.product #gcwi_quote_totals_shipping {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0px 20px;
+}
+
+#gcwi_quote_totals_shipping p {
+    margin: 0px 0px 20px;
+    padding: 0;
+}
+
+#gcwi_quote_shipping_options ul {
+    list-style: none;
+    margin: 0 0 0px 15px;
+}
+
+#gcwi_quote_shipping_options li {
+    margin-bottom: 10px;
+    font-size: 0.9em;
+}
+
+#gcwi_quote_shipping_options li bdi {
+    font-weight: bold;
+}
+
+#gcwi_quote_shipping_options input {
+    margin-right: 10px;
+}
+
+#gcwi_quote_shipping_address p {
+    font-size: 0.8em;
+    font-weight: bold;
+    color: #5d5d5d;
+    margin: 25px 0 10px 15px;
+}
+
+#gcwi_quote_shipping_form {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+#gcwi_quote_shipping_form input {
+    border-radius: 10px;
+    border: 2px solid #ddd;
+    height: 46px;
+    font-family: unset;
+    padding-left: 15px;
+    outline-offset: -4px;
+}
+
+#gcwi_quote_shipping_form button {
+    background-color: #5d707a;
+    color: #fff;
+    padding: 11px 20px;
+    border-radius: 7px;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    font-family: unset;
+    font-size: 14px;
+}
+
+#gcwi_quote_totals_total {
+    font-weight: bold;
+    background-color: #ebeeef;
+}

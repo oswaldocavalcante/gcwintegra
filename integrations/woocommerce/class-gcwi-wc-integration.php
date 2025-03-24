@@ -275,7 +275,7 @@ class GCWI_WC_Integration extends WC_Integration
 
     public function ajax_gcwi_nfe($order_id)
     {
-        if(!isset($_POST['order_id']) && !isset($_POST['security']) && !check_ajax_referer('gcwi_nonce', 'security')) return;
+        if(!isset($_POST['order_id']) || !isset($_POST['security']) || !check_ajax_referer('gcwi_nonce', 'security')) return;
 
         $order_id = absint(wp_unslash($_POST['order_id']));
         $order = wc_get_order($order_id);

@@ -44,12 +44,12 @@ jQuery(document).ready(function ($)
 
                         $.ajax
                         ({
-                            url: gcwi_quote_ajax_object.url,
+                            url: gcwi_ajax_object.url,
                             type: 'POST',
                             data: 
                             {
                                 action: 'gcwi_calculate_shipping',
-                                nonce: gcwi_quote_ajax_object.nonce,
+                                security: gcwi_ajax_object.nonce,
 
                                 product_id: product_id,
                                 quantity: quantity,
