@@ -30,14 +30,14 @@ define('GCWI_URL', plugins_url('/', __FILE__));
 define('GCWI_VERSION', '3.5.6');
 
 register_deactivation_hook(__FILE__, 'deactivate_gcwi');
-function deactivate_gcwi() 
+function deactivate_gcwi()
 {
 	require_once plugin_dir_path(__FILE__) . 'includes/class-gcwi-deactivator.php';
 	GCWI_Deactivator::deactivate();
 }
 
 require plugin_dir_path(__FILE__) . 'includes/class-gcwi.php';
-function gcwi_run() 
+function gcwi_run()
 {
 	$plugin = new GCWI();
 }
