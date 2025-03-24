@@ -9,7 +9,7 @@
  * Plugin Name:       GCW Integra - GestãoClick for WooCommerce
  * Plugin URI:        https://github.com/oswaldocavalcante/gcwintegra
  * Description:       Integra o ERP GestãoClick ao WooCommerce.
- * Version:           3.5.5
+ * Version:           3.5.6
  * Author:            Oswaldo Cavalcante
  * Author URI:        https://oswaldocavalcante.com/
  * License:           GPL-2.0+
@@ -27,7 +27,7 @@ if(!defined('WPINC')) die;
 if(!defined('GCWI_PLUGIN_FILE')) define('GCWI_PLUGIN_FILE', __FILE__);
 define('GCWI_ABSPATH', dirname(GCWI_PLUGIN_FILE) . '/');
 define('GCWI_URL', plugins_url('/', __FILE__));
-define('GCWI_VERSION', '3.5.5');
+define('GCWI_VERSION', '3.5.6');
 
 register_deactivation_hook(__FILE__, 'deactivate_gcwi');
 function deactivate_gcwi() 

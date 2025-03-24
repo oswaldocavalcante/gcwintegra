@@ -1,6 +1,6 @@
-# GCWI - GestãoClick for WooCommerce
+# GCW Integra - GestãoClick for WooCommerce
 
-GCWI é um plugin para WordPress que integra o ERP GestãoClick ao WooCommerce.
+GCW Integra é um plugin para WordPress que integra o ERP GestãoClick ao WooCommerce.
 
 - Author: [Oswaldo Cavalcante](https://oswaldocavalcante.com/)
 - Doação: https://oswaldocavalcante.com/donation
