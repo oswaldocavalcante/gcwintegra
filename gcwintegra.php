@@ -6,7 +6,7 @@
  * @package           GCWI
  *
  * @wordpress-plugin
- * Plugin Name:       GCW Integra - GestãoClick for WooCommerce
+ * Plugin Name:       GCW Integra for WooCommerce and GestãoClick
  * Plugin URI:        https://github.com/oswaldocavalcante/gcwintegra
  * Description:       Integra o ERP GestãoClick ao WooCommerce.
  * Version:           3.5.6

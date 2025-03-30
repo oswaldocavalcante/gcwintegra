@@ -1,4 +1,4 @@
-=== GCW Integra - GestãoClick for WooCommerce ===
+=== GCW Integra for WooCommerce and GestãoClick ===
 Contributors: oswaldocavalcante
 Donate link: https://oswaldocavalcante.com/donation
 Tags: woocommerce, gestaoclick, erp

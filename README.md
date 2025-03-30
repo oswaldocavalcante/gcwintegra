@@ -1,4 +1,4 @@
-# GCW Integra - GestãoClick for WooCommerce
+# GCW Integra for WooCommerce and GestãoClick
 
 GCW Integra é um plugin para WordPress que integra o ERP GestãoClick ao WooCommerce.
 
