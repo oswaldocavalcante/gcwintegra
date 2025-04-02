@@ -66,24 +66,6 @@ class GCWI_Admin
 			)
 		);
 	}
-	
-	/**
-	 * Register custom fields for settings.
-	 *
-	 * @since    1.0.0
-	 */
-	public function register_settings()
-	{
-		register_setting('gcwi_credentials', 'gcwi-api-access-token', 				'string');
-		register_setting('gcwi_credentials', 'gcwi-api-secret-access-token', 		'string');
-		register_setting('gcwi_settings', 	'gcwi-settings-auto-imports', 			'boolean');
-		register_setting('gcwi_settings', 	'gcwi-settings-categories-selection', 	'array');
-		register_setting('gcwi_settings', 	'gcwi-settings-attributes-selection', 	'array');
-		register_setting('gcwi_settings', 	'gcwi-settings-products-blacklist', 	'array');
-		register_setting('gcwi_settings', 	'gcwi-settings-export-orders', 			'boolean');
-		register_setting('gcwi_settings', 	'gcwi-settings-export-transportadora', 	'string');
-		register_setting('gcwi_settings', 	'gcwi-settings-export-situacao',		'string');
-	}
 
 	/**
 	 * Execute the importations of categories and products by cron schdeduled event.

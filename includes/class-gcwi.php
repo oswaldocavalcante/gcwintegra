@@ -65,7 +65,6 @@ class GCWI
 	{
 		$plugin_admin = new GCWI_Admin();
 
-		add_action('admin_init', 				array($plugin_admin, 'register_settings'));
 		add_filter('cron_schedules',            array($plugin_admin, 'add_cron_interval'));
 		add_action('admin_enqueue_scripts', 	array($plugin_admin, 'enqueue_scripts'));
 		add_action('before_woocommerce_init',   array($plugin_admin, 'declare_wc_compatibility'));

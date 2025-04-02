@@ -6,7 +6,7 @@
  * @package           GCWI
  *
  * @wordpress-plugin
- * Plugin Name:       GCW Integra for WooCommerce and GestãoClick
+ * Plugin Name:       GCW Integra - GestãoClick for WooCommerce
  * Plugin URI:        https://github.com/oswaldocavalcante/gcwintegra
  * Description:       Integra o ERP GestãoClick ao WooCommerce.
  * Version:           3.5.6
@@ -29,8 +29,8 @@ define('GCWI_ABSPATH', dirname(GCWI_PLUGIN_FILE) . '/');
 define('GCWI_URL', plugins_url('/', __FILE__));
 define('GCWI_VERSION', '3.5.6');
 
-register_deactivation_hook(__FILE__, 'deactivate_gcwi');
-function deactivate_gcwi()
+register_deactivation_hook(__FILE__, 'gcwi_deactivate');
+function gcwi_deactivate()
 {
 	require_once plugin_dir_path(__FILE__) . 'includes/class-gcwi-deactivator.php';
 	GCWI_Deactivator::deactivate();

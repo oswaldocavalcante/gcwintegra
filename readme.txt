@@ -1,4 +1,4 @@
-=== GCW Integra for WooCommerce and GestãoClick ===
+=== GCW Integra - GestãoClick for WooCommerce ===
 Contributors: oswaldocavalcante
 Donate link: https://oswaldocavalcante.com/donation
 Tags: woocommerce, gestaoclick, erp
@@ -48,11 +48,11 @@ Additional quotation module for products without stock control in GestãoClick.
 
 == External services ==
 
-This plugin connects to GestãoClick API to obtain information. It's needed to sync clients, products, categories and attributes for WooCommerce.
+This plugin connects to [GestãoClick](https://gestaoclick.com) API and ViaCEP to obtain information. It's needed to get addresses, sync clients, products, categories and attributes for WooCommerce.
 
-It sends your GestãoClick API Credentials and every time that a request is made. To exports orders, this plugin also sends customers and its order informations.
+It sends your GestãoClick API Credentials and every time that a request is made. To exports orders, this plugin also sends customers and its order informations. This external service is provided by "CLICK DIGITAL SOLUTIONS LTDA": [terms of use](https://gestaoclick.com.br/termos/), [privacy policy](https://gestaoclick.com.br/politicas-de-privacidade/).
 
-This external service is provided by "CLICK DIGITAL SOLUTIONS LTDA": [terms of use](https://gestaoclick.com.br/termos/), [privacy policy](https://gestaoclick.com.br/politicas-de-privacidade/).
+The plugin also sends the client zipcode to ViaCEP to obtain his complete address.
 
 == Frequently Asked Questions ==
 
