@@ -21,7 +21,7 @@ jQuery(document).ready(function ($)
 
             $.ajax
             ({
-                url: 'https://viacep.com.br/ws/' + shipping_postcode + '/json/',
+                url: 'https://brasilapi.com.br/api/cep/v1/' + shipping_postcode,
                 type: 'GET',
                 success: function (response) 
                 {
@@ -37,7 +37,7 @@ jQuery(document).ready(function ($)
 
                         $('#gcwi_quote_shipping_address').html
                         (
-                            '<p>' + response.logradouro + ', ' + response.bairro + ', ' + response.localidade + '/' + response.uf + '</p>'
+                            '<p>' + response.street + ', ' + response.neighborhood + ', ' + response.city + '/' + response.state + '</p>'
                         );
 
                         var shipping_address_html = $('#gcwi_quote_shipping_address').html();

@@ -48,11 +48,11 @@ Additional quotation module for products without stock control in GestãoClick.
 
 == External services ==
 
-This plugin connects to [GestãoClick](https://gestaoclick.com) API and ViaCEP to obtain information. It's needed to get addresses, sync clients, products, categories and attributes for WooCommerce.
+This plugin connects to [GestãoClick](https://gestaoclick.com) API and [Brasil API](https://brasilapi.com.br) to obtain information. It's needed to get addresses, sync clients, products, categories and attributes for WooCommerce.
 
 It sends your GestãoClick API Credentials and every time that a request is made. To exports orders, this plugin also sends customers and its order informations. This external service is provided by "CLICK DIGITAL SOLUTIONS LTDA": [terms of use](https://gestaoclick.com.br/termos/), [privacy policy](https://gestaoclick.com.br/politicas-de-privacidade/).
 
-The plugin also sends the client zipcode to ViaCEP to obtain his complete address.
+The plugin also sends the client zipcode to 'Brasil API' to obtain the complete address and calculate the shipping price. This external service is provided by "Brasil API": [terms of use](https://brasilapi.com.br/#termos-de-uso).
 
 == Frequently Asked Questions ==
 
