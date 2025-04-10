@@ -5,6 +5,7 @@ GCW Integra é um plugin para WordPress que integra o ERP GestãoClick ao WooCom
 - Author: [Oswaldo Cavalcante](https://oswaldocavalcante.com/)
 - Doação: https://oswaldocavalcante.com/donation
 - Licença: [GPL-2.0+](http://www.gnu.org/licenses/gpl-2.0.html)
+- Wordpress directory: https://wordpress.org/plugins/gcwintegra/
 
 ## Funcionalidades
 
