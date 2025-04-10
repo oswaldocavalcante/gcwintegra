@@ -63,3 +63,7 @@ GestãoClick is an online ERP system that manages all management tasks simply an
 = Where do I get my API credentials? =
 
 You can obtain your access credentials [here](https://gestaoclick.com/integracao_api/configuracoes/gerar_token).
+
+== Screenshots ==
+
+1. WooCommerce Integration settings page where you can configure your GestãoClick API credentials
