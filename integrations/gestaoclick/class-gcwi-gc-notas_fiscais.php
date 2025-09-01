@@ -22,10 +22,9 @@ class GCWI_GC_Notas_Fiscais extends GCWI_GC_API
     public function create_nota_fiscal($order_id)
     {
         $wc_order = wc_get_order($order_id);
-        $produtos = $this->get_produtos($wc_order);
+        $gc_produtos = $this->get_produtos($wc_order);
 
-        $customer_id = $wc_order->get_customer_id();
-        $wc_customer = new WC_Customer($customer_id);
+        $wc_customer = new WC_Customer($wc_order->get_customer_id());
         $gc_cliente_id = $wc_customer->get_meta('gcwi_gc_cliente_id');
 
         $body = array
@@ -33,7 +32,7 @@ class GCWI_GC_Notas_Fiscais extends GCWI_GC_API
             'loja_id'           => 5865,
             'tipo_nf'           => 1,
             'id_destinatario'   => $gc_cliente_id,
-            'produtos'          => $produtos
+            'produtos'          => $gc_produtos
         );
 
         $response = wp_remote_post($this->api_endpoint, array_merge
@@ -53,22 +52,17 @@ class GCWI_GC_Notas_Fiscais extends GCWI_GC_API
 
         foreach ($order->get_items() as $order_item)
         {
-            $order_item_data = $order_item->get_data();
-            $wc_product_id   = $order_item_data['product_id'];
-            $wc_product      = wc_get_product($wc_product_id);
-            $gc_product_id   = $wc_product->get_meta('gcwi_gc_product_id');
-            $gc_product_ncm  = $wc_product->get_meta('gcwi_gc_ncm');
-
+            $wc_product = wc_get_product($order_item->get_data()['product_id']);
             $gc_produto = array
             (
-                'produto_id'        => $gc_product_id,
+                'produto_id'        => $wc_product->get_meta('gcwi_gc_product_id'),
                 'codigo_produto'    => $wc_product->get_sku(),
                 'nome_produto'      => $wc_product->get_name(),
                 'unidade'           => 'UN',
                 'quantidade'        => $order_item->get_quantity(),
                 'valor_venda'       => $wc_product->get_price(),
                 'valor_custo'       => 0,
-                'ncm'               => $gc_product_ncm,
+                'ncm'               => $wc_product->get_meta('gcwi_gc_ncm'),
             );
 
             // Optional
