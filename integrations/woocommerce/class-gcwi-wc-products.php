@@ -121,8 +121,6 @@ class GCWI_WC_Products extends GCWI_GC_API
         {
             if((int) $product_data['possui_variacao'])  $product = new WC_Product_Variable();
             else                                        $product = new WC_Product_Simple();
-
-            $product->add_meta_data('gcwi_gc_product_id', (int) $product_data['id'], true);
         }
 
         if($product instanceof WC_Product_Variable)
@@ -155,7 +153,9 @@ class GCWI_WC_Products extends GCWI_GC_API
 
         $product->set_props($product_props);
         $product->set_attributes(array_merge($product->get_attributes(), $this->get_filters_attributes($product->get_name())));
+        $product->add_meta_data('gcwi_gc_product_id', (int) $product_data['id'], true);
         $product->add_meta_data('gcwi_last_update', $product_data['modificado_em'], true);
+        $product->add_meta_data('gcwi_gc_ncm', $product_data['fiscal']['ncm'], false);
         
         return $product->save();
     }
@@ -186,14 +186,11 @@ class GCWI_WC_Products extends GCWI_GC_API
             $variation_id_exists = wc_get_product_id_by_sku($sku);
             $variation = null;
 
-            if ($variation_id_exists) $variation = wc_get_product($variation_id_exists);
-            else 
-            {
-                $variation = new WC_Product_Variation();
-                $variation->set_sku($variation_data['variacao']['codigo']);
-                $variation->add_meta_data( 'gcwi_gc_variation_id', (int) $variation_data['variacao']['id'], true );
-            }
-            
+            if ($variation_id_exists)   $variation = wc_get_product($variation_id_exists);
+            else                        $variation = new WC_Product_Variation();
+
+            $variation->set_sku($variation_data['variacao']['codigo']);
+            $variation->add_meta_data('gcwi_gc_variation_id', (int) $variation_data['variacao']['id'], true);
             $variation->set_parent_id($parent_product_id);
             $variation->set_status('publish');
             $variation->set_manage_stock($parent_product->get_manage_stock());

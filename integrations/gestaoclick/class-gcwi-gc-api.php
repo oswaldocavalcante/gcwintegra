@@ -16,6 +16,7 @@ class GCWI_GC_API
     private $endpoint_transportadoras;
     private $endpoint_situacoes;
     private $endpoint_orcamentos;
+    private $endpoint_notas_fiscais;
 
     public function __construct()
     {
@@ -39,6 +40,7 @@ class GCWI_GC_API
         $this->endpoint_transportadoras = 'https://api.gestaoclick.com/transportadoras';
         $this->endpoint_situacoes       = 'https://api.gestaoclick.com/situacoes_vendas';
         $this->endpoint_orcamentos      = 'https://api.gestaoclick.com/orcamentos';
+        $this->endpoint_notas_fiscais   = 'https://api.gestaoclick.com/notas_fiscais_produtos';
     }
 
     public static function test_connection()
@@ -70,7 +72,7 @@ class GCWI_GC_API
         else return false;
     }
 
-    public function fetch($endpoint)
+    public function get_all($endpoint)
     {
         $items = [];
         $proxima_pagina = 1;
@@ -83,6 +85,7 @@ class GCWI_GC_API
             );
 
             $body_array = json_decode($body, true);
+            if (!is_array($body_array)) return false;
             $proxima_pagina = $body_array['meta']['proxima_pagina'];
 
             $items = array_merge($items, $body_array['data']);
@@ -90,6 +93,13 @@ class GCWI_GC_API
         while($proxima_pagina != null);
 
         return $items;
+    }
+
+    public function get($id, $endpoint)
+    {
+        $response = wp_remote_get($endpoint . '/' . $id, $this->headers);
+        
+        return wp_remote_retrieve_body($response);
     }
 
     public function get_access_token()
@@ -145,5 +155,10 @@ class GCWI_GC_API
     public function get_endpoint_orcamentos()
     {
         return $this->endpoint_orcamentos;
+    }
+
+    public function get_endpoint_notas_fiscais()
+    {
+        return $this->endpoint_notas_fiscais;
     }
 }

@@ -16,7 +16,7 @@ class GCWI_GC_Transportadoras extends GCWI_GC_API
         $this->api_endpoint = parent::get_endpoint_transportadoras();
     }
 
-    public function fetch_api() 
+    public function fetch_all() 
     {
         $transportadoras = [];
         $proxima_pagina = 1;
@@ -41,7 +41,7 @@ class GCWI_GC_Transportadoras extends GCWI_GC_API
 
     public function get_options_for_settings() 
     {
-        $transportadoras = $this->fetch_api();
+        $transportadoras = $this->fetch_all();
         if(!$transportadoras) return false;
         
         $array_options = [];

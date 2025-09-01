@@ -83,10 +83,11 @@ class GCWI_GC_Venda extends GCWI_GC_API
             $gc_cliente = new GCWI_GC_Cliente($wc_customer);
             $this->cliente_id = $gc_cliente->export();
             $wc_customer->add_meta_data('gcwi_gc_cliente_id', $this->cliente_id, true);
+            $wc_customer->save();
         }
     }
 
-    public function get()
+    public function fetch()
     {
         $order = wc_get_order($this->wc_order_id);
         $id = $order->get_meta('gcwi_gc_venda_id');
@@ -100,19 +101,10 @@ class GCWI_GC_Venda extends GCWI_GC_API
 
         if ($body['code'] == 200) 
         {
-            if (is_array($body['data'])) 
-            {
-                return $body['data'][0];
-            }
-            else 
-            {
-                return new WP_Error($body['code'], $body['data']);
-            }
+            if (is_array($body['data'])) return $body['data'][0];
+            else return new WP_Error($body['code'], $body['data']);
         }
-        else 
-        {
-            return new WP_Error($body['code'], $body['data']);
-        }
+        else return new WP_Error($body['code'], $body['data']);
     }
 
     public function export()
@@ -130,17 +122,13 @@ class GCWI_GC_Venda extends GCWI_GC_API
             'desconto_valor'    => $this->desconto_valor,
         );
 
-        $response = wp_remote_post
-        ( 
-            $this->api_endpoint, 
-            array_merge
-            (
-                $this->api_headers,
-                array('body' => wp_json_encode($body)),
-            ) 
-        );
+        $response = wp_remote_post($this->api_endpoint, array_merge
+        (
+            $this->api_headers,
+            array('body' => wp_json_encode($body))
+        ));
 
-        // Associates WC Order with GC Order through metadata
+        // Associates WC Order with GC Venda through metadata
         $this->add_wc_order_metadata(json_decode($response['body']));
     }
 

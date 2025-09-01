@@ -68,7 +68,7 @@ class GCWI_Admin
 	}
 
 	/**
-	 * Execute the importations of categories and products by cron schdeduled event.
+	 * Import categories and products by cron schdeduled event.
 	 * 
 	 * @since    1.0.0
 	 */
@@ -87,5 +87,11 @@ class GCWI_Admin
 	{
 		$gc_venda = new GCWI_GC_Venda($order_id);
 		$gc_venda->export();
+	}
+
+	public function create_invoice($order_id)
+	{
+		$gc_nota_fiscal = new GCWI_GC_Notas_Fiscais();
+		$gc_nota_fiscal->create_nota_fiscal($order_id);
 	}
 }

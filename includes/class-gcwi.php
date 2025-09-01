@@ -72,14 +72,8 @@ class GCWI
 		add_action('gcwi_update', 				array($plugin_admin, 'import_all'));
 		add_action('wp_ajax_gcwi_update', 		array($plugin_admin, 'import_all'));
 
-		if (get_option('gcwi-settings-export-orders') == 'yes') 
-		{
-			add_action('woocommerce_order_status_processing', array($plugin_admin, 'export_order'));
-		} 
-		else 
-		{
-			remove_action('woocommerce_order_status_processing', array($plugin_admin, 'export_order'));
-		}
+		if (get_option('gcwi-settings-export-orders') == 'yes') add_action('woocommerce_order_status_processing', array($plugin_admin, 'export_order'));
+		else remove_action('woocommerce_order_status_processing', array($plugin_admin, 'export_order'));
 	}
 
 	private function define_public_hooks()
