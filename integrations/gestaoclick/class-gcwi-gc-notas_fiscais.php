@@ -41,9 +41,12 @@ class GCWI_GC_Notas_Fiscais extends GCWI_GC_API
             array('body' => json_encode($body))
         ));
 
-        if(!is_wp_error($response)) $this->add_wc_order_metadata($wc_order, json_decode($response['body']));
+        if(is_wp_error($response)) return $response;
 
-        return $response;
+        $gc_nfe_id = json_decode($response['body'])->data->dados;
+        $this->add_wc_order_metadata($wc_order, $gc_nfe_id);
+
+        return $gc_nfe_id;
     }
 
     private function get_produtos(WC_Order $order)
@@ -84,10 +87,10 @@ class GCWI_GC_Notas_Fiscais extends GCWI_GC_API
         return $produtos;
     }
 
-    public function add_wc_order_metadata($wc_order, $gc_data)
+    public function add_wc_order_metadata(WC_Order $wc_order, $gc_data)
     {
         $order = wc_get_order($wc_order);
-        $order->add_meta_data('gcwi_gc_nfe_id', $gc_data->data->id, true);
+        $order->add_meta_data('gcwi_gc_nfe_id', $gc_data->data->dados, true);
         $order->save();
     }
 }

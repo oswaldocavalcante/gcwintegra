@@ -215,7 +215,7 @@ class GCWI_WC_Integration extends WC_Integration
         $order = wc_get_order($order_id);
         if(!$order || !$order->meta_exists('gcwi_gc_venda_id')) return;
 
-        echo wp_kses_post($this->generate_nfe_button($order));
+        echo wp_kses_post($this->render_nfe_button($order));
     }
 
     function add_order_list_column_actions_hpos($column, $post_or_order_object)
@@ -229,16 +229,16 @@ class GCWI_WC_Integration extends WC_Integration
 
         if(!$order || !$order->meta_exists('gcwi_gc_venda_id')) return;
 
-        echo wp_kses_post($this->generate_nfe_button($order));
+        echo wp_kses_post($this->render_nfe_button($order));
     }
 
-    private function generate_nfe_button(WC_Order $order)
+    private function render_nfe_button(WC_Order $order)
     {
         $button_label = '';
         $css_classes  = ['button', 'button-large', 'dashicons-before', 'dashicons-external'];
         if(!$order->is_paid()) $css_classes[] = 'disabled';
 
-        if($order->meta_exists('gcwi_gc_venda_nfe_id')) $button_label = __('Ver NFe', 'gcwintegra');
+        if($order->meta_exists('gcwi_gc_nfe_id')) $button_label = __('Ver NFe', 'gcwintegra');
         else
         {
             $button_label = __('Emitir NFe', 'gcwintegra');
@@ -265,40 +265,24 @@ class GCWI_WC_Integration extends WC_Integration
 
         if($order->meta_exists('gcwi_gc_nfe_id'))
         {
-            $nota_fiscal_id = $order->get_meta('gcwi_gc_nfe_id');
-            $redirect_url .= 'index?id=' . $nota_fiscal_id;
+            $gc_nfe_id      = $order->get_meta('gcwi_gc_nfe_id');
+            $redirect_url  .= 'index?id=' . $gc_nfe_id;
         }
         else
         {
-            $gc_nfe = new GCWI_GC_Notas_Fiscais();
-            $gc_nfe_data = $gc_nfe->create_nota_fiscal($order_id);
+            $gc_nfe     = new GCWI_GC_Notas_Fiscais();
+            $gc_nfe_id  = $gc_nfe->create_nota_fiscal($order_id);
 
-            // $gc_venda = new GCWI_GC_Venda($order_id);
-            // $gc_venda_data = $gc_venda->fetch();
-
-            // if (is_wp_error($gc_venda_data))
-            // {
-            //     wp_send_json( array
-            //     (
-            //         'success' => false,
-            //         'data' => $gc_venda_data,
-            //         'message' => 'Nenhuma venda encontrada para este pedido.'
-            //     ));
-            // }
-
-            // $nota_fiscal_id = $gc_venda_data['nota_fiscal_id'];
-
-            // if($nota_fiscal_id)
-            // {
-            //     $order->add_meta_data('gcwi_gc_venda_nfe_id', $nota_fiscal_id);
-            //     $redirect_url .= 'index?id=' . $nota_fiscal_id;
-            //     $order->save();
-            // }
-            // else
-            // {
-            //     $gc_venda_hash = $order->get_meta('gcwi_gc_venda_hash');
-            //     $redirect_url .= 'adicionar/venda:' . $gc_venda_hash;
-            // }
+            if (is_wp_error($gc_nfe_id))
+            {
+                wp_send_json( array
+                (
+                    'success'   => false,
+                    'data'      => $gc_nfe_id,
+                    'message'   => 'Não foi possível emitir a Nota Fiscal.'
+                ));
+            }
+            else $redirect_url .= 'index?id=' . $gc_nfe_id;
         }
 
         wp_send_json_success($redirect_url);
