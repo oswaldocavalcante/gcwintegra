@@ -19,10 +19,11 @@ class GCWI_GC_Notas_Fiscais extends GCWI_GC_API
         return parent::get($id, $this->api_endpoint);
     }
 
-    public function create_nota_fiscal($order_id)
+    public function generate($order_id)
     {
         $wc_order = wc_get_order($order_id);
         $gc_produtos = $this->get_produtos($wc_order);
+        if(empty($gc_produtos)) return new WP_Error('no_products', 'No products found in the order.');
 
         $wc_customer = new WC_Customer($wc_order->get_customer_id());
         $gc_cliente_id = $wc_customer->get_meta('gcwi_gc_cliente_id');
@@ -32,6 +33,7 @@ class GCWI_GC_Notas_Fiscais extends GCWI_GC_API
             'loja_id'           => 5865,
             'tipo_nf'           => 1,
             'id_destinatario'   => $gc_cliente_id,
+            'envio_automatico'  => 0,
             'produtos'          => $gc_produtos
         );
 
@@ -56,6 +58,8 @@ class GCWI_GC_Notas_Fiscais extends GCWI_GC_API
         foreach ($order->get_items() as $order_item)
         {
             $wc_product = wc_get_product($order_item->get_data()['product_id']);
+            if(!$wc_product) continue;
+            
             $gc_produto = array
             (
                 'produto_id'        => $wc_product->get_meta('gcwi_gc_product_id'),
@@ -87,10 +91,10 @@ class GCWI_GC_Notas_Fiscais extends GCWI_GC_API
         return $produtos;
     }
 
-    public function add_wc_order_metadata(WC_Order $wc_order, $gc_data)
+    public function add_wc_order_metadata(WC_Order $wc_order, $gc_nfe_id)
     {
         $order = wc_get_order($wc_order);
-        $order->add_meta_data('gcwi_gc_nfe_id', $gc_data->data->dados, true);
+        $order->add_meta_data('gcwi_gc_nfe_id', $gc_nfe_id, true);
         $order->save();
     }
 }

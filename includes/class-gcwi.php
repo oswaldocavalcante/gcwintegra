@@ -74,6 +74,9 @@ class GCWI
 
 		if (get_option('gcwi-settings-export-orders') == 'yes') add_action('woocommerce_order_status_processing', array($plugin_admin, 'export_order'));
 		else remove_action('woocommerce_order_status_processing', array($plugin_admin, 'export_order'));
+
+		if (get_option('gcwi-settings-export-invoice') == 'yes') add_action('woocommerce_order_status_processing', array($plugin_admin, 'generate_invoice'));
+		else remove_action('woocommerce_order_status_processing', array($plugin_admin, 'generate_invoice'));
 	}
 
 	private function define_public_hooks()

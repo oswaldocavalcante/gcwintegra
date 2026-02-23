@@ -75,9 +75,9 @@ jQuery(document).ready(function ($)
 					loaderContainer.removeClass('disabled');
 				},
 				success: function (response) {
-					if (response.success) {
-						window.open(response.data, '_blank');
-					} else {
+					if (response.success) window.open(response.data, '_blank');
+					else 
+					{
 						alert(response.message);
 						console.error(response.data);
 					}

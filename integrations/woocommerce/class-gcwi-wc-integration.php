@@ -91,7 +91,7 @@ class GCWI_WC_Integration extends WC_Integration
             (
                 'type'          => 'title',
                 'title'         => __('Importações', 'gcwintegra' ),
-                'description'   => __('Configure como realizar importações para o WooCommerce.', 'gcwintegra') . $button_import_html,
+                'description'   => __('Configure como realizar importações.', 'gcwintegra') . $button_import_html,
             ),
             'gcwi-settings-auto-imports' => array
             (
@@ -99,13 +99,13 @@ class GCWI_WC_Integration extends WC_Integration
                 'default'       => 'no',
                 'title'         => __( 'Auto-importar', 'gcwintegra' ),
                 'label'         => __( 'Habilitar auto-importação', 'gcwintegra' ),
-                'description'   => __( 'Habilite para sincronizar periodicamente (a cada 15 minutos) o WooCommerce com o GestãoClick.', 'gcwintegra'),
+                'description'   => __( 'Habilite para sincronizar periodicamente (a cada 15 minutos) com o WooCommerce.', 'gcwintegra'),
             ),
             'gcwi-settings-categories-selection' => array
             (
                 'type'          => 'multiselect',
                 'title'         => __('Seleção de Categorias', 'gcwintegra'),
-                'description'   => __('Selecione as categorias para importar seus produtos do GestãoClick.', 'gcwintegra'),
+                'description'   => __('Selecione as categorias para importar seus produtos.', 'gcwintegra'),
                 'css'           => 'height: 300px;',
                 'options'       => $this->gc_categorias_options,
             ),
@@ -114,37 +114,45 @@ class GCWI_WC_Integration extends WC_Integration
                 'type'          => 'textarea',
                 'placeholder'   => '2012254018005...',
                 'title'         => __('Produtos proibidos', 'gcwintegra'),
-                'description'   => __('Lista de códigos de produtos para não importar do GestãoClick (um código de produto por linha).', 'gcwintegra'),
+                'description'   => __('Lista de códigos de produtos para não importar (um código de produto por linha).', 'gcwintegra'),
             ),
 
             'gcwi-settings-exports-section' => array
             (
                 'type'          => 'title',
                 'title'         => __('Exportações', 'gcwintegra'),
-                'description'   => __('Configure como realizar exportações para o GestãoClick.', 'gcwintegra'),
+                'description'   => __('Configure como realizar exportações.', 'gcwintegra'),
             ),
             'gcwi-settings-export-orders' => array
             (
                 'type'          => 'checkbox',
                 'default'       => 'no',
                 'title'         => __('Auto-exportar vendas', 'gcwintegra'),
-                'label'         => __('Habilitar auto-exportar vendas', 'gcwintegra'),
-                'description'   => __('Sempre exportar novas vendas pagas e seus respectivos clientes ao GestãoClick.', 'gcwintegra'),
+                'label'         => __('Exportar vendas automaticamente', 'gcwintegra'),
+                'description'   => __('Sempre exportar novas vendas pagas e seus respectivos clientes.', 'gcwintegra'),
             ),
-            'gcwi-settings-export-situacao' => array
+            'gcwi-settings-export-invoice' => array
+            (
+                'type'          => 'checkbox',
+                'default'       => 'no',
+                'title'         => __('Auto-emitir notas fiscais', 'gcwintegra'),
+                'label'         => __('Emitir notas fiscais automaticamente', 'gcwintegra'),
+                'description'   => __('Sempre emitir notas fiscais para as vendas pagas.', 'gcwintegra'),
+            ),
+            'gcwi-settings-export-status' => array
             (
                 'type'          => 'select',
                 'title'         => __('Situação padrão ao exportar vendas ao GestãoClick', 'gcwintegra'),
                 'label'         => __('Selecione a situação padrão para novas vendas exportadas', 'gcwintegra'),
-                'description'   => __('A situação padrão para ser usada em novas vendas pagas exportadas para o GestaoClick.', 'gcwintegra'),
+                'description'   => __('A situação padrão para ser usada em novas vendas pagas exportadas.', 'gcwintegra'),
                 'options'       => $this->gc_situacoes_options,
             ),
-            'gcwi-settings-export-trasportadora' => array
+            'gcwi-settings-export-carrier' => array
             (
                 'type'          => 'select',
                 'title'         => __('Transportadora padrão ao exportar vendas ao GestãoClick', 'gcwintegra'),
                 'label'         => __('Selecione a transportadora padrão para novas vendas exportadas', 'gcwintegra'),
-                'description'   => __('A transportadora padrão para ser usada em novas vendas pagas exportadas ao GestaoClick.', 'gcwintegra'),
+                'description'   => __('A transportadora padrão para ser usada em novas vendas pagas exportadas.', 'gcwintegra'),
                 'options'       => $this->gc_transportadoras_options,
             ),
             'gcwi-settings-shipping-calculator' => array
@@ -160,18 +168,18 @@ class GCWI_WC_Integration extends WC_Integration
 
     public function admin_options() 
     {
-        update_option('gcwi-api-access-token',               $this->settings['gcwi-api-access-token']);
-        update_option('gcwi-api-secret-access-token',        $this->settings['gcwi-api-secret-access-token']);
+        update_option('gcwi-api-access-token',              $this->settings['gcwi-api-access-token']);
+        update_option('gcwi-api-secret-access-token',       $this->settings['gcwi-api-secret-access-token']);
 
-        update_option('gcwi-settings-auto-imports',          $this->settings['gcwi-settings-auto-imports']);
-        update_option('gcwi-settings-categories-selection',  $this->settings['gcwi-settings-categories-selection']);
-        update_option('gcwi-settings-products-blacklist',    explode(PHP_EOL, $this->settings['gcwi-settings-products-blacklist']));
+        update_option('gcwi-settings-auto-imports',         $this->settings['gcwi-settings-auto-imports']);
+        update_option('gcwi-settings-categories-selection', $this->settings['gcwi-settings-categories-selection']);
+        update_option('gcwi-settings-products-blacklist',   explode(PHP_EOL, $this->settings['gcwi-settings-products-blacklist']));
 
-        update_option('gcwi-settings-export-orders',         $this->settings['gcwi-settings-export-orders']);
-        update_option('gcwi-settings-export-trasportadora',  $this->settings['gcwi-settings-export-trasportadora']);
-        update_option('gcwi-settings-export-situacao',       $this->settings['gcwi-settings-export-situacao']);
-        update_option('gcwi-settings-shipping-calculator',   $this->settings['gcwi-settings-shipping-calculator']);
-
+        update_option('gcwi-settings-export-orders',        $this->settings['gcwi-settings-export-orders']);
+        update_option('gcwi-settings-export-invoice',       $this->settings['gcwi-settings-export-invoice']);
+        update_option('gcwi-settings-export-carrier',       $this->settings['gcwi-settings-export-carrier']);
+        update_option('gcwi-settings-export-status',        $this->settings['gcwi-settings-export-status']);
+        update_option('gcwi-settings-shipping-calculator',  $this->settings['gcwi-settings-shipping-calculator']);
 
         if(GCWI_GC_API::test_connection()) echo '<span id="gcwi-integration-connection" class="dashicons-before dashicons-yes-alt">' . esc_html( __('Conectado', 'gcwintegra') ) . '</span>';
         else wp_admin_notice(__( 'GestaoClick: Preencha corretamente suas credenciais de acesso.', 'gcwintegra' ), array( 'error' ) );
@@ -271,7 +279,7 @@ class GCWI_WC_Integration extends WC_Integration
         else
         {
             $gc_nfe     = new GCWI_GC_Notas_Fiscais();
-            $gc_nfe_id  = $gc_nfe->create_nota_fiscal($order_id);
+            $gc_nfe_id  = $gc_nfe->generate($order_id);
 
             if (is_wp_error($gc_nfe_id))
             {

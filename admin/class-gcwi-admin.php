@@ -86,12 +86,36 @@ class GCWI_Admin
 	public function export_order($order_id) 
 	{
 		$gc_venda = new GCWI_GC_Venda($order_id);
-		$gc_venda->export();
+		$gc_venda_id = $gc_venda->export();
+
+		if(is_wp_error($gc_venda_id)) 
+		{
+			error_log('GCWI – Erro ao exportar venda ' . $order_id . ': ' . $gc_venda_id->get_error_message());
+			return;
+		}
+		else
+		{
+			$wc_order = wc_get_order($order_id);
+			$wc_order->add_order_note('Venda exportada ao GestãoClick com sucesso. ID: ' . $gc_venda_id);
+			$wc_order->save();
+		}
 	}
 
-	public function create_invoice($order_id)
+	public function generate_invoice($order_id)
 	{
 		$gc_nota_fiscal = new GCWI_GC_Notas_Fiscais();
-		$gc_nota_fiscal->create_nota_fiscal($order_id);
+		$gc_nota_fiscal_id = $gc_nota_fiscal->generate($order_id);
+
+		if(is_wp_error($gc_nota_fiscal_id)) 
+		{
+			error_log('GCWI – Erro ao criar nota fiscal para o pedido ' . $order_id . ': ' . $gc_nota_fiscal_id->get_error_message());
+			return;
+		}
+		else
+		{
+			$wc_order = wc_get_order($order_id);
+			$wc_order->add_order_note('Nota fiscal criada com sucesso. ID: ' . $gc_nota_fiscal_id);
+			$wc_order->save();
+		}
 	}
 }
